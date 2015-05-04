@@ -40,7 +40,7 @@ func (u *unfolder) ReadLine() ([]byte, error) {
 			continue
 		}
 		toRet = append(toRet, p[:len(p)-1]...)
-		c, _ := u.buf.ReadByte()
+		c, _ = u.buf.ReadByte()
 		if c != ' ' {
 			u.buf.UnreadByte()
 			break

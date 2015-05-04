@@ -39,7 +39,7 @@ func (f folder) WriteLine(p []byte) (err error) {
 			}
 			buf = buf[:0]
 		}
-		buf = append(buf, p[:s])
+		buf = append(buf, p[:s]...)
 		pos += s
 		p = p[s:]
 	}
