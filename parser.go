@@ -175,7 +175,7 @@ func (p *parser) parseName() (token, stateFn) {
 func (p *parser) parseParamName() (token, stateFn) {
 	p.acceptRun(ianaTokenChars)
 	t := token{
-		TokenName,
+		TokenParamName,
 		p.buf.String(),
 	}
 	if p.buf.Len() == 0 {
@@ -200,7 +200,7 @@ func (p *parser) parseParamValue() (token, stateFn) {
 		t.data = p.buf.String()
 	} else {
 		p.exceptRun(invSafeChars)
-		t.typ = TokenParamQValue
+		t.typ = TokenParamValue
 		t.data = p.buf.String()
 	}
 	if p.accept(paramDelim) {
