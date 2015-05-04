@@ -139,18 +139,6 @@ func (p *parser) acceptRun(valid string) {
 	}
 }
 
-func (p *parser) except(invalid string) bool {
-	r := p.next()
-	if r == -1 {
-		return false
-	}
-	if !strings.ContainsRune(invalid, r) {
-		return true
-	}
-	p.backup()
-	return false
-}
-
 func (p *parser) exceptRun(invalid string) {
 	for {
 		r := p.next()
