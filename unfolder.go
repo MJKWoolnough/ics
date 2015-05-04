@@ -14,7 +14,7 @@ type unfolder struct {
 	buf bytes.Buffer
 }
 
-func NewUnfolder(r io.Reader) (*unfolder, error) {
+func newUnfolder(r io.Reader) (*unfolder, error) {
 	var u unfolder
 	_, err := u.buf.ReadFrom(r)
 	if err != nil {
