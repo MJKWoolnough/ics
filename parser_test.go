@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestParset(t *testing.T) {
+func TestParser(t *testing.T) {
 	tests := []struct {
 		input  string
 		tokens []token
