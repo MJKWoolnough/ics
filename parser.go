@@ -16,6 +16,8 @@ const (
 	paramDelim      = ";"
 	paramValueDelim = "="
 	nameValueDelim  = ":"
+	crlf            = "\r\n"
+	dquote          = "\""
 )
 
 type token struct {
@@ -67,6 +69,14 @@ func (p *parser) GetToken() (token, error) {
 		}
 	}
 	return t, p.err
+}
+
+func (p *parser) ClearError() {
+	if p.err == io.EOF || p.err == io.ErrUnexpectedEOF {
+		return
+	}
+	p.err = nil
+	p.state = p.clearLine
 }
 
 func (p *parser) next() rune {
@@ -190,9 +200,9 @@ func (p *parser) parseParamName() (token, stateFn) {
 
 func (p *parser) parseParamValue() (token, stateFn) {
 	var t token
-	if p.accept("\"") {
+	if p.accept(dquote) {
 		p.exceptRun(invQSafeChars)
-		if !p.accept("\"") {
+		if !p.accept(dquote) {
 			p.err = ErrInvalidChar
 			return p.errorFn()
 		}
@@ -217,7 +227,7 @@ func (p *parser) parseValue() (token, stateFn) {
 	var toRet []byte
 	for {
 		p.exceptRun(invValueChars)
-		if !p.accept("\r") || !p.accept("\n") {
+		if !p.accept(crlf[:1]) || !p.accept(crlf[1:]) {
 			if p.err == nil {
 				p.err = ErrInvalidChar
 			}
@@ -241,6 +251,17 @@ func (p *parser) errorFn() (token, stateFn) {
 		TokenError,
 		p.err.Error(),
 	}, p.errorFn
+}
+
+func (p *parser) clearLine() (token, stateFn) {
+	for {
+		p.exceptRun(crlf[:1])
+		if p.err != nil {
+			return p.errorFn()
+		} else if p.accept(crlf[:1]) && p.accept(crlf[1:]) {
+			return p.parseName()
+		}
+	}
 }
 
 // Errors
