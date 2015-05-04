@@ -148,38 +148,34 @@ func (p *parser) exceptRun(invalid string) {
 
 func (p *parser) parseName() (token, stateFn) {
 	p.acceptRun(ianaTokenChars)
-	if p.err == nil {
-		t := token{
-			TokenName,
-			p.buf.String(),
-		}
-		if p.buf.Len() == 0 {
-			p.err = ErrNoName
-		} else if p.accept(paramDelim) {
-			return t, p.parseParamName
-		} else if p.accept(nameValueDelim) {
-			return t, p.parseValue
-		} else {
-			p.err = ErrInvalidChar
-		}
+	t := token{
+		TokenName,
+		p.buf.String(),
+	}
+	if p.buf.Len() == 0 {
+		p.err = ErrNoName
+	} else if p.accept(paramDelim) {
+		return t, p.parseParamName
+	} else if p.accept(nameValueDelim) {
+		return t, p.parseValue
+	} else if p.err == nil {
+		p.err = ErrInvalidChar
 	}
 	return p.errorFn()
 }
 
 func (p *parser) parseParamName() (token, stateFn) {
 	p.acceptRun(ianaTokenChars)
-	if p.err == nil {
-		t := token{
-			TokenName,
-			p.buf.String(),
-		}
-		if p.buf.Len() == 0 {
-			p.err = ErrNoParamName
-		} else if p.accept(paramValueDelim) {
-			return t, p.parseParamValue
-		} else {
-			p.err = ErrInvalidChar
-		}
+	t := token{
+		TokenName,
+		p.buf.String(),
+	}
+	if p.buf.Len() == 0 {
+		p.err = ErrNoParamName
+	} else if p.accept(paramValueDelim) {
+		return t, p.parseParamValue
+	} else if p.err == nil {
+		p.err = ErrInvalidChar
 	}
 	return p.errorFn()
 }
@@ -199,14 +195,12 @@ func (p *parser) parseParamValue() (token, stateFn) {
 		t.typ = TokenParamQValue
 		t.data = p.buf.String()
 	}
-	if p.err == nil {
-		if p.accept(paramDelim) {
-			return t, p.parseParamName
-		} else if p.accept(nameValueDelim) {
-			return t, p.parseValue
-		} else {
-			p.err = ErrInvalidChar
-		}
+	if p.accept(paramDelim) {
+		return t, p.parseParamName
+	} else if p.accept(nameValueDelim) {
+		return t, p.parseValue
+	} else if p.err == nil {
+		p.err = ErrInvalidChar
 	}
 	return p.errorFn()
 }
@@ -216,7 +210,9 @@ func (p *parser) parseValue() (token, stateFn) {
 	for {
 		p.exceptRun(invValueChars)
 		if !p.accept("\r") && !p.accept("\n") {
-			p.err = ErrInvalidChar
+			if p.err == nil {
+				p.err = ErrInvalidChar
+			}
 			return p.errorFn()
 		}
 		toAdd := p.buf.Bytes()
