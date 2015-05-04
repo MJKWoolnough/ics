@@ -28,7 +28,7 @@ func (f folder) WriteLine(p []byte) (err error) {
 		r, s := utf8.DecodeRune(p)
 		if pos+s > lineLength {
 			f.bw.Write(continuation)
-			pos = 0
+			pos = 1
 		}
 		_, err = f.bw.WriteRune(r)
 		if err != nil {
