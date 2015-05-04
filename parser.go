@@ -242,7 +242,7 @@ func (p *parser) errorFn() (token, stateFn) {
 // Errors
 
 var (
-	ErrInvalidChar = errors.New("invalid characted")
+	ErrInvalidChar = errors.New("invalid character")
 	ErrNoName      = errors.New("zero length name")
 	ErrNoParamName = errors.New("zero length param name")
 )
