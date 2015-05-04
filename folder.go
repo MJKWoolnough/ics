@@ -11,7 +11,11 @@ type folder struct {
 	w io.Writer
 }
 
-func (f *folder) WriteLine(p []byte) (err error) {
+func newFolder(w io.Writer) folder {
+	return folder{w}
+}
+
+func (f folder) WriteLine(p []byte) (err error) {
 	pos := 0
 	var bufArr [1024]byte
 	buf := bufArr[:0]
