@@ -58,6 +58,14 @@ func (p *parser) GetToken() (token, error) {
 	var t token
 	p.buf.Reset()
 	t, p.state = p.state()
+	if p.err == io.EOF {
+		p.state = p.errorFn
+		if t.typ == TokenError {
+			p.err = io.ErrUnexpectedEOF
+		} else {
+			return t, nil
+		}
+	}
 	return t, p.err
 }
 
