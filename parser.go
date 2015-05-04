@@ -217,7 +217,7 @@ func (p *parser) parseValue() (token, stateFn) {
 	var toRet []byte
 	for {
 		p.exceptRun(invValueChars)
-		if !p.accept("\r") && !p.accept("\n") {
+		if !p.accept("\r") || !p.accept("\n") {
 			if p.err == nil {
 				p.err = ErrInvalidChar
 			}
