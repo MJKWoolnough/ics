@@ -5,11 +5,6 @@ import (
 	"io"
 )
 
-var (
-	lineWrap = []byte{'\r', '\n', ' '}
-	lineEnd  = []byte{'\r', '\n'}
-)
-
 type unfolder struct {
 	buf bytes.Buffer
 }
