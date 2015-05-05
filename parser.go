@@ -35,6 +35,7 @@ const (
 	TokenParamValue
 	TokenParamQValue
 	TokenValue
+	TokenDone
 )
 
 type stateFn func() (token, stateFn)
@@ -58,11 +59,13 @@ func newParser(r io.Reader) *parser {
 }
 
 func (p *parser) GetToken() (token, error) {
+	if p.err == io.EOF {
+		return token{TokenDone, ""}, p.err
+	}
 	var t token
 	p.buf.Reset()
 	t, p.state = p.state()
 	if p.err == io.EOF {
-		p.state = p.errorFn
 		if t.typ == TokenError {
 			p.err = io.ErrUnexpectedEOF
 		} else {
@@ -160,6 +163,9 @@ func (p *parser) parseName() (token, stateFn) {
 		p.buf.String(),
 	}
 	if p.buf.Len() == 0 {
+		if p.err == io.EOF {
+			return token{TokenDone, ""}, nil
+		}
 		p.err = ErrNoName
 	} else if p.accept(paramDelim) {
 		return t, p.parseParamName
