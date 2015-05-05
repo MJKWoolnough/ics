@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestParser(t *testing.T) {
+func TestLexer(t *testing.T) {
 	tests := []struct {
 		input  string
 		tokens []token
@@ -30,9 +30,9 @@ func TestParser(t *testing.T) {
 		},
 	}
 	for n, test := range tests {
-		p := newParser(strings.NewReader(test.input))
+		l := newLexer(strings.NewReader(test.input))
 		for o, token := range test.tokens {
-			got, err := p.GetToken()
+			got, err := l.GetToken()
 			if err != nil {
 				t.Errorf("test %d-%d: unexpected error: %s", n+1, o+1, err)
 			} else if !reflect.DeepEqual(got, token) {
