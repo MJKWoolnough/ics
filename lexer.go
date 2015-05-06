@@ -41,13 +41,11 @@ const (
 type stateFn func() (token, stateFn)
 
 type lexer struct {
-	br                 *bufio.Reader
-	buf                bytes.Buffer
-	state              stateFn
-	pos, lineNo, colNo int
-	lastWidth          int
-	wasNewLine         bool
-	err                error
+	br        *bufio.Reader
+	buf       bytes.Buffer
+	state     stateFn
+	lastWidth int
+	err       error
 }
 
 func newLexer(r io.Reader) *lexer {
@@ -94,28 +92,12 @@ func (l *lexer) next() rune {
 		return -1
 	}
 	l.buf.WriteRune(r)
-	l.pos += s
 	l.lastWidth = s
-	if s > 0 {
-		if r == '\n' {
-			l.lineNo++
-			l.wasNewLine = true
-			l.colNo = 0
-		} else {
-			l.colNo++
-			l.wasNewLine = false
-		}
-	}
 	return r
 }
 
 func (l *lexer) backup() {
 	if l.lastWidth > 0 {
-		l.pos -= l.lastWidth
-		if l.wasNewLine {
-			l.lineNo--
-		}
-		l.colNo--
 		l.br.UnreadRune()
 		l.buf.Truncate(l.buf.Len() - l.lastWidth)
 		l.lastWidth = 0
