@@ -175,6 +175,28 @@ func (l *lexer) lexParamName() (token, stateFn) {
 	return l.errorFn()
 }
 
+func unescape6868(p []byte) []byte {
+	u := p[:0]
+	for i := 0; i < len(p); i++ {
+		if p[i] == '^' && i+1 < len(p) {
+			i++
+			switch p[i] {
+			case 'n':
+				u = append(u, '\n') //crlf on windows?
+			case '^':
+				u = append(u, '^')
+			case '\'':
+				u = append(u, '"')
+			default:
+				u = append(u, '^', p[i])
+			}
+		} else {
+			u = append(u, p[i])
+		}
+	}
+	return u
+}
+
 func (l *lexer) lexParamValue() (token, stateFn) {
 	var t token
 	if l.accept(dquote) {
@@ -184,11 +206,11 @@ func (l *lexer) lexParamValue() (token, stateFn) {
 			return l.errorFn()
 		}
 		t.typ = TokenParamQValue
-		t.data = l.buf.String()
+		t.data = string(unescape6868(l.buf.Bytes()[1 : l.buf.Len()-1]))
 	} else {
 		l.exceptRun(invSafeChars)
 		t.typ = TokenParamValue
-		t.data = l.buf.String()
+		t.data = string(unescape6868(l.buf.Bytes()))
 	}
 	if l.accept(paramMultipleValueDelim) {
 		return t, l.lexParamValue
