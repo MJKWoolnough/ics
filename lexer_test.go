@@ -17,7 +17,7 @@ func TestLexer(t *testing.T) {
 				{TokenValue, "World"},
 			},
 		},
-		{"BEEP;PN=PV;QN=\"QV\",RV:Value\r\n  Keeps \r\n Going\r\nTESTQUOTED;ONE=A^nB^^C^';TWO=\"A^nB^^C^'\":\r\n",
+		{"BEEP;PN=PV;QN=\"QV\",RV:Value\r\n  Keeps \r\n Going\r\nTestQuoted;ONE=A^nB^^C^';TWO=\"A^nB^^C^'\":\r\n",
 			[]token{
 				{TokenName, "BEEP"},
 				{TokenParamName, "PN"},

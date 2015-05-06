@@ -142,7 +142,7 @@ func (l *lexer) lexName() (token, stateFn) {
 	l.acceptRun(ianaTokenChars)
 	t := token{
 		TokenName,
-		l.buf.String(),
+		string(bytes.ToUpper(l.buf.Bytes())),
 	}
 	if l.buf.Len() == 0 {
 		if l.err == io.EOF {
@@ -163,7 +163,7 @@ func (l *lexer) lexParamName() (token, stateFn) {
 	l.acceptRun(ianaTokenChars)
 	t := token{
 		TokenParamName,
-		l.buf.String(),
+		string(bytes.ToUpper(l.buf.Bytes())),
 	}
 	if l.buf.Len() == 0 {
 		l.err = ErrNoParamName
