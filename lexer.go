@@ -29,13 +29,13 @@ type token struct {
 type tokenType uint8
 
 const (
-	TokenError tokenType = iota
-	TokenName
-	TokenParamName
-	TokenParamValue
-	TokenParamQValue
-	TokenValue
-	TokenDone
+	tokenError tokenType = iota
+	tokenName
+	tokenParamName
+	tokenParamValue
+	tokenParamQValue
+	tokenValue
+	tokenDone
 )
 
 type stateFn func() (token, stateFn)
@@ -58,13 +58,13 @@ func newLexer(r io.Reader) *lexer {
 
 func (l *lexer) GetToken() (token, error) {
 	if l.err == io.EOF {
-		return token{TokenDone, ""}, l.err
+		return token{tokenDone, ""}, l.err
 	}
 	var t token
 	l.buf.Reset()
 	t, l.state = l.state()
 	if l.err == io.EOF {
-		if t.typ == TokenError {
+		if t.typ == tokenError {
 			l.err = io.ErrUnexpectedEOF
 		} else {
 			return t, nil
@@ -141,12 +141,12 @@ func (l *lexer) exceptRun(invalid string) {
 func (l *lexer) lexName() (token, stateFn) {
 	l.acceptRun(ianaTokenChars)
 	t := token{
-		TokenName,
+		tokenName,
 		string(bytes.ToUpper(l.buf.Bytes())),
 	}
 	if l.buf.Len() == 0 {
 		if l.err == io.EOF {
-			return token{TokenDone, ""}, nil
+			return token{tokenDone, ""}, nil
 		}
 		l.err = ErrNoName
 	} else if l.accept(paramDelim) {
@@ -162,7 +162,7 @@ func (l *lexer) lexName() (token, stateFn) {
 func (l *lexer) lexParamName() (token, stateFn) {
 	l.acceptRun(ianaTokenChars)
 	t := token{
-		TokenParamName,
+		tokenParamName,
 		string(bytes.ToUpper(l.buf.Bytes())),
 	}
 	if l.buf.Len() == 0 {
@@ -205,11 +205,11 @@ func (l *lexer) lexParamValue() (token, stateFn) {
 			l.err = ErrInvalidChar
 			return l.errorFn()
 		}
-		t.typ = TokenParamQValue
+		t.typ = tokenParamQValue
 		t.data = string(unescape6868(l.buf.Bytes()[1 : l.buf.Len()-1]))
 	} else {
 		l.exceptRun(invSafeChars)
-		t.typ = TokenParamValue
+		t.typ = tokenParamValue
 		t.data = string(unescape6868(l.buf.Bytes()))
 	}
 	if l.accept(paramMultipleValueDelim) {
@@ -242,14 +242,14 @@ func (l *lexer) lexValue() (token, stateFn) {
 		l.buf.Reset()
 	}
 	return token{
-		TokenValue,
+		tokenValue,
 		string(toRet),
 	}, l.lexName
 }
 
 func (l *lexer) errorFn() (token, stateFn) {
 	return token{
-		TokenError,
+		tokenError,
 		l.err.Error(),
 	}, l.errorFn
 }

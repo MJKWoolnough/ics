@@ -13,11 +13,11 @@ func newParser(r io.Reader) parser {
 	return parser{newLexer(r)}
 }
 
-func (p parser) GetComponent(r io.Reader) (component, error) {
+func (p parser) GetComponent() (component, error) {
 	t, err := p.l.GetToken()
 	if err != nil {
 		return nil, err
-	} else if t.typ != TokenName {
+	} else if t.typ != tokenName {
 		return nil, ErrInvalidToken
 	}
 	c := componentFromToken(t)
@@ -27,7 +27,7 @@ func (p parser) GetComponent(r io.Reader) (component, error) {
 	}
 	for {
 		switch t.typ {
-		case TokenParamName:
+		case tokenParamName:
 			pn := t
 			values := make([]token, 0, 1)
 		Loop:
@@ -37,17 +37,21 @@ func (p parser) GetComponent(r io.Reader) (component, error) {
 					return nil, err
 				}
 				switch t.typ {
-				case TokenParamValue, TokenParamQValue:
+				case tokenParamValue, tokenParamQValue:
 					values = append(values, t)
 				default:
 					break Loop
 				}
 			}
-			if err := c.setAttribute(pn, values); err != nil {
+			attr, err := attributeFromTokens(pn, values)
+			if err != nil {
 				return nil, err
 			}
-		case TokenValue:
-			if err = c.setValue(t); err != nil {
+			if err = c.setAttribute(attr); err != nil {
+				return nil, err
+			}
+		case tokenValue:
+			if err = c.setValue(t.data); err != nil {
 				return nil, err
 			}
 			return c, nil
