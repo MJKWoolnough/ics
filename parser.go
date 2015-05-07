@@ -20,7 +20,7 @@ func (p parser) GetComponent() (component, error) {
 	} else if t.typ != tokenName {
 		return nil, ErrInvalidToken
 	}
-	c := componentFromToken(t)
+	c := componentFromToken(t.data)
 	t, err = p.l.GetToken()
 	if err != nil {
 		return nil, err
