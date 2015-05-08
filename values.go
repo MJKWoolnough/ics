@@ -30,7 +30,10 @@ func valueDate(i string) (time.Time, error) {
 }
 
 func valueDateTime(i string) (time.Time, error) {
-	return time.Now(), nil
+	if len(i) > 0 && i[len(i)-1] == 'Z' {
+		return time.ParseInLocation("20060102T150405Z", i, time.UTC)
+	}
+	return time.Parse("20060102T150405", i)
 }
 
 // Errors
