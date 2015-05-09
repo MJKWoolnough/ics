@@ -22,8 +22,55 @@ func (p *parser) GetComponent() (c component, err error) {
 		return nil, ErrInvalidToken
 	}
 	switch p.t.data {
-	case "ATTACH":
+	case calscalec:
+	case methodc:
+	case prodidc:
+	case versionc:
+	case attachc:
 		return p.readAttachComponent()
+	case categoriesc:
+		return p.readCategoriesComponent()
+	case classc:
+		return p.readClassComponent()
+	case commentc:
+		return p.readCommentComponent()
+	case descriptionc:
+	case geoc:
+	case locationc:
+	case percentcompletec:
+	case priorityc:
+	case resourcesc:
+	case statusc:
+	case summaryc:
+	case completedc:
+	case dtendc:
+	case duec:
+	case dtstartc:
+	case durationc:
+	case freebusyc:
+	case transpc:
+	case tzidc:
+	case tznamec:
+	case tzoffsetfromc:
+	case tzoffsettoc:
+	case tzurlc:
+	case attendeec:
+	case contactc:
+	case organizerc:
+	case recuridc:
+	case relatedc:
+	case urlc:
+	case uidc:
+	case exdatec:
+	case rdatec:
+	case rrulec:
+	case actionc:
+	case repeatc:
+	case triggerc:
+	case createdc:
+	case dtstampc:
+	case lastmodc:
+	case seqc:
 	default:
 		return p.readUnknownComponent(p.t.data)
 	}
