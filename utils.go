@@ -1,5 +1,24 @@
 package ics
 
+func escape(s string) []byte {
+	p := make([]byte, 0, len(s))
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '\\':
+			p = append(p, '\\', '\\')
+		case ';':
+			p = append(p, '\\', ';')
+		case ',':
+			p = append(p, '\\', ',')
+		case '\n':
+			p = append(p, '\\', 'n')
+		default:
+			p = append(p, s[i])
+		}
+	}
+	return p
+}
+
 func unescape(p []byte) []byte {
 	u := p[:0]
 	for i := 0; i < len(p); i++ {
@@ -21,6 +40,23 @@ func unescape(p []byte) []byte {
 			u = append(u, p[i])
 		}
 	}
+}
+
+func escape6868(s []byte) []byte {
+	p := make([]byte, 0, len(s))
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '\n':
+			p = append(p, '^', 'n')
+		case '^':
+			p = append(p, '^', '^')
+		case '"':
+			p = append(p, '^', '\'')
+		default:
+			p = append(p, s[i])
+		}
+	}
+	return p
 }
 
 func unescape6868(p []byte) []byte {
