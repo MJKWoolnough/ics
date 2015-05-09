@@ -3,6 +3,7 @@ package ics
 import (
 	"encoding/base64"
 	"errors"
+	"strconv"
 )
 
 const (
@@ -192,40 +193,262 @@ func (p *parser) readCategoriesComponent() (component, error) {
 }
 
 const (
-	classPublic = iota
+	classPublic class = iota
 	classPrivate
 	classConfidential
 )
 
-type class struct {
-	Value int
-}
+type class int
 
 func (p *parser) readClassComponent() (component, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
 	}
-	var cv int
 	switch v {
 	case "PUBLIC":
-		cv = classPublic
+		return classPublic, nil
 	case "PRIVATE":
-		cv = classPrivate
+		return classPrivate, nil
 	case "CONFIDENTIAL":
-		cv = classConfidential
+		return classConfidential, nil
 	default:
-		cv = classPrivate
+		return classPrivate, nil
 	}
-	return class{cv}, nil
 }
 
 type comment struct {
-	Altrep, Language string
+	Altrep, Language, Comment string
 }
 
 func (p *parser) readCommentComponent() (component, error) {
+	as, err := p.readAttributes(altrepparam, languageparam)
+	if err != nil {
+		return nil, err
+	}
+	var altRep, language string
+	if alt, ok := as[altrepparam]; ok {
+		altRep = string(alt.(altrep))
+	}
+	if l, ok := as[languageparam]; ok {
+		language = string(l.(language))
+	}
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	return comment{
+		altRep,
+		language,
+		string(unescape(v)),
+	}, nil
+}
 
+type description struct {
+	Altrep, Language, Description string
+}
+
+func (p *parser) readDescriptionComponent() (component, error) {
+	as, err := p.readAttributes(altrepparam, languageparam)
+	if err != nil {
+		return nil, err
+	}
+	var altRep, language string
+	if alt, ok := as[altrepparam]; ok {
+		altRep = string(alt.(altrep))
+	}
+	if l, ok := as[languageparam]; ok {
+		language = string(l.(language))
+	}
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	return description{
+		altRep,
+		language,
+		string(unescape(v)),
+	}, nil
+}
+
+type geo struct {
+	Latitude, Longitude float32
+}
+
+func (p *parser) readGeoComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil
+	}
+	parts := textSplit(v, ';')
+	if len(parts) != 2 {
+		return nil, ErrUnsupportedValue
+	}
+	la, err := strconv.ParseFloat(parts[0], 32)
+	if err != nil {
+		return nil, err
+	}
+	lo, err := strconv.ParseFloat(parts[0], 32)
+	if err != nil {
+		return nil, err
+	}
+	return geo{la, lo}, nil
+}
+
+type location struct {
+	Altrep, Language, Location string
+}
+
+func (p *parser) readLocationComponent() (component, error) {
+	as, err := p.readAttributes(altrepparam, languageparam)
+	if err != nil {
+		return nil, err
+	}
+	var altRep, language string
+	if alt, ok := as[altrepparam]; ok {
+		altRep = string(alt.(altrep))
+	}
+	if l, ok := as[languageparam]; ok {
+		language = string(l.(language))
+	}
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	return location{
+		altRep,
+		language,
+		string(unescape(v)),
+	}, nil
+}
+
+type percentComplete int
+
+func (p *parser) readPercentCompleteComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	pc, err := strconv.Atoi(v)
+	if err != nil {
+		return nil, err
+	}
+	if pc < 0 || pc > 100 {
+		return nil, ErrUnsupportedValue
+	}
+	return percentComplete(pc), nil
+}
+
+type priority int
+
+func (p *parser) readPriorityComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	pc, err := strconv.Atoi(v)
+	if err != nil {
+		return nil, err
+	}
+	if pc < 0 || pc > 9 {
+		return nil, ErrUnsupportedValue
+	}
+	return priority(pc), nil
+}
+
+type resources struct {
+	Altrep, Language string
+	Resources        []string
+}
+
+func (p *parser) readResourcesComponent() (component, error) {
+	as, err := p.readAttributes(altrepparam, languageparam)
+	if err != nil {
+		return nil, err
+	}
+	var altRep, language string
+	if alt, ok := as[altrepparam]; ok {
+		altRep = string(alt.(altrep))
+	}
+	if l, ok := as[languageparam]; ok {
+		language = string(l.(language))
+	}
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	return location{
+		altRep,
+		language,
+		string(textSplit(v, ',')),
+	}, nil
+}
+
+const (
+	statusTentative status = iota
+	statusConfirmed
+	statusNeedsAction
+	statusCompleted
+	statusInProgress
+	statusDraft
+	statusFinal
+	statusCancelled
+)
+
+type status int
+
+func (p *parser) readStatusComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	switch v {
+	case "TENTATIVE":
+		return statusTentative, nil
+	case "CONFIRMED":
+		return statusConfirmed, nil
+	case "NEED-ACTION":
+		return statusNeedsAction, nil
+	case "COMPLETED":
+		return statusCompleted, nil
+	case "IN-PROGRESS":
+		return statusInProgress, nil
+	case "DRAFT":
+		return statusDraft, nil
+	case "FINAL":
+		return statusFinal, nil
+	case "CANCELLED":
+		return statusCancelled, nil
+	default:
+		return nil, ErrUnsupportedValue
+	}
+}
+
+type summary struct {
+	Altrep, Language, Summary string
+}
+
+func (p *parser) readSummaryComponent() (component, error) {
+	as, err := p.readAttributes(altrepparam, languageparam)
+	if err != nil {
+		return nil, err
+	}
+	var altRep, language string
+	if alt, ok := as[altrepparam]; ok {
+		altRep = string(alt.(altrep))
+	}
+	if l, ok := as[languageparam]; ok {
+		language = string(l.(language))
+	}
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	return summary{
+		altRep,
+		language,
+		string(unescape(v)),
+	}, nil
 }
 
 type unknown struct {

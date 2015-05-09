@@ -43,13 +43,21 @@ func (p *parser) GetComponent() (c component, err error) {
 	case commentc:
 		return p.readCommentComponent()
 	case descriptionc:
+		return p.readDescriptionComponent()
 	case geoc:
+		return p.readGeoComponent()
 	case locationc:
+		return p.readLocationComponent()
 	case percentcompletec:
+		return p.readPercentCompleteComponent()
 	case priorityc:
+		return p.readPriorityComponent()
 	case resourcesc:
+		return p.readResourcesComponent()
 	case statusc:
+		return p.readStatusComponent()
 	case summaryc:
+		return p.readSummaryComponent()
 	case completedc:
 	case dtendc:
 	case duec:
