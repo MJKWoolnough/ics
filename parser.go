@@ -22,10 +22,18 @@ func (p *parser) GetComponent() (c component, err error) {
 		return nil, ErrInvalidToken
 	}
 	switch p.t.data {
+	case beginc:
+		return p.readBeginComponent()
+	case endc:
+		return p.readEndComponent()
 	case calscalec:
+		return p.readCalScaleComponent()
 	case methodc:
+		return p.readMethodComponent()
 	case prodidc:
+		return p.readProductIDComponent()
 	case versionc:
+		return p.readVersionComponent()
 	case attachc:
 		return p.readAttachComponent()
 	case categoriesc:

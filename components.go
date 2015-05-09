@@ -6,6 +6,8 @@ import (
 )
 
 const (
+	beginc           = "BEGIN"
+	endc             = "END"
 	calscalec        = "CALSCALE"
 	methodc          = "METHOD"
 	prodidc          = "PRODID"
@@ -54,6 +56,26 @@ const (
 )
 
 type component interface{}
+
+type begin string
+
+func (p *parser) readBeginComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	return begin(unescape(v)), nil
+}
+
+type end string
+
+func (p *parser) readEndComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	return end(unescape(v)), nil
+}
 
 type calscale string
 
