@@ -3,6 +3,7 @@ package ics
 import (
 	"errors"
 	"strings"
+	"time"
 )
 
 type componentType int
@@ -26,6 +27,10 @@ func componentFromToken(s string) component {
 		return new(productID)
 	case "VERSION":
 		return new(version)
+	case "DTSTAMP":
+		return new(datestamp)
+	case "UID":
+		return new(uid)
 	default:
 		return &unknownComponent{
 			Name: s,
@@ -115,6 +120,31 @@ func (ver *version) setValue(v string) error {
 		ver[0] = parts[0]
 		ver[1] = parts[1]
 	}
+	return nil
+}
+
+type datestamp time.Time
+
+func (d *datestamp) setAttribute(_ attribute) error {
+	return nil
+}
+
+func (d *datestamp) setValue(v string) error {
+	t, err := valueDateTime(v)
+	if err != nil {
+		return err
+	}
+	*d = t
+}
+
+type uid string
+
+func (uid) setAttribute(_ attribute) error {
+	return nil
+}
+
+func (u *uid) setValue(v string) error {
+	*u = v
 	return nil
 }
 
