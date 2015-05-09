@@ -2,6 +2,29 @@ package ics
 
 import "errors"
 
+const (
+	altrepparam    = "ALTREP"
+	cnparam        = "CN"
+	cutypeparam    = "CUTYPE"
+	delfromparam   = "DELEGATED-FROM"
+	deltoparam     = "DELEGATED-TO"
+	dirparam       = "DIR"
+	encodingparam  = "ENCODING"
+	fmttypeparam   = "FMTTYPE"
+	fbtypeparam    = "FBTYPE"
+	languageparam  = "LANGUAGE"
+	memberparam    = "MEMBER"
+	partstatparam  = "PARTSTAT"
+	rangeparam     = "RANGE"
+	trigrelparam   = "RELATED"
+	reltypeparam   = "RELTYPE"
+	roleparam      = "ROLE"
+	rsvpparam      = "RSVP"
+	sentbyparam    = "SENT-BY"
+	tzidparam      = "TZID"
+	valuetypeparam = "VALUE"
+)
+
 type attribute interface {
 	String() string
 }

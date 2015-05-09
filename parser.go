@@ -55,45 +55,45 @@ func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, er
 			vs = append(vs, t)
 		}
 		switch p.t.data {
-		case "ALTREP":
+		case altrepparam:
 			a, err = newAltRepParam(vs)
-		case "CN":
+		case cnparam:
 			a, err = newCommonNameParam(vs)
-		case "CUTYPE":
+		case cutypeparam:
 			a, err = newCalendarUserTypeParam(vs)
-		case "DELEGATED-FROM":
+		case delfromparam:
 			a, err = newDelegatorsParam(vs)
-		case "DELEGATED-TO":
+		case deltoparam:
 			a, err = newDelegateeParam(vs)
-		case "DIR":
+		case dirparam:
 			a, err = newDirectoryEntryRefParam(vs)
-		case "ENCODING":
+		case encodingparam:
 			a, err = newEncodingParam(vs)
-		case "FMTTYPE":
+		case fmttypeparam:
 			a, err = newFmtTypeParam(vs)
-		case "FBTIME":
+		case fbtypeparam:
 			a, err = newFreeBusyTimeParam(vs)
-		case "LANGUAGE":
+		case languageparam:
 			a, err = newLanguageParam(vs)
-		case "MEMBER":
+		case memberparam:
 			a, err = newMemberParam(vs)
-		case "PARTSTAT":
+		case partstatparam:
 			a, err = newParticipationStatusParam(vs)
-		case "RANGE":
+		case rangeparam:
 			a, err = newRangeParam(vs)
-		case "RELATED":
+		case trigrelparam:
 			a, err = newAlarmTriggerRelationshipParam(vs)
-		case "RELTYPE":
+		case reltypeparam:
 			a, err = newRelationshipTypeParam(vs)
-		case "ROLE":
+		case roleparam:
 			a, err = newParticipationRoleParam(vs)
-		case "RSVP":
+		case rsvpparam:
 			a, err = newRSVPExpectationParam(vs)
-		case "SENT-BY":
+		case sentbyparam:
 			a, err = newSentByParam(vs)
-		case "TZID":
+		case tzidparam:
 			a, err = newTimezoneIDParam(vs)
-		case "VALUE":
+		case valuetypeparam:
 			a, err = newValueParam(vs)
 		default:
 			a, err = newUnknownParam(vs)
