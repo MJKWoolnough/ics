@@ -172,28 +172,6 @@ func (l *lexer) lexParamName() (token, stateFn) {
 	return l.errorFn()
 }
 
-func unescape6868(p []byte) []byte {
-	u := p[:0]
-	for i := 0; i < len(p); i++ {
-		if p[i] == '^' && i+1 < len(p) {
-			i++
-			switch p[i] {
-			case 'n':
-				u = append(u, '\n') //crlf on windows?
-			case '^':
-				u = append(u, '^')
-			case '\'':
-				u = append(u, '"')
-			default:
-				u = append(u, '^', p[i])
-			}
-		} else {
-			u = append(u, p[i])
-		}
-	}
-	return u
-}
-
 func (l *lexer) lexParamValue() (token, stateFn) {
 	var t token
 	if l.accept(dquote) {
@@ -221,29 +199,6 @@ func (l *lexer) lexParamValue() (token, stateFn) {
 		l.err = ErrInvalidChar
 	}
 	return l.errorFn()
-}
-
-func escape(p []byte) []byte {
-	u := p[:0]
-	for i := 0; i < len(p); i++ {
-		if p[i] == '\\' && i+1 < len(p) {
-			i++
-			switch p[i] {
-			case '\\':
-				u = append(u, '\\')
-			case ';':
-				u = append(u, ';')
-			case ',':
-				u = append(u, ',')
-			case 'N', 'n':
-				u = append(u, '\n')
-			default:
-				u = append(u, p[i])
-			}
-		} else {
-			u = append(u, p[i])
-		}
-	}
 }
 
 func (l *lexer) lexValue() (token, stateFn) {
