@@ -207,7 +207,7 @@ func (l *lexer) lexParamValue() (token, stateFn) {
 	} else {
 		l.exceptRun(invSafeChars)
 		t.typ = tokenParamValue
-		t.data = string(unescape6868(l.buf.Bytes()))
+		t.data = string(bytes.ToUpper(unescape6868(l.buf.Bytes())))
 	}
 	if !utf8.ValidString(t.data) {
 		l.err = ErrNotUTF8
