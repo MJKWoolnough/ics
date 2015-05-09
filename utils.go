@@ -42,7 +42,7 @@ func unescape(p []byte) []byte {
 	}
 }
 
-func escape6868(s []byte) []byte {
+func escape6868(s string) []byte {
 	p := make([]byte, 0, len(s))
 	for i := 0; i < len(s); i++ {
 		switch s[i] {
