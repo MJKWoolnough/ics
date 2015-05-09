@@ -19,7 +19,7 @@ func escape(s string) []byte {
 	return p
 }
 
-func unescape(p []byte) []byte {
+func unescape(p string) []byte {
 	u := p[:0]
 	for i := 0; i < len(p); i++ {
 		if p[i] == '\\' && i+1 < len(p) {
@@ -40,6 +40,7 @@ func unescape(p []byte) []byte {
 			u = append(u, p[i])
 		}
 	}
+	return toRet
 }
 
 func escape6868(s string) []byte {
@@ -79,4 +80,22 @@ func unescape6868(p []byte) []byte {
 		}
 	}
 	return u
+}
+
+func textSplit(s string, delim byte) []string {
+	toRet := make([]string, 0, 1)
+	lastPos := 0
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '\\':
+			i++
+		case delim:
+			toRet = append(toRet, unescape(s[lastPos:i]))
+			lastPos = i + 2
+		}
+	}
+	if lastPos <= len(s) {
+		toRet = append(toRet, unescape(s[lastPos:len(s)]))
+	}
+	return toRet
 }
