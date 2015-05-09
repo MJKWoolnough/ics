@@ -103,6 +103,9 @@ func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, er
 		}
 		for _, pn := range accepted {
 			if pn == p.t.data {
+				if _, ok := as[pn]; ok {
+					return nil, ErrDuplicateParam
+				}
 				as[pn] = a
 			}
 		}
@@ -127,4 +130,7 @@ func (p *parser) readValue() (v string, err error) {
 
 // Errors
 
-var ErrInvalidToken = errors.New("received invalid token")
+var (
+	ErrInvalidToken   = errors.New("received invalid token")
+	ErrDuplicateParam = errors.New("duplicate parameter")
+)
