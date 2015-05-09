@@ -224,7 +224,7 @@ func (l *lexer) lexValue() (token, stateFn) {
 	}
 	return token{
 		tokenValue,
-		string(unescape(toRet)),
+		string(toRet),
 	}, l.lexName
 }
 
