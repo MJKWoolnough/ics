@@ -6,6 +6,7 @@ import (
 	"errors"
 	"io"
 	"strings"
+	"unicode/utf8"
 )
 
 const (
@@ -41,11 +42,10 @@ const (
 type stateFn func() (token, stateFn)
 
 type lexer struct {
-	br        *bufio.Reader
-	buf       bytes.Buffer
-	state     stateFn
-	lastWidth int
-	err       error
+	br    *bufio.Reader
+	buf   bytes.Buffer
+	state stateFn
+	err   error
 }
 
 func newLexer(r io.Reader) *lexer {
@@ -81,27 +81,22 @@ func (l *lexer) ClearError() {
 	l.state = l.clearLine
 }
 
-func (l *lexer) next() rune {
+func (l *lexer) next() byte {
 	if l.err != nil {
-		return -1
+		return 0
 	}
-	r, s, err := l.br.ReadRune()
+	c, err := l.br.ReadByte()
 	if err != nil {
-		l.lastWidth = 0
 		l.err = err
-		return -1
+		return 0
 	}
-	l.buf.WriteRune(r)
-	l.lastWidth = s
-	return r
+	l.buf.WriteByte(c)
+	return c
 }
 
 func (l *lexer) backup() {
-	if l.lastWidth > 0 {
-		l.br.UnreadRune()
-		l.buf.Truncate(l.buf.Len() - l.lastWidth)
-		l.lastWidth = 0
-	}
+	l.br.UnreadByte()
+	l.buf.Truncate(l.buf.Len() - 1)
 }
 
 func (l *lexer) accept(valid string) bool {
@@ -167,6 +162,8 @@ func (l *lexer) lexParamName() (token, stateFn) {
 	}
 	if l.buf.Len() == 0 {
 		l.err = ErrNoParamName
+	} else if !utf8.ValidString(t.data) {
+		l.err = ErrNotUTF8
 	} else if l.accept(paramValueDelim) {
 		return t, l.lexParamValue
 	} else if l.err == nil {
@@ -212,7 +209,9 @@ func (l *lexer) lexParamValue() (token, stateFn) {
 		t.typ = tokenParamValue
 		t.data = string(unescape6868(l.buf.Bytes()))
 	}
-	if l.accept(paramMultipleValueDelim) {
+	if !utf8.ValidString(t.data) {
+		l.err = ErrNotUTF8
+	} else if l.accept(paramMultipleValueDelim) {
 		return t, l.lexParamValue
 	} else if l.accept(paramDelim) {
 		return t, l.lexParamName
@@ -264,6 +263,10 @@ func (l *lexer) lexValue() (token, stateFn) {
 		}
 		l.buf.Reset()
 	}
+	if !utf8.Valid(toRet) {
+		l.err = ErrNotUTF8
+		return l.errorFn()
+	}
 	return token{
 		tokenValue,
 		string(unescape(toRet)),
@@ -294,4 +297,5 @@ var (
 	ErrInvalidChar = errors.New("invalid character")
 	ErrNoName      = errors.New("zero length name")
 	ErrNoParamName = errors.New("zero length param name")
+	ErrNotUTF8     = errors.New("invalid utf8 string")
 )
