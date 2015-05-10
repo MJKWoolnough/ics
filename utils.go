@@ -1,5 +1,13 @@
 package ics
 
+import (
+	"errors"
+	"strconv"
+	"time"
+
+	"github.com/MJKWoolnough/strparse"
+)
+
 func escape(s string) []byte {
 	p := make([]byte, 0, len(s))
 	for i := 0; i < len(s); i++ {
@@ -99,3 +107,111 @@ func textSplit(s string, delim byte) []string {
 	}
 	return toRet
 }
+
+func parseDate(s string) (time.Time, error) {
+	return time.Parse("20060102", s)
+}
+
+func parseDateTime(s string, l *time.Location) (time.Time, error) {
+	if l == nil {
+		if s[len(s)-1] == 'Z' {
+			return time.Parse("20060102T150405Z", s)
+		} else {
+			return time.ParseInLocation("20060102T150405Z", s, time.Local)
+		}
+	}
+	return time.ParseInLocation("20060102T150405", v, l)
+}
+
+func parseTime(s string, l *time.Location) (time.Time, error) {
+	if l == nil {
+		if s[len(s)-1] == 'Z' {
+			return time.Parse("150405Z", s)
+		} else {
+			return time.ParseInLocation("150405Z", s, time.Local)
+		}
+	}
+	return time.ParseInLocation("150405", v, l)
+}
+
+const nums = "0123456789"
+
+func parseDuration(s string) (time.Duration, error) {
+	p := strparse.Parser{Str: s}
+	var (
+		dur time.Duration
+		neg bool
+	)
+	if p.Accept("-") {
+		neg = true
+	} else {
+		p.Accept("+")
+	}
+	if !p.Accept("P") {
+		return ErrInvalidDuration
+	}
+	p.Get()
+	if !p.Accept("T") {
+		p.AcceptRun(nums)
+		num := p.Get()
+		if len(num) == 0 {
+			return 0, ErrInvalidDuration
+		}
+		n, _ := strconv.Atoi(num)
+		p.Accept("DW")
+		switch p.Get() {
+		case "D":
+			dur = time.Duration(n) * time.Hour * 24
+		case "W":
+			return time.Duration(n) * time.Hour * 24 * 7
+		default:
+			return 0, ErrInvalidDuration
+		}
+		p.Except("")
+		switch p.Get() {
+		case "":
+			if neg {
+				return -dur, nil
+			}
+			return dur, nil
+		case "T":
+		default:
+			return 0, ErrInvalidDuration
+		}
+	} else {
+		p.Get()
+	}
+	toRead := "HMS"
+	for len(toRead) > 0 {
+		p.AcceptRun(nums)
+		num := p.Get()
+		if len(num) == 0 {
+			return 0, ErrInvalidDuration
+		}
+		n, _ := strconv.Atoi(num)
+		p.Accept(toRead)
+		switch p.Get() {
+		case "H":
+			dur += n * time.Hour
+			toRead = "MS"
+		case "M":
+			dur += n * time.Minute
+			toRead = "S"
+		case "S":
+			dur += n * time.Second
+			toRead = ""
+		default:
+			return 0, ErrInvalidDuration
+		}
+	}
+	if neg {
+		return -dur, nil
+	}
+	return dur, nil
+}
+
+// Errors
+
+var (
+	ErrInvalidDuration = errors.New("invalid duration string")
+)
