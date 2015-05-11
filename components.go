@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"strconv"
+	"time"
 )
 
 const (
@@ -449,6 +450,110 @@ func (p *parser) readSummaryComponent() (component, error) {
 		language,
 		string(unescape(v)),
 	}, nil
+}
+
+type completed time.Time
+
+func (p *parser) readCompletedComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	t, err := time.ParseInLocation("20060102T150405Z", i, time.UTC)
+	if err != nil {
+		return nil, err
+	}
+	return completed(t), nil
+}
+
+type dateTimeEnd struct {
+	justDate bool
+	Time     time.Time
+}
+
+func (p *parser) readDateTimeOrTime() (t time.Time, justDate bool, err error) {
+	as, err := p.readAttributes(tzidparam, valueparam)
+	if err != nil {
+		return t, justDate, err
+	}
+	var (
+		l *time.Location
+	)
+	if tzid, ok := as[tzidparam]; ok {
+		l, err = time.LoadLocation(string(tzid.(timezoneID)))
+		if err != nil {
+			return t, justDate, err
+		}
+	}
+	if v, ok := as[valueparam]; ok {
+		val := v.(value)
+		switch val {
+		case valueDate:
+			justDate = true
+		case valueDateTime:
+			justDate = false
+		default:
+			return t, justDate, ErrUnsupportedValue
+		}
+	}
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	if justDate {
+		t, err = parseDate(v)
+	} else {
+		t, err = parseDateTime(v)
+	}
+	return t, justDate, err
+}
+
+func (p *parser) readDateTimeEndComponent() (component, error) {
+	t, j, err := p.readDateTimeOrTime()
+	if err != nil {
+		return nil, err
+	}
+	return dateTimeEnd{j, t}, nil
+}
+
+type dateTimeDue struct {
+	justDate bool
+	Time     time.Time
+}
+
+func (p *parser) readDateTimeDueComponent() (component, error) {
+	t, j, err := p.readDateTimeOrTime()
+	if err != nil {
+		return nil, err
+	}
+	return dateTimeDue{j, t}, nil
+}
+
+type dateTimeStart struct {
+	justDate bool
+	Time     time.Time
+}
+
+func (p *parser) readDateTimeStartComponent() (component, error) {
+	t, j, err := p.readDateTimeOrTime()
+	if err != nil {
+		return nil, err
+	}
+	return dateTimeStart{j, t}, nil
+}
+
+type duration time.Duration
+
+func (p *parser) readDurationComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	d, err := parseDuration(v)
+	if err != nil {
+		return nil, err
+	}
+	return duration(d), nil
 }
 
 type unknown struct {
