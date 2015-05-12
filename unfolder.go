@@ -40,21 +40,16 @@ func (u *unfolder) Read(p []byte) (int, error) {
 					if p[pos+2] == ' ' {
 						copy(p[pos:], p[pos+3:])
 						p = p[pos:]
-						m, e := io.ReadFull(u.r, p[len(p)-3:])
+						m, _ := io.ReadFull(u.r, p[len(p)-3:])
+						p = p[:len(p)-3+m]
 						n = n - 3 + m
-						if e != nil {
-							return n, err
-						}
 					} else {
 						p = p[pos+2:]
 					}
 				} else if err != nil {
 					return n, err
 				} else {
-					_, e := io.ReadFull(u.r, u.buf[:1])
-					if e != nil {
-						return n, err
-					}
+					io.ReadFull(u.r, u.buf[:1])
 					if u.buf[0] == ' ' {
 						p = p[pos:]
 						m, e := io.ReadFull(u.r, p[len(p)-2:])
