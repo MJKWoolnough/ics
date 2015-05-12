@@ -130,7 +130,7 @@ func (d delegators) String() string {
 	return string(ds)
 }
 
-type delagatee []string
+type delegatee []string
 
 func newDelegateeParam(vs []token) (attribute, error) {
 	if len(vs) == 0 {
@@ -146,7 +146,7 @@ func newDelegateeParam(vs []token) (attribute, error) {
 	return d, nil
 }
 
-func (d delagatee) String() string {
+func (d delegatee) String() string {
 	var ds []byte
 	for n, dg := range d {
 		if n > 0 {
@@ -249,7 +249,7 @@ func newFreeBusyParam(vs []token) (attribute, error) {
 }
 
 func (fb freeBusy) String() string {
-	switch f {
+	switch fb {
 	case fbBusy:
 		return "BUSY"
 	case fbFree:
@@ -285,7 +285,7 @@ func newMemberParam(vs []token) (attribute, error) {
 	if len(vs) == 0 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	m := make(member, 0, 1)
+	m := make(members, 0, 1)
 	for _, v := range vs {
 		if v.typ != tokenParamQValue {
 			return nil, ErrIncorrectParamValueType
@@ -698,7 +698,7 @@ func (u unknownParam) String() string {
 		if uv.typ == tokenParamQValue {
 			toRet = append(toRet, '"')
 		}
-		toRet = append(toRet, escape6868(m)...)
+		toRet = append(toRet, escape6868(uv.data)...)
 		if uv.typ == tokenParamQValue {
 			toRet = append(toRet, '"')
 		}
