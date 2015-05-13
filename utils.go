@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/MJKWoolnough/strparse"
+	strparse "github.com/MJKWoolnough/parser"
 )
 
 func escape(s string) []byte {
@@ -28,7 +28,7 @@ func escape(s string) []byte {
 }
 
 func unescape(p string) []byte {
-	u := p[:0]
+	u := make([]byte, 0, len(p))
 	for i := 0; i < len(p); i++ {
 		if p[i] == '\\' && i+1 < len(p) {
 			i++
@@ -48,7 +48,7 @@ func unescape(p string) []byte {
 			u = append(u, p[i])
 		}
 	}
-	return toRet
+	return u
 }
 
 func escape6868(s string) []byte {
@@ -68,8 +68,8 @@ func escape6868(s string) []byte {
 	return p
 }
 
-func unescape6868(p []byte) []byte {
-	u := p[:0]
+func unescape6868(p string) string {
+	u := make([]byte, 0, len(p))
 	for i := 0; i < len(p); i++ {
 		if p[i] == '^' && i+1 < len(p) {
 			i++
@@ -87,7 +87,7 @@ func unescape6868(p []byte) []byte {
 			u = append(u, p[i])
 		}
 	}
-	return u
+	return string(u)
 }
 
 func textSplit(s string, delim byte) []string {
@@ -98,12 +98,12 @@ func textSplit(s string, delim byte) []string {
 		case '\\':
 			i++
 		case delim:
-			toRet = append(toRet, unescape(s[lastPos:i]))
+			toRet = append(toRet, string(unescape(s[lastPos:i])))
 			lastPos = i + 2
 		}
 	}
 	if lastPos <= len(s) {
-		toRet = append(toRet, unescape(s[lastPos:len(s)]))
+		toRet = append(toRet, string(unescape(s[lastPos:])))
 	}
 	return toRet
 }
@@ -120,7 +120,7 @@ func parseDateTime(s string, l *time.Location) (time.Time, error) {
 			return time.ParseInLocation("20060102T150405Z", s, time.Local)
 		}
 	}
-	return time.ParseInLocation("20060102T150405", v, l)
+	return time.ParseInLocation("20060102T150405", s, l)
 }
 
 func parseTime(s string, l *time.Location) (time.Time, error) {
@@ -131,13 +131,13 @@ func parseTime(s string, l *time.Location) (time.Time, error) {
 			return time.ParseInLocation("150405Z", s, time.Local)
 		}
 	}
-	return time.ParseInLocation("150405", v, l)
+	return time.ParseInLocation("150405", s, l)
 }
 
 const nums = "0123456789"
 
 func parseDuration(s string) (time.Duration, error) {
-	p := strparse.Parser{Str: s}
+	p := strparse.NewStringParser(s)
 	var (
 		dur time.Duration
 		neg bool
@@ -148,7 +148,7 @@ func parseDuration(s string) (time.Duration, error) {
 		p.Accept("+")
 	}
 	if !p.Accept("P") {
-		return ErrInvalidDuration
+		return 0, ErrInvalidDuration
 	}
 	p.Get()
 	if !p.Accept("T") {
@@ -163,7 +163,7 @@ func parseDuration(s string) (time.Duration, error) {
 		case "D":
 			dur = time.Duration(n) * time.Hour * 24
 		case "W":
-			return time.Duration(n) * time.Hour * 24 * 7
+			return time.Duration(n) * time.Hour * 24 * 7, nil
 		default:
 			return 0, ErrInvalidDuration
 		}
@@ -192,13 +192,13 @@ func parseDuration(s string) (time.Duration, error) {
 		p.Accept(toRead)
 		switch p.Get() {
 		case "H":
-			dur += n * time.Hour
+			dur += time.Duration(n) * time.Hour
 			toRead = "MS"
 		case "M":
-			dur += n * time.Minute
+			dur += time.Duration(n) * time.Minute
 			toRead = "S"
 		case "S":
-			dur += n * time.Second
+			dur += time.Duration(n) * time.Second
 			toRead = ""
 		default:
 			return 0, ErrInvalidDuration
