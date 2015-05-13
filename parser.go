@@ -70,12 +70,17 @@ func (p *parser) GetComponent() (c component, err error) {
 		return p.readFreeBusyTimeComponent()
 	case transpc:
 		return p.readTimeTransparencyComponent()
-	/*case tzidc:
+	case tzidc:
+		return p.readTimezoneID()
 	case tznamec:
+		return p.readTimezoneName()
 	case tzoffsetfromc:
+		return p.readTimezoneOffsetFrom()
 	case tzoffsettoc:
+		return p.readTimezoneOffsetTo()
 	case tzurlc:
-	case attendeec:
+		return p.readTimezoneURL()
+	/*case attendeec:
 	case contactc:
 	case organizerc:
 	case recuridc:

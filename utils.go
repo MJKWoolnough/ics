@@ -210,8 +210,41 @@ func parseDuration(s string) (time.Duration, error) {
 	return dur, nil
 }
 
+func parseOffset(s string) (int, error) {
+	if len(s) != 5 && len(s) != 7 {
+		return 0, ErrInvalidOffset
+	}
+	var neg bool
+	if s[0] == '-' {
+		neg = true
+	} else if s[0] != '+' {
+		return 0, ErrInvalidOffset
+	}
+	hours, err := strconv.Atoi(s[1:2])
+	if err != nil {
+		return 0, ErrInvalidOffset
+	}
+	minutes, err := strconv.Atoi(s[3:4])
+	if err != nil {
+		return 0, ErrInvalidOffset
+	}
+	var seconds int
+	if len(s) == 7 {
+		seconds, err = strconv.Atoi(s[5:6])
+		if err != nil {
+			return 0, ErrInvalidOffset
+		}
+	}
+	val = hours*3600 + minutes*60 + seconds
+	if neg {
+		return -val, nil
+	}
+	return val, nil
+}
+
 // Errors
 
 var (
 	ErrInvalidDuration = errors.New("invalid duration string")
+	ErrInvalidOffset   = errors.New("invalid offset string")
 )
