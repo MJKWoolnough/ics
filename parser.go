@@ -11,17 +11,15 @@ type parser struct {
 }
 
 func newParser(r io.Reader) *parser {
-	return &parser{newLexer(r)}
+	return &parser{l: newLexer(r)}
 }
 
 func (p *parser) GetComponent() (c component, err error) {
-	p.t, err = p.l.GetToken()
+	n, err := p.readName()
 	if err != nil {
 		return nil, err
-	} else if t.typ != tokenName {
-		return nil, ErrInvalidToken
 	}
-	switch p.t.data {
+	switch n {
 	case beginc:
 		return p.readBeginComponent()
 	case endc:
@@ -58,7 +56,7 @@ func (p *parser) GetComponent() (c component, err error) {
 		return p.readStatusComponent()
 	case summaryc:
 		return p.readSummaryComponent()
-	case completedc:
+	/*case completedc:
 	case dtendc:
 	case duec:
 	case dtstartc:
@@ -86,10 +84,24 @@ func (p *parser) GetComponent() (c component, err error) {
 	case createdc:
 	case dtstampc:
 	case lastmodc:
-	case seqc:
+	case seqc:*/
 	default:
 		return p.readUnknownComponent(p.t.data)
 	}
+}
+
+func (p *parser) readName() (string, error) {
+	if p.t.typ != tokenName {
+		var err error
+		p.t, err = p.l.GetToken()
+		if err != nil {
+			return "", err
+		} else if p.t.typ != tokenName {
+			return "", ErrInvalidToken
+		}
+	}
+	return p.t.data, nil
+
 }
 
 func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, err error) {
@@ -105,19 +117,20 @@ func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, er
 				return as, nil
 			}
 		}
+		pt := p.t
 		vs := make([]token, 0, 1)
 		for {
 			t, err := p.l.GetToken()
 			if err != nil {
 				return nil, err
 			}
-			if t.typ != tokenParamValue {
+			if t.typ != tokenParamValue && t.typ != tokenParamQValue {
 				p.t = t
-				return vs, nil
+				break
 			}
 			vs = append(vs, t)
 		}
-		switch p.t.data {
+		switch pt.data {
 		case altrepparam:
 			a, err = newAltRepParam(vs)
 		case cnparam:
@@ -135,7 +148,7 @@ func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, er
 		case fmttypeparam:
 			a, err = newFmtTypeParam(vs)
 		case fbtypeparam:
-			a, err = newFreeBusyTimeParam(vs)
+			a, err = newFreeBusyParam(vs)
 		case languageparam:
 			a, err = newLanguageParam(vs)
 		case memberparam:
@@ -165,14 +178,14 @@ func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, er
 			return nil, err
 		}
 		for _, pn := range accepted {
-			if pn == p.t.data {
+			if pn == pt.data {
 				if _, ok := as[pn]; ok {
 					return nil, ErrDuplicateParam
 				}
 				as[pn] = a
 			}
 		}
-		if p.t.typ == tokenParamValue {
+		if p.t.typ != tokenParamName {
 			return as, nil
 		}
 	}
@@ -181,9 +194,6 @@ func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, er
 func (p *parser) readValue() (v string, err error) {
 	if p.t.typ != tokenValue {
 		_, err = p.readAttributes()
-		if err != nil || a == nil {
-			break
-		}
 		if err == nil && p.t.typ != tokenValue {
 			err = ErrInvalidToken
 		}
