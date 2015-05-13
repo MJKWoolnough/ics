@@ -56,14 +56,21 @@ func (p *parser) GetComponent() (c component, err error) {
 		return p.readStatusComponent()
 	case summaryc:
 		return p.readSummaryComponent()
-	/*case completedc:
+	case completedc:
+		return p.readCompletedComponent()
 	case dtendc:
+		return p.readDateTimeEndComponent()
 	case duec:
+		return p.readDateTimeDueComponent()
 	case dtstartc:
+		return p.readDateTimeStartComponent()
 	case durationc:
+		return p.readDurationComponent()
 	case freebusyc:
+		return p.readFreeBusyTimeComponent()
 	case transpc:
-	case tzidc:
+		return p.readTimeTransparencyComponent()
+	/*case tzidc:
 	case tznamec:
 	case tzoffsetfromc:
 	case tzoffsettoc:
