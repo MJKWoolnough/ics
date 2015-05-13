@@ -71,23 +71,30 @@ func (p *parser) GetComponent() (c component, err error) {
 	case transpc:
 		return p.readTimeTransparencyComponent()
 	case tzidc:
-		return p.readTimezoneID()
+		return p.readTimezoneIDComponent()
 	case tznamec:
-		return p.readTimezoneName()
+		return p.readTimezoneNameComponent()
 	case tzoffsetfromc:
-		return p.readTimezoneOffsetFrom()
+		return p.readTimezoneOffsetFromComponent()
 	case tzoffsettoc:
-		return p.readTimezoneOffsetTo()
+		return p.readTimezoneOffsetToComponent()
 	case tzurlc:
-		return p.readTimezoneURL()
-	/*case attendeec:
+		return p.readTimezoneURLComponent()
+	case attendeec:
+		return p.readAttendeeComponent()
 	case contactc:
+		return p.readContactComponent()
 	case organizerc:
+		return p.readOrganizerComponent()
 	case recuridc:
+		return p.readRecurrenceIDComponent()
 	case relatedc:
+		return p.readRelatedToComponent()
 	case urlc:
+		return p.readURLComponent()
 	case uidc:
-	case exdatec:
+		return p.readUIDComponent()
+	/*case exdatec:
 	case rdatec:
 	case rrulec:
 	case actionc:
