@@ -1,6 +1,7 @@
 package ics
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"strings"
@@ -120,11 +121,11 @@ func (l *lexer) lexParamValue() (token, stateFn) {
 		}
 		t.typ = tokenParamQValue
 		t.data = l.p.Get()
-		t.data = unescape6868(t.data[1 : len(t.data)-1])
+		t.data = string(unescape6868(t.data[1 : len(t.data)-1]))
 	} else {
 		l.p.ExceptRun(invSafeChars)
 		t.typ = tokenParamValue
-		t.data = strings.ToUpper(unescape6868(l.p.Get()))
+		t.data = string(bytes.ToUpper(unescape6868(l.p.Get())))
 	}
 	if !utf8.ValidString(t.data) {
 		l.err = ErrNotUTF8

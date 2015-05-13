@@ -68,7 +68,7 @@ func escape6868(s string) []byte {
 	return p
 }
 
-func unescape6868(p string) string {
+func unescape6868(p string) []byte {
 	u := make([]byte, 0, len(p))
 	for i := 0; i < len(p); i++ {
 		if p[i] == '^' && i+1 < len(p) {
@@ -87,7 +87,7 @@ func unescape6868(p string) string {
 			u = append(u, p[i])
 		}
 	}
-	return string(u)
+	return u
 }
 
 func textSplit(s string, delim byte) []string {
@@ -235,7 +235,7 @@ func parseOffset(s string) (int, error) {
 			return 0, ErrInvalidOffset
 		}
 	}
-	val = hours*3600 + minutes*60 + seconds
+	val := hours*3600 + minutes*60 + seconds
 	if neg {
 		return -val, nil
 	}
