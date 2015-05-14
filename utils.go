@@ -99,7 +99,7 @@ func textSplit(s string, delim byte) []string {
 			i++
 		case delim:
 			toRet = append(toRet, string(unescape(s[lastPos:i])))
-			lastPos = i + 2
+			lastPos = i + 1
 		}
 	}
 	if lastPos <= len(s) {
