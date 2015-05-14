@@ -182,11 +182,15 @@ func parseDuration(s string) (time.Duration, error) {
 		p.Get()
 	}
 	toRead := "HMS"
+	var readTime bool
 	for len(toRead) > 0 {
 		p.AcceptRun(nums)
 		num := p.Get()
 		if len(num) == 0 {
-			return 0, ErrInvalidDuration
+			if !readTime {
+				return 0, ErrInvalidDuration
+			}
+			break
 		}
 		n, _ := strconv.Atoi(num)
 		p.Accept(toRead)
@@ -203,6 +207,7 @@ func parseDuration(s string) (time.Duration, error) {
 		default:
 			return 0, ErrInvalidDuration
 		}
+		readTime = true
 	}
 	if neg {
 		return -dur, nil
@@ -220,17 +225,17 @@ func parseOffset(s string) (int, error) {
 	} else if s[0] != '+' {
 		return 0, ErrInvalidOffset
 	}
-	hours, err := strconv.Atoi(s[1:2])
+	hours, err := strconv.Atoi(s[1:3])
 	if err != nil {
 		return 0, ErrInvalidOffset
 	}
-	minutes, err := strconv.Atoi(s[3:4])
+	minutes, err := strconv.Atoi(s[3:5])
 	if err != nil {
 		return 0, ErrInvalidOffset
 	}
 	var seconds int
 	if len(s) == 7 {
-		seconds, err = strconv.Atoi(s[5:6])
+		seconds, err = strconv.Atoi(s[5:7])
 		if err != nil {
 			return 0, ErrInvalidOffset
 		}
