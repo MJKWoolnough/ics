@@ -94,10 +94,13 @@ func (p *parser) GetComponent() (c component, err error) {
 		return p.readURLComponent()
 	case uidc:
 		return p.readUIDComponent()
-	/*case exdatec:
+	case exdatec:
+		return p.readExceptionDateComponent()
 	case rdatec:
+		return p.readRecurrenceDateComponent()
 	case rrulec:
-	case actionc:
+		return p.readRecurrenceRuleComponent()
+	/*case actionc:
 	case repeatc:
 	case triggerc:
 	case createdc:
