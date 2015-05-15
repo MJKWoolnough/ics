@@ -1,7 +1,5 @@
 package ics
 
-import "time"
-
 //type timeZoneID string //(in attributes)
 
 func (p *parser) readTimezoneIDComponent() (component, error) {
@@ -46,17 +44,14 @@ func (p *parser) readTimezoneOffsetFromComponent() (component, error) {
 	return timezoneOffsetFrom(tzo), nil
 }
 
-type timezoneOffsetTo struct {
-	time.Duration
-}
+type timezoneOffsetTo int
 
 func (p *parser) readTimezoneOffsetToComponent() (component, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
 	}
-	var tzo timezoneOffsetTo
-	tzo.Duration, err = parseOffset(v)
+	tzo, err := parseOffset(v)
 	if err != nil {
 		return nil, err
 	}
