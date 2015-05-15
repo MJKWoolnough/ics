@@ -58,6 +58,7 @@ const (
 	dtstampc         = "DTSTAMP"
 	lastmodc         = "LAST-MODIFIED"
 	seqc             = "SEQUENCE"
+	rstatusc         = "REQUEST-STATUS"
 )
 
 type component interface{}
@@ -455,18 +456,21 @@ func (p *parser) readSummaryComponent() (component, error) {
 	}, nil
 }
 
-type completed time.Time
+type completed struct {
+	time.Time
+}
 
 func (p *parser) readCompletedComponent() (component, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
 	}
-	t, err := time.ParseInLocation("20060102T150405Z", v, time.UTC)
+	var c completed
+	c.Time, err = time.ParseInLocation("20060102T150405Z", v, time.UTC)
 	if err != nil {
 		return nil, err
 	}
-	return completed(t), nil
+	return c, nil
 }
 
 type dateTimeEnd struct {
@@ -545,18 +549,21 @@ func (p *parser) readDateTimeStartComponent() (component, error) {
 	return dateTimeStart{j, t}, nil
 }
 
-type duration time.Duration
+type duration struct {
+	time.Duration
+}
 
 func (p *parser) readDurationComponent() (component, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
 	}
-	d, err := parseDuration(v)
+	var d duration
+	d.Duration, err = parseDuration(v)
 	if err != nil {
 		return nil, err
 	}
-	return duration(d), nil
+	return d, nil
 }
 
 type freeBusyTime struct {
@@ -698,14 +705,17 @@ func (p *parser) readTimezoneOffsetFromComponent() (component, error) {
 	return timezoneOffsetFrom(tzo), nil
 }
 
-type timezoneOffsetTo time.Duration
+type timezoneOffsetTo struct {
+	time.Duration
+}
 
 func (p *parser) readTimezoneOffsetToComponent() (component, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
 	}
-	tzo, err := parseOffset(v)
+	var tzo timezoneOffsetTo
+	tzo.Duration, err = parseOffset(v)
 	if err != nil {
 		return nil, err
 	}
@@ -1379,6 +1389,103 @@ func (p *parser) readTriggerComponent() (component, error) {
 		}
 	}
 	return t, nil
+}
+
+type created struct {
+	time.Time
+}
+
+func (p *parser) readCreateComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	if v[len(v)-1] != 'Z' {
+		return nil, ErrUnsupportedValue
+	}
+	var c created
+	c.Time, err = parseDateTime(v, nil)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+type dateStamp struct {
+	time.Time
+}
+
+func (p *parser) readDateStampComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	if v[len(v)-1] != 'Z' {
+		return nil, ErrUnsupportedValue
+	}
+	var d dateStamp
+	d.Time, err = parseDateTime(v, nil)
+	if err != nil {
+		return nil, err
+	}
+	return d, nil
+}
+
+type lastModified struct {
+	time.Time
+}
+
+func (p *parser) readLastModifiedComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	if v[len(v)-1] != 'Z' {
+		return nil, ErrUnsupportedValue
+	}
+	var l lastModified
+	l.Time, err = parseDateTime(v, nil)
+	if err != nil {
+		return nil, err
+	}
+	return l, nil
+}
+
+type sequence int
+
+func (p *parser) readSequenceComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	s, err := strconv.Atoi(v)
+	if err != nil {
+		return nil, err
+	}
+	if s < 0 {
+		return nil, ErrUnsupportedValue
+	}
+	return sequence(s), nil
+}
+
+type requestStatus struct {
+	Language, Status string
+}
+
+func (p *parser) readRequestStatusComponent() (component, error) {
+	as, err := p.readAttributes(languageparam)
+	if err != nil {
+		return nil, err
+	}
+	var r requestStatus
+	r.Status, err = p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	if l, ok := as[languageparam]; ok {
+		r.Language = l.String()
+	}
+	return r, nil
 }
 
 type unknown struct {

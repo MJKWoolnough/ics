@@ -106,10 +106,16 @@ func (p *parser) GetComponent() (c component, err error) {
 		return p.readRepeatComponent()
 	case triggerc:
 		return p.readTriggerComponent()
-	/*case createdc:
+	case createdc:
+		return p.readCreateComponent()
 	case dtstampc:
+		return p.readDateStampComponent()
 	case lastmodc:
-	case seqc:*/
+		return p.readLastModifiedComponent()
+	case seqc:
+		return p.readSequenceComponent()
+	case rstatusc:
+		return p.readRequestStatusComponent()
 	default:
 		return p.readUnknownComponent(p.t.data)
 	}
