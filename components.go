@@ -1,6 +1,10 @@
 package ics
 
-import "errors"
+import (
+	"errors"
+	"strconv"
+	"strings"
+)
 
 const (
 	beginc           = "BEGIN"
@@ -76,7 +80,10 @@ func (p *parser) readEndComponent() (component, error) {
 }
 
 type requestStatus struct {
-	Language, Status string
+	Language          string
+	StatusCode        int
+	StatusDescription string
+	Extra             string
 }
 
 func (p *parser) readRequestStatusComponent() (component, error) {
@@ -84,10 +91,28 @@ func (p *parser) readRequestStatusComponent() (component, error) {
 	if err != nil {
 		return nil, err
 	}
-	var r requestStatus
-	r.Status, err = p.readValue()
+	v, err := p.readValue()
 	if err != nil {
 		return nil, err
+	}
+	parts := strings.SplitN(v, ";", 3)
+	if len(parts) < 2 {
+		return nil, ErrUnsupportedValue
+	}
+	c, err := strconv.ParseFloat(parts[0], 32)
+	if err != nil {
+		return nil, err
+	}
+	ci := int(c * 100)
+	if ci < 100 || ci > 499 {
+		return nil, ErrUnsupportedValue
+	}
+	r := requestStatus{
+		StatusCode:        ci,
+		StatusDescription: parts[1],
+	}
+	if len(parts) == 3 {
+		r.Extra = parts[2]
 	}
 	if l, ok := as[languageparam]; ok {
 		r.Language = l.String()
