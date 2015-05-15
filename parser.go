@@ -150,7 +150,7 @@ func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, er
 			if err != nil {
 				return nil, err
 			}
-			if p.t.typ == tokenParamValue {
+			if p.t.typ == tokenValue {
 				return as, nil
 			}
 		}

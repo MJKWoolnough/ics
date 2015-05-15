@@ -7,8 +7,25 @@ import (
 )
 
 func TestParserParts(t *testing.T) {
-	p := newParser(strings.NewReader("NAME;Param=Pvalue1,\"Pvalue2\";Oparam=\"qValue\":VAL\r\n UE\r\nNAME;Ignored=THIS;And=\"this\":But not this\r\nParamTest;GetThisParam=VAL;ANDThisParam=VAL;ButNotThisOne=NO:\r\n"))
+	p := newParser(strings.NewReader("NO:Params\r\nNAME;Param=Pvalue1,\"Pvalue2\";Oparam=\"qValue\":VAL\r\n UE\r\nNAME;Ignored=THIS;And=\"this\":But not this\r\nParamTest;GetThisParam=VAL;ANDThisParam=VAL;ButNotThisOne=NO:\r\n"))
 	n, err := p.readName()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+		return
+	}
+	if n != "NO" {
+		t.Errorf("expecting name %q, got %q", "NO", n)
+	}
+	val, err := p.readValue()
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+		return
+	}
+	if val != "Params" {
+		t.Errorf("expecting value %q, got %q", "Params", val)
+		return
+	}
+	n, err = p.readName()
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 		return
@@ -34,7 +51,7 @@ func TestParserParts(t *testing.T) {
 		t.Errorf("expecting attributes %v, got %v", exp, atts)
 		return
 	}
-	val, err := p.readValue()
+	val, err = p.readValue()
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 		return
