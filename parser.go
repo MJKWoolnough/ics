@@ -100,10 +100,13 @@ func (p *parser) GetComponent() (c component, err error) {
 		return p.readRecurrenceDateComponent()
 	case rrulec:
 		return p.readRecurrenceRuleComponent()
-	/*case actionc:
+	case actionc:
+		return p.readActionComponent()
 	case repeatc:
+		return p.readRepeatComponent()
 	case triggerc:
-	case createdc:
+		return p.readTriggerComponent()
+	/*case createdc:
 	case dtstampc:
 	case lastmodc:
 	case seqc:*/

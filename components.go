@@ -1119,6 +1119,9 @@ func (p *parser) readRecurrenceRuleComponent() (component, error) {
 			bsSet = true
 			for _, sec := range strings.Split(parts[1], ",") {
 				s, err := strconv.Atoi(sec)
+				if err != nil {
+					return nil, err
+				}
 				if s < 0 || s > 60 {
 					return nil, ErrUnsupportedValue
 				}
@@ -1131,6 +1134,9 @@ func (p *parser) readRecurrenceRuleComponent() (component, error) {
 			bmSet = true
 			for _, min := range strings.Split(parts[1], ",") {
 				m, err := strconv.Atoi(min)
+				if err != nil {
+					return nil, err
+				}
 				if m < 0 || m > 59 {
 					return nil, ErrUnsupportedValue
 				}
@@ -1143,6 +1149,9 @@ func (p *parser) readRecurrenceRuleComponent() (component, error) {
 			bhSet = true
 			for _, hour := range strings.Split(parts[1], ",") {
 				h, err := strconv.Atoi(hour)
+				if err != nil {
+					return nil, err
+				}
 				if h < 0 || h > 23 {
 					return nil, ErrUnsupportedValue
 				}
@@ -1202,6 +1211,9 @@ func (p *parser) readRecurrenceRuleComponent() (component, error) {
 			bmdSet = true
 			for _, monthday := range strings.Split(parts[1], ",") {
 				md, err := strconv.Atoi(monthday)
+				if err != nil {
+					return nil, err
+				}
 				if md < -31 || md > 31 || md == 0 {
 					return nil, ErrUnsupportedValue
 				}
@@ -1214,6 +1226,9 @@ func (p *parser) readRecurrenceRuleComponent() (component, error) {
 			bydSet = true
 			for _, yearday := range strings.Split(parts[1], ",") {
 				yd, err := strconv.Atoi(yearday)
+				if err != nil {
+					return nil, err
+				}
 				if yd < -366 || yd > 366 || yd == 0 {
 					return nil, ErrUnsupportedValue
 				}
@@ -1226,6 +1241,9 @@ func (p *parser) readRecurrenceRuleComponent() (component, error) {
 			bwnSet = true
 			for _, week := range strings.Split(parts[1], ",") {
 				w, err := strconv.Atoi(week)
+				if err != nil {
+					return nil, err
+				}
 				if w < -53 || w > 53 || w == 0 {
 					return nil, ErrUnsupportedValue
 				}
@@ -1238,6 +1256,9 @@ func (p *parser) readRecurrenceRuleComponent() (component, error) {
 			bmoSet = true
 			for _, month := range strings.Split(parts[1], ",") {
 				m, err := strconv.Atoi(month)
+				if err != nil {
+					return nil, err
+				}
 				if m < 1 || m > 12 {
 					return nil, ErrUnsupportedValue
 				}
@@ -1250,10 +1271,13 @@ func (p *parser) readRecurrenceRuleComponent() (component, error) {
 			bstSet = true
 			for _, setpos := range strings.Split(parts[1], ",") {
 				sp, err := strconv.Atoi(setpos)
+				if err != nil {
+					return nil, err
+				}
 				if sp < -366 || sp > 366 || sp == 0 {
 					return nil, ErrUnsupportedValue
 				}
-				r.BySetPos = append(r.BySetPos, yd)
+				r.BySetPos = append(r.BySetPos, sp)
 			}
 		case "WKST":
 			if wSet {
@@ -1274,6 +1298,87 @@ func (p *parser) readRecurrenceRuleComponent() (component, error) {
 		return nil, ErrUnsupportedValue
 	}
 	return r, nil
+}
+
+const (
+	actionUnknown action = iota
+	actionAudio
+	actionDisplay
+	actionEmail
+)
+
+type action int
+
+func (p *parser) readActionComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	switch v {
+	case "AUDIO":
+		return actionAudio, nil
+	case "DISPLAY":
+		return actionDisplay, nil
+	case "EMAIL":
+		return actionEmail, nil
+	default:
+		return actionUnknown, nil
+	}
+}
+
+type repeat int
+
+func (p *parser) readRepeatComponent() (component, error) {
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	n, err := strconv.Atoi(v)
+	if err != nil {
+		return nil, err
+	}
+	return repeat(n), nil
+}
+
+type related int
+
+type trigger struct {
+	DateTime time.Time
+	Related  alarmTriggerRelationship
+	Duration time.Duration
+}
+
+func (p *parser) readTriggerComponent() (component, error) {
+	as, err := p.readAttributes(valuetypeparam, trigrelparam)
+	if err != nil {
+		return nil, err
+	}
+	v, err := p.readValue()
+	if err != nil {
+		return nil, err
+	}
+	var t trigger
+	if val, ok := as[valuetypeparam]; ok && val.(value) == valueDateTime {
+		if v[len(v)-1] != 'Z' {
+			return nil, ErrUnsupportedValue
+		}
+		t.DateTime, err = parseDateTime(v, nil)
+		if err != nil {
+			return nil, err
+		}
+		t.Related = -1
+	} else {
+		if rel, ok := as[trigrelparam]; ok {
+			t.Related = rel.(alarmTriggerRelationship)
+		} else {
+			t.Related = atrStart
+		}
+		t.Duration, err = parseDuration(v)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return t, nil
 }
 
 type unknown struct {
