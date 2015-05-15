@@ -137,7 +137,13 @@ func (p *parser) readName() (string, error) {
 
 func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, err error) {
 	as = make(map[string]attribute)
-	var a attribute
+	var (
+		a   attribute
+		all bool
+	)
+	if len(accepted) == 1 && accepted[0] == "*" {
+		all = true
+	}
 	for {
 		if p.t.typ != tokenParamName {
 			p.t, err = p.l.GetToken()
@@ -209,7 +215,7 @@ func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, er
 			return nil, err
 		}
 		for _, pn := range accepted {
-			if pn == pt.data {
+			if all || pn == pt.data {
 				if _, ok := as[pn]; ok {
 					return nil, ErrDuplicateParam
 				}

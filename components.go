@@ -102,7 +102,7 @@ type unknown struct {
 }
 
 func (p *parser) readUnknownComponent(name string) (component, error) {
-	vs, err := p.readAttributes()
+	vs, err := p.readAttributes("*")
 	if err != nil {
 		return nil, err
 	}
