@@ -216,10 +216,10 @@ func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, er
 		}
 		for _, pn := range accepted {
 			if all || pn == pt.data {
-				if _, ok := as[pn]; ok {
+				if _, ok := as[pt.data]; ok {
 					return nil, ErrDuplicateParam
 				}
-				as[pn] = a
+				as[pt.data] = a
 			}
 		}
 		if p.t.typ != tokenParamName {
