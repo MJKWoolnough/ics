@@ -2,7 +2,7 @@ package ics
 
 type calscale string
 
-func (p *parser) readCalScaleComponent() (component, error) {
+func (p *parser) readCalScaleProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -12,7 +12,7 @@ func (p *parser) readCalScaleComponent() (component, error) {
 
 type method string
 
-func (p *parser) readMethodComponent() (component, error) {
+func (p *parser) readMethodProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (p *parser) readMethodComponent() (component, error) {
 
 type productID string
 
-func (p *parser) readProductIDComponent() (component, error) {
+func (p *parser) readProductIDProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ type version struct {
 	Min, Max string
 }
 
-func (p *parser) readVersionComponent() (component, error) {
+func (p *parser) readVersionProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err

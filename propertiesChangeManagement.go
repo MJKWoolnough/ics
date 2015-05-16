@@ -9,7 +9,7 @@ type created struct {
 	time.Time
 }
 
-func (p *parser) readCreateComponent() (component, error) {
+func (p *parser) readCreateProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ type dateStamp struct {
 	time.Time
 }
 
-func (p *parser) readDateStampComponent() (component, error) {
+func (p *parser) readDateStampProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ type lastModified struct {
 	time.Time
 }
 
-func (p *parser) readLastModifiedComponent() (component, error) {
+func (p *parser) readLastModifiedProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (p *parser) readLastModifiedComponent() (component, error) {
 
 type sequence int
 
-func (p *parser) readSequenceComponent() (component, error) {
+func (p *parser) readSequenceProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err

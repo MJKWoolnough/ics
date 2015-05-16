@@ -9,7 +9,7 @@ type completed struct {
 	time.Time
 }
 
-func (p *parser) readCompletedComponent() (component, error) {
+func (p *parser) readCompletedProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func (p *parser) readDateTimeOrTime() (t time.Time, justDate bool, err error) {
 	return t, justDate, err
 }
 
-func (p *parser) readDateTimeEndComponent() (component, error) {
+func (p *parser) readDateTimeEndProperty() (property, error) {
 	t, j, err := p.readDateTimeOrTime()
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ type dateTimeDue struct {
 	Time     time.Time
 }
 
-func (p *parser) readDateTimeDueComponent() (component, error) {
+func (p *parser) readDateTimeDueProperty() (property, error) {
 	t, j, err := p.readDateTimeOrTime()
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ type dateTimeStart struct {
 	Time     time.Time
 }
 
-func (p *parser) readDateTimeStartComponent() (component, error) {
+func (p *parser) readDateTimeStartProperty() (property, error) {
 	t, j, err := p.readDateTimeOrTime()
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ type duration struct {
 	time.Duration
 }
 
-func (p *parser) readDurationComponent() (component, error) {
+func (p *parser) readDurationProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -165,7 +165,7 @@ func parsePeriods(v string, l *time.Location) ([]period, error) {
 	return periods, nil
 }
 
-func (p *parser) readFreeBusyTimeComponent() (component, error) {
+func (p *parser) readFreeBusyTimeProperty() (property, error) {
 	as, err := p.readAttributes(fbtypeparam)
 	if err != nil {
 		return nil, err
@@ -195,7 +195,7 @@ const (
 
 type timeTransparency int
 
-func (p *parser) readTimeTransparencyComponent() (component, error) {
+func (p *parser) readTimeTransparencyProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err

@@ -6,10 +6,10 @@ import (
 	"testing"
 )
 
-func componentTester(t *testing.T, testStr string, tests []component) {
+func propertyTester(t *testing.T, testStr string, tests []property) {
 	p := newParser(strings.NewReader(testStr))
 	for n, test := range tests {
-		c, err := p.GetComponent()
+		c, err := p.GetProperty()
 		if err != nil {
 			t.Errorf("test %d: got unexpected error: %q", n+1, err)
 		} else if !reflect.DeepEqual(c, test) {
@@ -18,40 +18,40 @@ func componentTester(t *testing.T, testStr string, tests []component) {
 	}
 }
 
-func TestBeginComponent(t *testing.T) {
-	componentTester(t,
+func TestBeginproperty(t *testing.T) {
+	propertyTester(t,
 		"BEGIN:HELLO\r\nBEGIN;Ignored=Param:WORLD\r\n",
-		[]component{
+		[]property{
 			begin("HELLO"),
 			begin("WORLD"),
 		},
 	)
 }
 
-func TestEndComponent(t *testing.T) {
-	componentTester(t,
+func TestEndproperty(t *testing.T) {
+	propertyTester(t,
 		"END;Ignored=Param:WORLD\r\nEND:HELLO\r\n",
-		[]component{
+		[]property{
 			end("WORLD"),
 			end("HELLO"),
 		},
 	)
 }
 
-func TestRequestStatusComponent(t *testing.T) {
-	componentTester(t,
+func TestRequestStatusproperty(t *testing.T) {
+	propertyTester(t,
 		"REQUEST-STATUS:1.02;Almost Successful\r\nREQUEST-STATUS;LANGUAGE=\"EN\":3.94;Client died;Heart-Attack\r\n",
-		[]component{
+		[]property{
 			requestStatus{StatusCode: 102, StatusDescription: "Almost Successful"},
 			requestStatus{Language: "EN", StatusCode: 394, StatusDescription: "Client died", Extra: "Heart-Attack"},
 		},
 	)
 }
 
-func TestUnknownComponent(t *testing.T) {
-	componentTester(t,
+func TestUnknownproperty(t *testing.T) {
+	propertyTester(t,
 		"SOMECOMP;LANGUAGE=\"FRENCH\";COLA=CHERRY:SomeValue\r\n",
-		[]component{
+		[]property{
 			unknown{Name: "SOMECOMP", Params: map[string]attribute{"LANGUAGE": language("FRENCH"), "COLA": unknownParam{token{tokenParamValue, "CHERRY"}}}, Value: "SomeValue"},
 		},
 	)

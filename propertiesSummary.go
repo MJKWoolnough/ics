@@ -11,7 +11,7 @@ type attach struct {
 	Data []byte
 }
 
-func (p *parser) readAttachComponent() (component, error) {
+func (p *parser) readAttachProperty() (property, error) {
 	as, err := p.readAttributes(fmttypeparam, encodingparam, valuetypeparam)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ type categories struct {
 	Categories []string
 }
 
-func (p *parser) readCategoriesComponent() (component, error) {
+func (p *parser) readCategoriesProperty() (property, error) {
 	as, err := p.readAttributes(languageparam)
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ const (
 
 type class int
 
-func (p *parser) readClassComponent() (component, error) {
+func (p *parser) readClassProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ type comment struct {
 	Altrep, Language, Comment string
 }
 
-func (p *parser) readCommentComponent() (component, error) {
+func (p *parser) readCommentProperty() (property, error) {
 	as, err := p.readAttributes(altrepparam, languageparam)
 	if err != nil {
 		return nil, err
@@ -126,7 +126,7 @@ type description struct {
 	Altrep, Language, Description string
 }
 
-func (p *parser) readDescriptionComponent() (component, error) {
+func (p *parser) readDescriptionProperty() (property, error) {
 	as, err := p.readAttributes(altrepparam, languageparam)
 	if err != nil {
 		return nil, err
@@ -153,7 +153,7 @@ type geo struct {
 	Latitude, Longitude float64
 }
 
-func (p *parser) readGeoComponent() (component, error) {
+func (p *parser) readGeoProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -177,7 +177,7 @@ type location struct {
 	Altrep, Language, Location string
 }
 
-func (p *parser) readLocationComponent() (component, error) {
+func (p *parser) readLocationProperty() (property, error) {
 	as, err := p.readAttributes(altrepparam, languageparam)
 	if err != nil {
 		return nil, err
@@ -202,7 +202,7 @@ func (p *parser) readLocationComponent() (component, error) {
 
 type percentComplete int
 
-func (p *parser) readPercentCompleteComponent() (component, error) {
+func (p *parser) readPercentCompleteProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -219,7 +219,7 @@ func (p *parser) readPercentCompleteComponent() (component, error) {
 
 type priority int
 
-func (p *parser) readPriorityComponent() (component, error) {
+func (p *parser) readPriorityProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -239,7 +239,7 @@ type resources struct {
 	Resources        []string
 }
 
-func (p *parser) readResourcesComponent() (component, error) {
+func (p *parser) readResourcesProperty() (property, error) {
 	as, err := p.readAttributes(altrepparam, languageparam)
 	if err != nil {
 		return nil, err
@@ -275,7 +275,7 @@ const (
 
 type status int
 
-func (p *parser) readStatusComponent() (component, error) {
+func (p *parser) readStatusProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -306,7 +306,7 @@ type summary struct {
 	Altrep, Language, Summary string
 }
 
-func (p *parser) readSummaryComponent() (component, error) {
+func (p *parser) readSummaryProperty() (property, error) {
 	as, err := p.readAttributes(altrepparam, languageparam)
 	if err != nil {
 		return nil, err

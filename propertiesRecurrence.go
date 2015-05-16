@@ -13,7 +13,7 @@ type exceptionDate struct {
 	DateTime time.Time
 }
 
-func (p *parser) readExceptionDateComponent() (component, error) {
+func (p *parser) readExceptionDateProperty() (property, error) {
 	as, err := p.readAttributes(tzidparam, valuetypeparam)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ type recurrenceDate struct {
 	Periods  []period
 }
 
-func (p *parser) readRecurrenceDateComponent() (component, error) {
+func (p *parser) readRecurrenceDateProperty() (property, error) {
 	as, err := p.readAttributes(tzidparam, valuetypeparam)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ type recurrenceRule struct {
 	WeekStart                                                                      int
 }
 
-func (p *parser) readRecurrenceRuleComponent() (component, error) {
+func (p *parser) readRecurrenceRuleProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err

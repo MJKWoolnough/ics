@@ -17,7 +17,7 @@ type attendee struct {
 	Address             string
 }
 
-func (p *parser) readAttendeeComponent() (component, error) {
+func (p *parser) readAttendeeProperty() (property, error) {
 	as, err := p.readAttributes(cutypeparam, memberparam, roleparam, partstatparam, rsvpparam, deltoparam, delfromparam, sentbyparam, cnparam, dirparam, languageparam)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ type contact struct {
 	Altrep, Language, Value string
 }
 
-func (p *parser) readContactComponent() (component, error) {
+func (p *parser) readContactProperty() (property, error) {
 	as, err := p.readAttributes(altrepparam, languageparam)
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ type organizer struct {
 	Name              string
 }
 
-func (p *parser) readOrganizerComponent() (component, error) {
+func (p *parser) readOrganizerProperty() (property, error) {
 	as, err := p.readAttributes(cnparam, dirparam, sentbyparam, languageparam)
 	if err != nil {
 		return nil, err
@@ -131,7 +131,7 @@ type recurrenceID struct {
 	DateTime time.Time
 }
 
-func (p *parser) readRecurrenceIDComponent() (component, error) {
+func (p *parser) readRecurrenceIDProperty() (property, error) {
 	as, err := p.readAttributes(valuetypeparam, tzidparam, rangeparam)
 	if err != nil {
 		return nil, err
@@ -170,7 +170,7 @@ type relatedTo struct {
 	Value            string
 }
 
-func (p *parser) readRelatedToComponent() (component, error) {
+func (p *parser) readRelatedToProperty() (property, error) {
 	as, err := p.readAttributes(reltypeparam)
 	if err != nil {
 		return nil, err
@@ -188,7 +188,7 @@ func (p *parser) readRelatedToComponent() (component, error) {
 
 type url string
 
-func (p *parser) readURLComponent() (component, error) {
+func (p *parser) readURLProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -198,7 +198,7 @@ func (p *parser) readURLComponent() (component, error) {
 
 type uid string
 
-func (p *parser) readUIDComponent() (component, error) {
+func (p *parser) readUIDProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err

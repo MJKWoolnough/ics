@@ -2,7 +2,7 @@ package ics
 
 //type timeZoneID string //(in attributes)
 
-func (p *parser) readTimezoneIDComponent() (component, error) {
+func (p *parser) readTimezoneIDProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -14,7 +14,7 @@ type timezoneName struct {
 	Language, Name string
 }
 
-func (p *parser) readTimezoneNameComponent() (component, error) {
+func (p *parser) readTimezoneNameProperty() (property, error) {
 	as, err := p.readAttributes(languageparam)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (p *parser) readTimezoneNameComponent() (component, error) {
 
 type timezoneOffsetFrom int
 
-func (p *parser) readTimezoneOffsetFromComponent() (component, error) {
+func (p *parser) readTimezoneOffsetFromProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (p *parser) readTimezoneOffsetFromComponent() (component, error) {
 
 type timezoneOffsetTo int
 
-func (p *parser) readTimezoneOffsetToComponent() (component, error) {
+func (p *parser) readTimezoneOffsetToProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (p *parser) readTimezoneOffsetToComponent() (component, error) {
 
 type timezoneURL string
 
-func (p *parser) readTimezoneURLComponent() (component, error) {
+func (p *parser) readTimezoneURLProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err

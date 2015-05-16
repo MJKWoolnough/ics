@@ -14,7 +14,7 @@ const (
 
 type action int
 
-func (p *parser) readActionComponent() (component, error) {
+func (p *parser) readActionProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (p *parser) readActionComponent() (component, error) {
 
 type repeat int
 
-func (p *parser) readRepeatComponent() (component, error) {
+func (p *parser) readRepeatProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ type trigger struct {
 	Duration time.Duration
 }
 
-func (p *parser) readTriggerComponent() (component, error) {
+func (p *parser) readTriggerProperty() (property, error) {
 	as, err := p.readAttributes(valuetypeparam, trigrelparam)
 	if err != nil {
 		return nil, err
