@@ -50,15 +50,27 @@ func (c *Calendar) decode(d Decoder) error {
 			}
 			switch p {
 			case vEvent:
-
+				if err = c.decodeEvent(d); err != nil {
+					return err
+				}
 			case vTodo:
+				if err = c.decodeTodo(d); err != nil {
+					return err
+				}
 			case vJournal:
+				if err = c.decodeJournal(d); err != nil {
+					return err
+				}
 			case vFreeBusy:
+				if err = c.decodeFreeBusy(d); err != nil {
+					return err
+				}
 			case vTimezone:
-			case vAlarm:
+				if err = c.decodeTimezone(d); err != nil {
+					return err
+				}
 			default:
-				err = d.readUnknownComponent(string(p))
-				if err != nil {
+				if err = d.readUnknownComponent(string(p)); err != nil {
 					return err
 				}
 			}
