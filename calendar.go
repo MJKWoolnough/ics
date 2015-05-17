@@ -1,37 +1,82 @@
 package ics
 
-type Calendar struct{}
+import "errors"
 
-func (c *Calendar) SetProductID(id string) {
+const vCalendar = "VCALENDAR"
 
+type Calendar struct {
+	ProductID, Method string
 }
 
-type Event struct{}
+func (c *Calendar) decode(d Decoder) error {
+	var pID, ver, cs, m bool
+	for {
+		p, err := d.p.GetProperty()
+		if err != nil {
+			return err
+		}
+		switch p := p.(type) {
+		case productID:
+			if pID {
+				return ErrMultipleUnique
+			}
+			pID = true
+			c.ProductID = string(p)
+		case version:
+			if ver {
+				return ErrMultipleUnique
+			}
+			ver = true
+			if p.Min != "2.0" && p.Max != "2.0" {
+				return ErrUnsupportedVersion
+			}
+		case calscale:
+			if cs {
+				return ErrMultipleUnique
+			}
+			cs = true
+			if p != "GREGORIAN" {
+				return ErrUnsupportedCalendar
+			}
+		case method:
+			if m {
+				return ErrMultipleUnique
+			}
+			m = true
+			// do something with value?
+		case begin:
+			if !pID || !ver {
+				return ErrRequiredMissing
+			}
+			switch p {
+			case vEvent:
 
-func (c *Calendar) AddEvent(e *Event) {
-
+			case vTodo:
+			case vJournal:
+			case vFreeBusy:
+			case vTimezone:
+			case vAlarm:
+			default:
+				err = d.readUnknownComponent(string(p))
+				if err != nil {
+					return err
+				}
+			}
+		case end:
+			if !pID || !ver {
+				return ErrRequiredMissing
+			}
+			if p != vCalendar {
+				return ErrInvalidEnd
+			}
+			return nil
+		}
+	}
 }
 
-type Todo struct{}
+// Errors
 
-func (c *Calendar) AddTodo(t *Todo) {
-
-}
-
-type Journal struct{}
-
-func (c *Calendar) AddJournal(j *Journal) {
-
-}
-
-type FreeBusy struct{}
-
-func (c *Calendar) AddFreeBusy(fb *FreeBusy) {
-
-}
-
-type Timezone struct{}
-
-func (c *Calendar) AddTimezone(tz *Timezone) {
-
-}
+var (
+	ErrUnsupportedCalendar = errors.New("unsupported calendar")
+	ErrUnsupportedVersion  = errors.New("unsupported ics version")
+)
