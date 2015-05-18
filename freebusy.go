@@ -21,7 +21,7 @@ func (c *Calendar) decodeFreeBusy(d Decoder) error {
 		case url:
 		case attendee:
 		case comment:
-		case freebusy:
+		case freeBusy:
 		case requestStatus:
 		case begin:
 			if err = d.readUnknownComponent(string(p)); err != nil {

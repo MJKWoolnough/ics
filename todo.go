@@ -23,7 +23,7 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 		case lastModified:
 		case location:
 		case organizer:
-		case percent:
+		case percentComplete:
 		case priority:
 		case recurrenceID:
 		case sequence:
@@ -31,7 +31,7 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 		case summary:
 		case url:
 		case recurrenceRule:
-		case due:
+		case dateTimeDue:
 		case duration:
 		case attach:
 		case attendee:

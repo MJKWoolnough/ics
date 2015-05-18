@@ -1,6 +1,6 @@
 package ics
 
-//type timeZoneID string //(in attributes)
+//type timezoneID string //(in attributes)
 
 func (p *parser) readTimezoneIDProperty() (property, error) {
 	v, err := p.readValue()
