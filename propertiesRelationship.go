@@ -64,9 +64,7 @@ func (p *parser) readAttendeeProperty() (property, error) {
 	return a, nil
 }
 
-type contact struct {
-	Altrep, Language, Value string
-}
+type contact altrepLanguageData
 
 func (p *parser) readContactProperty() (property, error) {
 	as, err := p.readAttributes(altrepparam, languageparam)

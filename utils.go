@@ -283,3 +283,7 @@ var (
 	ErrInvalidDuration = errors.New("invalid duration string")
 	ErrInvalidOffset   = errors.New("invalid offset string")
 )
+
+type altrepLanguageData struct {
+	AltRep, Language, Data string
+}

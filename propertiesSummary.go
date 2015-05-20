@@ -95,9 +95,7 @@ func (p *parser) readClassProperty() (property, error) {
 	}
 }
 
-type comment struct {
-	Altrep, Language, Comment string
-}
+type comment altrepLanguageData
 
 func (p *parser) readCommentProperty() (property, error) {
 	as, err := p.readAttributes(altrepparam, languageparam)
@@ -122,9 +120,7 @@ func (p *parser) readCommentProperty() (property, error) {
 	}, nil
 }
 
-type description struct {
-	Altrep, Language, Description string
-}
+type description altrepLanguageData
 
 func (p *parser) readDescriptionProperty() (property, error) {
 	as, err := p.readAttributes(altrepparam, languageparam)
@@ -173,9 +169,7 @@ func (p *parser) readGeoProperty() (property, error) {
 	return geo{la, lo}, nil
 }
 
-type location struct {
-	Altrep, Language, Location string
-}
+type location altrepLanguageData
 
 func (p *parser) readLocationProperty() (property, error) {
 	as, err := p.readAttributes(altrepparam, languageparam)
@@ -302,9 +296,7 @@ func (p *parser) readStatusProperty() (property, error) {
 	}
 }
 
-type summary struct {
-	Altrep, Language, Summary string
-}
+type summary altrepLanguageData
 
 func (p *parser) readSummaryProperty() (property, error) {
 	as, err := p.readAttributes(altrepparam, languageparam)
