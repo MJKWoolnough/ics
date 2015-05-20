@@ -1,15 +1,23 @@
 package ics
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/MJKWoolnough/bitmask"
+)
 
 const vCalendar = "VCALENDAR"
 
 type Calendar struct {
 	ProductID, Method string
+	Events            []Event
+	Todo              []Todo
+	Journals          []Journal
+	Timezones         []Timezone
 }
 
 func (c *Calendar) decode(d Decoder) error {
-	var pID, ver, cs, m bool
+	bm := bitmask.New(4)
 	for {
 		p, err := d.p.GetProperty()
 		if err != nil {
@@ -17,13 +25,13 @@ func (c *Calendar) decode(d Decoder) error {
 		}
 		switch p := p.(type) {
 		case productID:
-			if pID {
+			if bm.SetIfNot(0, true) {
 				return ErrMultipleUnique
 			}
 			pID = true
 			c.ProductID = string(p)
 		case version:
-			if ver {
+			if bm.SetIfNot(1, true) {
 				return ErrMultipleUnique
 			}
 			ver = true
@@ -31,7 +39,7 @@ func (c *Calendar) decode(d Decoder) error {
 				return ErrUnsupportedVersion
 			}
 		case calscale:
-			if cs {
+			if bm.SetIfNot(2, true) {
 				return ErrMultipleUnique
 			}
 			cs = true
@@ -39,13 +47,13 @@ func (c *Calendar) decode(d Decoder) error {
 				return ErrUnsupportedCalendar
 			}
 		case method:
-			if m {
+			if bm.SetIfNot(3, true) {
 				return ErrMultipleUnique
 			}
 			m = true
-			// do something with value?
+			c.Method = string(p)
 		case begin:
-			if !pID || !ver {
+			if !bm.Get(0) || !bm.Get(1) {
 				return ErrRequiredMissing
 			}
 			switch p {
@@ -75,7 +83,7 @@ func (c *Calendar) decode(d Decoder) error {
 				}
 			}
 		case end:
-			if !pID || !ver {
+			if !bm.Get(0) || !bm.Get(1) {
 				return ErrRequiredMissing
 			}
 			if p != vCalendar {
