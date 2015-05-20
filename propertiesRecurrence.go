@@ -10,7 +10,7 @@ import (
 
 type exceptionDate struct {
 	JustDate bool
-	DateTime time.Time
+	DateTime dateTime
 }
 
 func (p *parser) readExceptionDateProperty() (property, error) {
@@ -112,7 +112,7 @@ type frequency int
 
 type recurrenceRule struct {
 	Frequency                                                                      frequency
-	Until                                                                          time.Time
+	Until                                                                          dateTime
 	Count, Interval                                                                int
 	BySecond, ByMinute, ByHour, ByMonthDay, ByYearDay, ByWeekNo, ByMonth, BySetPos []int
 	ByDay                                                                          [][2]int

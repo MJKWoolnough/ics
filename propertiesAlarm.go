@@ -48,7 +48,7 @@ func (p *parser) readRepeatProperty() (property, error) {
 type related int
 
 type trigger struct {
-	DateTime time.Time
+	DateTime dateTime
 	Related  alarmTriggerRelationship
 	Duration time.Duration
 }

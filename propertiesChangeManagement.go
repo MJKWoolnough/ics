@@ -1,12 +1,9 @@
 package ics
 
-import (
-	"strconv"
-	"time"
-)
+import "strconv"
 
 type created struct {
-	time.Time
+	dateTime
 }
 
 func (p *parser) readCreateProperty() (property, error) {
@@ -18,7 +15,7 @@ func (p *parser) readCreateProperty() (property, error) {
 		return nil, ErrUnsupportedValue
 	}
 	var c created
-	c.Time, err = parseDateTime(v, nil)
+	c.dateTime, err = parseDateTime(v, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +23,7 @@ func (p *parser) readCreateProperty() (property, error) {
 }
 
 type dateStamp struct {
-	time.Time
+	dateTime
 }
 
 func (p *parser) readDateStampProperty() (property, error) {
@@ -38,7 +35,7 @@ func (p *parser) readDateStampProperty() (property, error) {
 		return nil, ErrUnsupportedValue
 	}
 	var d dateStamp
-	d.Time, err = parseDateTime(v, nil)
+	d.dateTime, err = parseDateTime(v, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +43,7 @@ func (p *parser) readDateStampProperty() (property, error) {
 }
 
 type lastModified struct {
-	time.Time
+	dateTime
 }
 
 func (p *parser) readLastModifiedProperty() (property, error) {
@@ -58,7 +55,7 @@ func (p *parser) readLastModifiedProperty() (property, error) {
 		return nil, ErrUnsupportedValue
 	}
 	var l lastModified
-	l.Time, err = parseDateTime(v, nil)
+	l.dateTime, err = parseDateTime(v, nil)
 	if err != nil {
 		return nil, err
 	}

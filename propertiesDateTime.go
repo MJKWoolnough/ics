@@ -23,22 +23,22 @@ func (p *parser) readCompletedProperty() (property, error) {
 }
 
 type dateTimeEnd struct {
-	justDate bool
-	Time     time.Time
+	dateTime
 }
 
-func (p *parser) readDateTimeOrTime() (t time.Time, justDate bool, err error) {
+func (p *parser) readDateTimeOrTime() (t dateTime, err error) {
 	as, err := p.readAttributes(tzidparam, valuetypeparam)
 	if err != nil {
-		return t, justDate, err
+		return t, err
 	}
 	var (
-		l *time.Location
+		l        *time.Location
+		justDate bool
 	)
 	if tzid, ok := as[tzidparam]; ok {
 		l, err = time.LoadLocation(string(tzid.(timezoneID)))
 		if err != nil {
-			return t, justDate, err
+			return t, err
 		}
 	}
 	if v, ok := as[valuetypeparam]; ok {
@@ -49,53 +49,51 @@ func (p *parser) readDateTimeOrTime() (t time.Time, justDate bool, err error) {
 		case valueDateTime:
 			justDate = false
 		default:
-			return t, justDate, ErrUnsupportedValue
+			return t, ErrUnsupportedValue
 		}
 	}
 	v, err := p.readValue()
 	if err != nil {
-		return t, justDate, err
+		return t, err
 	}
 	if justDate {
 		t, err = parseDate(v)
 	} else {
 		t, err = parseDateTime(v, l)
 	}
-	return t, justDate, err
+	return t, err
 }
 
 func (p *parser) readDateTimeEndProperty() (property, error) {
-	t, j, err := p.readDateTimeOrTime()
+	t, err := p.readDateTimeOrTime()
 	if err != nil {
 		return nil, err
 	}
-	return dateTimeEnd{j, t}, nil
+	return dateTimeEnd{t}, nil
 }
 
 type dateTimeDue struct {
-	justDate bool
-	Time     time.Time
+	dateTime dateTime
 }
 
 func (p *parser) readDateTimeDueProperty() (property, error) {
-	t, j, err := p.readDateTimeOrTime()
+	t, err := p.readDateTimeOrTime()
 	if err != nil {
 		return nil, err
 	}
-	return dateTimeDue{j, t}, nil
+	return dateTimeDue{t}, nil
 }
 
 type dateTimeStart struct {
-	justDate bool
-	Time     time.Time
+	dateTime dateTime
 }
 
 func (p *parser) readDateTimeStartProperty() (property, error) {
-	t, j, err := p.readDateTimeOrTime()
+	t, err := p.readDateTimeOrTime()
 	if err != nil {
 		return nil, err
 	}
-	return dateTimeStart{j, t}, nil
+	return dateTimeStart{t}, nil
 }
 
 type duration struct {
@@ -122,7 +120,7 @@ type freeBusyTime struct {
 
 type period struct {
 	FixedDuration bool
-	Start, End    time.Time
+	Start, End    dateTime
 }
 
 func parsePeriods(v string, l *time.Location) ([]period, error) {
@@ -141,7 +139,7 @@ func parsePeriods(v string, l *time.Location) ([]period, error) {
 			return nil, err
 		}
 		var (
-			end           time.Time
+			end           dateTime
 			fixedDuration bool
 		)
 		if parts[1][len(parts[1])-1] == 'Z' {

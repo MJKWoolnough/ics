@@ -128,7 +128,7 @@ func (p *parser) readOrganizerProperty() (property, error) {
 type recurrenceID struct {
 	Range    rangeParam
 	JustDate bool
-	DateTime time.Time
+	DateTime dateTime
 }
 
 func (p *parser) readRecurrenceIDProperty() (property, error) {

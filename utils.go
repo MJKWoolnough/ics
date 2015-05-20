@@ -108,19 +108,49 @@ func textSplit(s string, delim byte) []string {
 	return toRet
 }
 
-func parseDate(s string) (time.Time, error) {
-	return time.Parse("20060102", s)
+type dateTime struct {
+	justDate bool
+	time.Time
 }
 
-func parseDateTime(s string, l *time.Location) (time.Time, error) {
+func (dt dateTime) Add(d time.Duration) dateTime {
+	if d%24*time.Hour != 0 {
+		dt.justDate = false
+	}
+	dt.Time = dt.Time.Add(d)
+	return dt
+}
+
+func (dt dateTime) AddDate(years, months, days int) dateTime {
+	dt.Time = dt.Time.AddDate(years, months, days)
+	return dt
+}
+
+func (dt dateTime) In(loc *time.Location) dateTime {
+	dt.Time.In(loc)
+	return dt
+}
+
+func parseDate(s string) (dateTime, error) {
+	t, err := time.Parse("20060102", s)
+	return dateTime{true, t}, err
+}
+
+func parseDateTime(s string, l *time.Location) (dateTime, error) {
+	var (
+		t   time.Time
+		err error
+	)
 	if l == nil {
 		if s[len(s)-1] == 'Z' {
-			return time.Parse("20060102T150405Z", s)
+			t, err = time.Parse("20060102T150405Z", s)
 		} else {
-			return time.ParseInLocation("20060102T150405Z", s, time.Local)
+			t, err = time.ParseInLocation("20060102T150405Z", s, time.Local)
 		}
+	} else {
+		t, err = time.ParseInLocation("20060102T150405", s, l)
 	}
-	return time.ParseInLocation("20060102T150405", s, l)
+	return dateTime{Time: t}, err
 }
 
 func parseTime(s string, l *time.Location) (time.Time, error) {
