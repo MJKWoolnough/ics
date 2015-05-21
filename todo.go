@@ -28,7 +28,7 @@ type Todo struct {
 	URL                url
 	RecurrenceRule     recurrenceRule
 	Attachments        []attach
-	Attendees          []atendee
+	Attendees          []attendee
 	Categories         map[string][]string
 	Comments           []comment
 	Contacts           []contact
@@ -82,7 +82,7 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 			if bm.SetIfNot(6, true) {
 				return ErrMultipleUnique
 			}
-			t.Start = p
+			t.Start = p.dateTime
 		case geo:
 			if bm.SetIfNot(7, true) {
 				return ErrMultipleUnique
@@ -147,7 +147,7 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 			if bm.SetIfNot(18, true) {
 				return ErrMultipleUnique
 			}
-			t.End = p
+			t.End = p.dateTime
 		case duration:
 			if bm.Get(18) {
 				return ErrInvalidComponentCombination
@@ -170,7 +170,7 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 		case comment:
 			t.Comments = append(t.Comments, p)
 		case contact:
-			t.Contacts = append(t.Comments, p)
+			t.Contacts = append(t.Contacts, p)
 		case exceptionDate:
 			t.ExceptionDates = append(t.ExceptionDates, p)
 		case requestStatus:
