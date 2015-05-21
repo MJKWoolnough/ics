@@ -1,9 +1,12 @@
 package ics
 
-import "strconv"
+import (
+	"strconv"
+	"time"
+)
 
 type created struct {
-	dateTime
+	time.Time
 }
 
 func (p *parser) readCreateProperty() (property, error) {
@@ -14,12 +17,11 @@ func (p *parser) readCreateProperty() (property, error) {
 	if v[len(v)-1] != 'Z' {
 		return nil, ErrUnsupportedValue
 	}
-	var c created
-	c.dateTime, err = parseDateTime(v, nil)
+	dateTime, err := parseDateTime(v, nil)
 	if err != nil {
 		return nil, err
 	}
-	return c, nil
+	return created{dateTime.Time}, nil
 }
 
 type dateStamp struct {
