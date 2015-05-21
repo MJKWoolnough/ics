@@ -196,6 +196,7 @@ func (c *Calendar) decodeEvent(d Decoder) error {
 			if p != vEvent {
 				return ErrInvalidEnd
 			}
+			c.Events = append(c.Events, e)
 			return nil
 		}
 	}
