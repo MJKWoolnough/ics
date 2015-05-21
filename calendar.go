@@ -28,13 +28,11 @@ func (c *Calendar) decode(d Decoder) error {
 			if bm.SetIfNot(0, true) {
 				return ErrMultipleUnique
 			}
-			pID = true
 			c.ProductID = string(p)
 		case version:
 			if bm.SetIfNot(1, true) {
 				return ErrMultipleUnique
 			}
-			ver = true
 			if p.Min != "2.0" && p.Max != "2.0" {
 				return ErrUnsupportedVersion
 			}
@@ -42,7 +40,6 @@ func (c *Calendar) decode(d Decoder) error {
 			if bm.SetIfNot(2, true) {
 				return ErrMultipleUnique
 			}
-			cs = true
 			if p != "GREGORIAN" {
 				return ErrUnsupportedCalendar
 			}
@@ -50,7 +47,6 @@ func (c *Calendar) decode(d Decoder) error {
 			if bm.SetIfNot(3, true) {
 				return ErrMultipleUnique
 			}
-			m = true
 			c.Method = string(p)
 		case begin:
 			if !bm.Get(0) || !bm.Get(1) {
