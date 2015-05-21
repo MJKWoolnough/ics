@@ -13,6 +13,7 @@ type Calendar struct {
 	Events            []Event
 	Todo              []Todo
 	Journals          []Journal
+	FreeBusy          []FreeBusy
 	Timezones         []Timezone
 }
 
