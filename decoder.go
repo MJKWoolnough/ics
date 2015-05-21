@@ -55,8 +55,9 @@ func (d Decoder) readUnknownComponent(name string) error {
 // Errors
 
 var (
-	ErrInvalidStart    = errors.New("invalid start component")
-	ErrInvalidEnd      = errors.New("invalid end component")
-	ErrMultipleUnique  = errors.New("multiple of a unique property")
-	ErrRequiredMissing = errors.New("required property missing")
+	ErrInvalidStart                = errors.New("invalid start component")
+	ErrInvalidEnd                  = errors.New("invalid end component")
+	ErrMultipleUnique              = errors.New("multiple of a unique property")
+	ErrRequiredMissing             = errors.New("required property missing")
+	ErrInvalidComponentCombination = errors.New("invalid component combination")
 )
