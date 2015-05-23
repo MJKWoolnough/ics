@@ -36,7 +36,7 @@ func (p *parser) readDateTimeOrTime() (t dateTime, err error) {
 		justDate bool
 	)
 	if tzid, ok := as[tzidparam]; ok {
-		l, err = time.LoadLocation(string(tzid.(timezoneID)))
+		l, err = time.LoadLocation(tzid.String())
 		if err != nil {
 			return t, err
 		}
