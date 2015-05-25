@@ -118,7 +118,7 @@ func (p *parser) readRequestStatusProperty() (property, error) {
 	return r, nil
 }
 
-type unknown struct {
+type propertyData struct {
 	Name   string
 	Params map[string]attribute
 	Value  string
@@ -133,7 +133,7 @@ func (p *parser) readUnknownProperty(name string) (property, error) {
 	if err != nil {
 		return nil, err
 	}
-	return unknown{
+	return propertyData{
 		name,
 		vs,
 		v,

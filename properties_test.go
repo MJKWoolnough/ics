@@ -52,7 +52,7 @@ func TestUnknownproperty(t *testing.T) {
 	propertyTester(t,
 		"SOMECOMP;LANGUAGE=\"FRENCH\";COLA=CHERRY:SomeValue\r\n",
 		[]property{
-			unknown{Name: "SOMECOMP", Params: map[string]attribute{"LANGUAGE": language("FRENCH"), "COLA": unknownParam{token{tokenParamValue, "CHERRY"}}}, Value: "SomeValue"},
+			propertyData{Name: "SOMECOMP", Params: map[string]attribute{"LANGUAGE": language("FRENCH"), "COLA": unknownParam{token{tokenParamValue, "CHERRY"}}}, Value: "SomeValue"},
 		},
 	)
 }
