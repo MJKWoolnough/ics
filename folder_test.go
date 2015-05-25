@@ -23,7 +23,11 @@ func TestFolder(t *testing.T) {
 
 	for n, test := range tests {
 		buf.Reset()
-		err := f.WriteLine(test.input)
+		err := f.writeLine(test.input)
+		if err != nil {
+			t.Errorf("test %d: unexpected error: %s", n+1, err)
+		}
+		err = f.flush()
 		if err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		}

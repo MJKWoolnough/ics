@@ -19,10 +19,10 @@ type folder struct {
 }
 
 func newFolder(w io.Writer) folder {
-	return folder{bufio.NewWriterSize(w, 1024)}
+	return folder{bufio.NewWriter(w)}
 }
 
-func (f folder) WriteLine(p []byte) (err error) {
+func (f folder) writeLine(p []byte) (err error) {
 	pos := 0
 	for len(p) > 0 {
 		r, s := utf8.DecodeRune(p)
@@ -41,5 +41,9 @@ func (f folder) WriteLine(p []byte) (err error) {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (f folder) flush() error {
 	return f.bw.Flush()
 }
