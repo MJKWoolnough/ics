@@ -33,16 +33,12 @@ func unescape(p string) []byte {
 		if p[i] == '\\' && i+1 < len(p) {
 			i++
 			switch p[i] {
-			case '\\':
-				u = append(u, '\\')
-			case ';':
-				u = append(u, ';')
-			case ',':
-				u = append(u, ',')
+			case '\\', ';', ',':
+				u = append(u, p[i])
 			case 'N', 'n':
 				u = append(u, '\n')
 			default:
-				u = append(u, p[i])
+				u = append(u, '\\', p[i])
 			}
 		} else {
 			u = append(u, p[i])
