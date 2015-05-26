@@ -273,6 +273,24 @@ func parseOffset(s string) (int, error) {
 	return val, nil
 }
 
+func dquote(p []byte) []byte {
+	q := make([]byte, 0, len(p)+2)
+	q = append(q, '"')
+	q = append(q, p...)
+	q = append(q, '"')
+	return q
+}
+
+func dquoteIfNeeded(p []byte) []byte {
+	for _, c := range p {
+		switch c {
+		case ';', ':', ',':
+			return dquote(p)
+		}
+	}
+	return p
+}
+
 // Errors
 
 var (
