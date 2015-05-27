@@ -31,6 +31,34 @@ func (p *parser) readActionProperty() (property, error) {
 	}
 }
 
+func (a action) Validate() bool {
+	switch a {
+	case actionAudio, actionDisplay, actionEmail:
+		return true
+	}
+	return false
+}
+
+func (a action) Data() propertyData {
+	return propertyData{
+		Name:  actionp,
+		Value: a.String(),
+	}
+}
+
+func (a action) String() string {
+	switch a {
+	case actionAudio:
+		return "AUDIO"
+	case actionDisplay:
+		return "DISPLAY"
+	case actionEmail:
+		return "EMAIL"
+	default:
+		return "UNKNOWN"
+	}
+}
+
 type repeat int
 
 func (p *parser) readRepeatProperty() (property, error) {
@@ -45,7 +73,18 @@ func (p *parser) readRepeatProperty() (property, error) {
 	return repeat(n), nil
 }
 
-type related int
+func (r repeat) Validate() bool {
+	return true
+}
+
+func (r repeat) Data() propertyData {
+	return propertyData{
+		Name:  repeatp,
+		Value: strconv.Itoa(int(r)),
+	}
+}
+
+//type related int
 
 type trigger struct {
 	DateTime dateTime
@@ -84,4 +123,27 @@ func (p *parser) readTriggerProperty() (property, error) {
 		}
 	}
 	return t, nil
+}
+
+func (t trigger) Validate() bool {
+	return true
+}
+
+func (t trigger) Data() propertyData {
+	params := make(map[string]attribute)
+	if t.Related != atrStart {
+		params[trigrelparam] = t.Related
+	}
+	var val string
+	if t.DateTime.IsZero() {
+		val = strconv.FormatInt(int64(t.Duration), 10)
+	} else {
+		params[valuetypeparam] = valueDateTime
+		val = t.DateTime.String()
+	}
+	return propertyData{
+		Name:   triggerp,
+		Params: params,
+		Value:  val,
+	}
 }
