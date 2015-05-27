@@ -141,7 +141,7 @@ func parseDateTime(s string, l *time.Location) (dateTime, error) {
 		if s[len(s)-1] == 'Z' {
 			t, err = time.Parse("20060102T150405Z", s)
 		} else {
-			t, err = time.ParseInLocation("20060102T150405Z", s, time.Local)
+			t, err = time.ParseInLocation("20060102T150405", s, time.Local)
 		}
 	} else {
 		t, err = time.ParseInLocation("20060102T150405", s, l)
