@@ -127,6 +127,18 @@ func (dt dateTime) In(loc *time.Location) dateTime {
 	return dt
 }
 
+func (dt dateTime) String() string {
+	if dt.justDate {
+		return dt.Format("20060102")
+	}
+	switch dt.Location {
+	case nil, time.UTC:
+		return dt.Format("20060102T150405Z")
+	default:
+		return dt.Format("20060102T150405")
+	}
+}
+
 func parseDate(s string) (dateTime, error) {
 	t, err := time.Parse("20060102", s)
 	return dateTime{true, t}, err
