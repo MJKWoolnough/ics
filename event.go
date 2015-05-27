@@ -34,7 +34,7 @@ type Event struct {
 	Contacts              []contact
 	ExceptionDates        []exceptionDate
 	RequestStatus         []requestStatus
-	Related               []related
+	RelatedTo             []relatedTo
 	Resources             []resources
 	RecurrenceDate        []recurrenceDate
 	Alarms                []Alarm
@@ -173,8 +173,8 @@ func (c *Calendar) decodeEvent(d Decoder) error {
 			e.ExceptionDates = append(e.ExceptionDates, p)
 		case requestStatus:
 			e.RequestStatus = append(e.RequestStatus, p)
-		case related:
-			e.Related = append(e.Related, p)
+		case relatedTo:
+			e.RelatedTo = append(e.RelatedTo, p)
 		case resources:
 			e.Resources = append(e.Resources, p)
 		case recurrenceDate:

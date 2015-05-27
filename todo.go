@@ -34,7 +34,7 @@ type Todo struct {
 	Contacts           []contact
 	ExceptionDates     []exceptionDate
 	RequestStatuses    []requestStatus
-	Related            []related
+	RelatedTo          []relatedTo
 	Resources          []resources
 	RecurrenceDates    []recurrenceDate
 }
@@ -175,8 +175,8 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 			t.ExceptionDates = append(t.ExceptionDates, p)
 		case requestStatus:
 			t.RequestStatuses = append(t.RequestStatuses, p)
-		case related:
-			t.Related = append(t.Related, p)
+		case relatedTo:
+			t.RelatedTo = append(t.RelatedTo, p)
 		case resources:
 			t.Resources = append(t.Resources, p)
 		case recurrenceDate:

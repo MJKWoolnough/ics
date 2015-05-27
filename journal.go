@@ -27,7 +27,7 @@ type Journal struct {
 	Contacts              []contact
 	Descriptions          []description
 	ExceptionDates        []exceptionDate
-	Related               []related
+	RelatedTo             []relatedTo
 	RecurrenceDates       []recurrenceDate
 	RequestStatus         []requestStatus
 }
@@ -122,8 +122,8 @@ func (c *Calendar) decodeJournal(d Decoder) error {
 			j.Descriptions = append(j.Descriptions, p)
 		case exceptionDate:
 			j.ExceptionDates = append(j.ExceptionDates, p)
-		case related:
-			j.Related = append(j.Related, p)
+		case relatedTo:
+			j.RelatedTo = append(j.RelatedTo, p)
 		case recurrenceDate:
 			j.RecurrenceDates = append(j.RecurrenceDates, p)
 		case requestStatus:
