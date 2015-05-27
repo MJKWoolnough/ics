@@ -26,6 +26,7 @@ const (
 )
 
 type attribute interface {
+	Bytes() string
 	String() string
 }
 
@@ -41,6 +42,10 @@ func newAltRepParam(vs []token) (attribute, error) {
 	return altrep(vs[0].data), nil
 }
 
+func (a altrep) Bytes() []byte {
+	return dquote(escape6868(string(a)))
+}
+
 func (a altrep) String() string {
 	return string(a)
 }
@@ -52,6 +57,10 @@ func newCommonNameParam(vs []token) (attribute, error) {
 		return nil, ErrIncorrectNumParamValues
 	}
 	return commonName(vs[0].data), nil
+}
+
+func (c commonName) Bytes() []byte {
+	return escape6868(string(c))
 }
 
 func (c commonName) String() string {
@@ -86,6 +95,10 @@ func newCalendarUserTypeParam(vs []token) (attribute, error) {
 	}
 }
 
+func (c calendarUserType) Bytes() []byte {
+	return []byte(c.String())
+}
+
 func (c calendarUserType) String() string {
 	switch c {
 	case cuIndividual:
@@ -117,17 +130,19 @@ func newDelegatorsParam(vs []token) (attribute, error) {
 	return d, nil
 }
 
-func (d delegators) String() string {
+func (d delegators) Bytes() []byte {
 	var ds []byte
 	for n, dg := range d {
 		if n > 0 {
 			ds = append(ds, ',')
 		}
-		ds = append(ds, '"')
-		ds = append(ds, escape6868(dg)...)
-		ds = append(ds, '"')
+		ds = append(ds, dquote(escape6868(dg))...)
 	}
-	return string(ds)
+	return ds
+}
+
+func (d delegators) String() string {
+	return string(d.Bytes())
 }
 
 type delegatee []string
@@ -146,17 +161,19 @@ func newDelegateeParam(vs []token) (attribute, error) {
 	return d, nil
 }
 
-func (d delegatee) String() string {
+func (d delegatee) Bytes() []byte {
 	var ds []byte
 	for n, dg := range d {
 		if n > 0 {
 			ds = append(ds, ',')
 		}
-		ds = append(ds, '"')
-		ds = append(ds, escape6868(dg)...)
-		ds = append(ds, '"')
+		ds = append(ds, dquote(escape6868(dg))...)
 	}
 	return string(ds)
+}
+
+func (d delegatee) String() string {
+	return string(d.Bytes())
 }
 
 type directoryEntryRef string
@@ -169,6 +186,10 @@ func newDirectoryEntryRefParam(vs []token) (attribute, error) {
 		return nil, ErrIncorrectParamValueType
 	}
 	return directoryEntryRef(vs[0].data), nil
+}
+
+func (d directoryEntryRef) Bytes() []byte {
+	return dquote([]byte(d))
 }
 
 func (d directoryEntryRef) String() string {
@@ -196,6 +217,10 @@ func newEncodingParam(vs []token) (attribute, error) {
 	}
 }
 
+func (e encoding) Bytes() []byte {
+	return []byte(e.String())
+}
+
 func (e encoding) String() string {
 	switch e {
 	case encoding8Bit:
@@ -203,7 +228,7 @@ func (e encoding) String() string {
 	case encodingBase64:
 		return "BASE64"
 	default:
-		return "unknown encoding"
+		return "unknownencoding"
 	}
 }
 
@@ -215,6 +240,10 @@ func newFmtTypeParam(vs []token) (attribute, error) {
 	}
 	//validate value
 	return fmtType(vs[0].data), nil
+}
+
+func (f fmtType) Bytes() []byte {
+	return dquoteIfNeeded([]byte(f))
 }
 
 func (f fmtType) String() string {
@@ -248,6 +277,10 @@ func newFreeBusyParam(vs []token) (attribute, error) {
 	}
 }
 
+func (fb freeBusy) Bytes() []byte {
+	return []byte(fb.String())
+}
+
 func (fb freeBusy) String() string {
 	switch fb {
 	case fbBusy:
@@ -275,6 +308,10 @@ func newLanguageParam(vs []token) (attribute, error) {
 	return language(vs[0].data), nil
 }
 
+func (l language) Bytes() []byte {
+	return dquote([]byte(l))
+}
+
 func (l language) String() string {
 	return string(l)
 }
@@ -295,17 +332,19 @@ func newMemberParam(vs []token) (attribute, error) {
 	return m, nil
 }
 
-func (ms members) String() string {
+func (ms members) Bytes() []byte {
 	var mstr []byte
 	for n, m := range ms {
 		if n > 0 {
 			mstr = append(mstr, ',')
 		}
-		mstr = append(mstr, '"')
-		mstr = append(mstr, escape6868(m)...)
-		mstr = append(mstr, '"')
+		mstr = append(mstr, dquote(escape6868(m))...)
 	}
-	return string(mstr)
+	return mstr
+}
+
+func (ms members) String() string {
+	return string(ms.Bytes())
 }
 
 const (
@@ -342,6 +381,10 @@ func newParticipationStatusParam(vs []token) (attribute, error) {
 	default:
 		return psNeedsAction, nil
 	}
+}
+
+func (p participationStatus) Bytes() []byte {
+	return []byte(p.String())
 }
 
 func (p participationStatus) String() string {
@@ -413,6 +456,10 @@ func newRangeParam(vs []token) (attribute, error) {
 	}
 }
 
+func (r rangeParam) Bytes() []byte {
+	return []byte(r.String())
+}
+
 func (r rangeParam) String() string {
 	switch r {
 	case rngThisAndFuture:
@@ -443,6 +490,10 @@ func newAlarmTriggerRelationshipParam(vs []token) (attribute, error) {
 	default:
 		return atrStart, nil
 	}
+}
+
+func (a alarmTriggerRelationship) Bytes() []byte {
+	return []byte(a.String())
 }
 
 func (a alarmTriggerRelationship) String() string {
@@ -478,6 +529,10 @@ func newRelationshipTypeParam(vs []token) (attribute, error) {
 	default:
 		return rtParent, nil
 	}
+}
+
+func (r relationshipType) Bytes() []byte {
+	return []byte(r.String())
 }
 
 func (r relationshipType) String() string {
@@ -520,6 +575,10 @@ func newParticipationRoleParam(vs []token) (attribute, error) {
 	}
 }
 
+func (p participationRole) Bytes() []byte {
+	return []byte(p.String())
+}
+
 func (p participationRole) String() string {
 	switch p {
 	case prRequiredParticipant:
@@ -551,6 +610,10 @@ func newRSVPExpectationParam(vs []token) (attribute, error) {
 	}
 }
 
+func (r rsvp) Bytes() []byte {
+	return []byte(r.String())
+}
+
 func (r rsvp) String() string {
 	if r {
 		return "TRUE"
@@ -571,6 +634,10 @@ func newSentByParam(vs []token) (attribute, error) {
 	return sentBy(vs[0].data), nil
 }
 
+func (s sentBy) Bytes() []byte {
+	return dquote(escape6868(string(s)))
+}
+
 func (s sentBy) String() string {
 	return string(s)
 }
@@ -585,6 +652,10 @@ func newTimezoneIDParam(vs []token) (attribute, error) {
 		return nil, ErrIncorrectParamValueType
 	}
 	return timezoneID(vs[0].data), nil
+}
+
+func (t timezoneID) Bytes() []byte {
+	return dquote(escape6868(string(t)))
 }
 
 func (t timezoneID) String() string {
@@ -648,6 +719,10 @@ func newValueParam(vs []token) (attribute, error) {
 	}
 }
 
+func (v value) Bytes() []byte {
+	return []byte(v.String())
+}
+
 func (v value) String() string {
 	switch v {
 	case valueBinary:
@@ -679,7 +754,7 @@ func (v value) String() string {
 	case valueUTCOffset:
 		return "UTC-OFFSET"
 	default:
-		return "unknown value"
+		return "unknownvalue"
 	}
 }
 
@@ -689,21 +764,23 @@ func newUnknownParam(vs []token) (attribute, error) {
 	return unknownParam(vs), nil
 }
 
-func (u unknownParam) String() string {
+func (u unknownParam) Bytes() []byte {
 	var toRet []byte
 	for n, uv := range u {
 		if n > 0 {
 			toRet = append(toRet, ',')
 		}
 		if uv.typ == tokenParamQValue {
-			toRet = append(toRet, '"')
-		}
-		toRet = append(toRet, escape6868(uv.data)...)
-		if uv.typ == tokenParamQValue {
-			toRet = append(toRet, '"')
+			toRet = append(toRet, dquote(escape6868(uv.data))...)
+		} else {
+			toRet = append(toRet, escape6868(uv.data)...)
 		}
 	}
-	return string(toRet)
+	return toRet
+}
+
+func (u unknownParam) String() string {
+	return string(u.Bytes())
 }
 
 // Errors
