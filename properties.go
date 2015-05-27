@@ -1,7 +1,9 @@
 package ics
 
 import (
+	"bytes"
 	"errors"
+	"strconv"
 	"strings"
 )
 
@@ -56,7 +58,10 @@ const (
 	rstatusp         = "REQUEST-STATUS"
 )
 
-type property interface{}
+type property interface {
+	Validate() bool
+	Data() propertyData
+}
 
 type begin string
 
@@ -68,6 +73,21 @@ func (p *parser) readBeginProperty() (property, error) {
 	return begin(unescape(v)), nil
 }
 
+func (b begin) Validate() bool {
+	switch b {
+	case vCalendar, vEvent, vAlarm, vTodo, vJournal, vTimezone:
+		return true
+	}
+	return false
+}
+
+func (b begin) Data() propertyData {
+	return propertyData{
+		Name:  beginp,
+		Value: string(b),
+	}
+}
+
 type end string
 
 func (p *parser) readEndProperty() (property, error) {
@@ -76,6 +96,21 @@ func (p *parser) readEndProperty() (property, error) {
 		return nil, err
 	}
 	return end(unescape(v)), nil
+}
+
+func (e end) Validate() bool {
+	switch e {
+	case vCalendar, vEvent, vAlarm, vTodo, vJournal, vTimezone:
+		return true
+	}
+	return false
+}
+
+func (e end) Data() propertyData {
+	return propertyData{
+		Name:  endp,
+		Value: string(b),
+	}
 }
 
 type requestStatus struct {
@@ -118,6 +153,31 @@ func (p *parser) readRequestStatusProperty() (property, error) {
 	return r, nil
 }
 
+func (r requestStatus) Validate() bool {
+	if r.StatusCode < 100 || r.StatusCode > 499 {
+		return false
+	}
+	return true
+}
+
+func (r requestStatus) Data() propertyData {
+	params := make(map[string]attribute)
+	if r.Language != "" {
+		params[languageparam] = language(r.Language)
+	}
+	parts := make([]string, 0, 3)
+	parts = append(parts, strconv.Itoa(r.StatusCode), r.StatusDescription)
+	if r.Extra != "" {
+		parts = append(parts, r.Extra)
+	}
+	val := strings.Join(parts, ";")
+	return propertyData{
+		Name:   rstatusp,
+		Params: params,
+		Value:  val,
+	}
+}
+
 type propertyData struct {
 	Name   string
 	Params map[string]attribute
@@ -138,6 +198,20 @@ func (p *parser) readUnknownProperty(name string) (property, error) {
 		vs,
 		v,
 	}, err
+}
+
+func (p propertyData) Bytes() []byte {
+	var buf bytes.Buffer
+	buf.WriteString(p.Name)
+	for k, v := range p.Params {
+		buf.WriteByte(';')
+		buf.WriteString(k)
+		buf.WriteByte('=')
+		buf.Write(v.Bytes())
+	}
+	buf.WriteByte(':')
+	buf.WriteString(p.Value)
+	return buf.Bytes()
 }
 
 // Errors
