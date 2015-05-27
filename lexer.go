@@ -20,7 +20,7 @@ const (
 	paramMultipleValueDelim = ","
 	nameValueDelim          = ":"
 	crlf                    = "\r\n"
-	dquote                  = "\""
+	dQuote                  = "\""
 )
 
 type token struct {
@@ -113,9 +113,9 @@ func (l *lexer) lexParamName() (token, stateFn) {
 
 func (l *lexer) lexParamValue() (token, stateFn) {
 	var t token
-	if l.p.Accept(dquote) {
+	if l.p.Accept(dQuote) {
 		l.p.ExceptRun(invQSafeChars)
-		if !l.p.Accept(dquote) {
+		if !l.p.Accept(dQuote) {
 			l.err = ErrInvalidChar
 			return l.errorFn()
 		}
