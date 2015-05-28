@@ -107,7 +107,7 @@ func (p *parser) GetProperty() (c property, err error) {
 	case triggerp:
 		return p.readTriggerProperty()
 	case createdp:
-		return p.readCreateProperty()
+		return p.readCreatedProperty()
 	case dtstampp:
 		return p.readDateStampProperty()
 	case lastmodp:

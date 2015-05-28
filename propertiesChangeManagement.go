@@ -9,7 +9,7 @@ type created struct {
 	time.Time
 }
 
-func (p *parser) readCreateProperty() (property, error) {
+func (p *parser) readCreatedProperty() (property, error) {
 	v, err := p.readValue()
 	if err != nil {
 		return nil, err
