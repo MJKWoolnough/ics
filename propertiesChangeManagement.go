@@ -6,7 +6,7 @@ import (
 )
 
 type created struct {
-	time.Time
+	dateTime
 }
 
 func (p *parser) readCreatedProperty() (property, error) {
@@ -21,7 +21,18 @@ func (p *parser) readCreatedProperty() (property, error) {
 	if err != nil {
 		return nil, err
 	}
-	return created{dateTime.Time}, nil
+	return created{dateTime}, nil
+}
+
+func (c created) Validate() bool {
+	return c.Location == time.UTC
+}
+
+func (c created) Data() propertyData {
+	return propertyData{
+		Name:  createdp,
+		Value: c.String(),
+	}
 }
 
 type dateStamp struct {
@@ -44,6 +55,17 @@ func (p *parser) readDateStampProperty() (property, error) {
 	return d, nil
 }
 
+func (d dateStamp) Validate() bool {
+	return d.Location == time.UTC
+}
+
+func (d dateStamp) Data() propertyData {
+	return propertyData{
+		Name:  dtstampp,
+		Value: d.String(),
+	}
+}
+
 type lastModified struct {
 	dateTime
 }
@@ -64,6 +86,17 @@ func (p *parser) readLastModifiedProperty() (property, error) {
 	return l, nil
 }
 
+func (l lastModified) Validate() bool {
+	return l.Location == time.UTC
+}
+
+func (l lastModified) Data() propertyData {
+	return propertyData{
+		Name:  lastmodp,
+		Value: l.String(),
+	}
+}
+
 type sequence int
 
 func (p *parser) readSequenceProperty() (property, error) {
@@ -79,4 +112,15 @@ func (p *parser) readSequenceProperty() (property, error) {
 		return nil, ErrUnsupportedValue
 	}
 	return sequence(s), nil
+}
+
+func (s sequence) Validate() bool {
+	return s >= 0
+}
+
+func (s sequence) Data() propertyData {
+	return propertData{
+		Name:  seqp,
+		Value: strconv.Itoa(int(s)),
+	}
 }
