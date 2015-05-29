@@ -253,6 +253,42 @@ func parseDuration(s string) (time.Duration, error) {
 	return dur, nil
 }
 
+func durationString(d time.Duration) string {
+	toRet := make([]byte, 0, 16)
+	if d < 0 {
+		toRet = append(toRet, '-')
+	}
+	toRet = append(toRet, 'P')
+	if d%(time.Hour*24*7) == 0 {
+		toRet = append(toRet, strconv.FormatInt(int64(d/(time.Hour*24*7)))...)
+		toRet = append(toRet, 'W')
+	} else {
+		if d >= time.Hour*24 {
+			toRet = append(toRet, strconv.FormatInt(int64(d/(time.Hour*24)))...)
+			toRet = append(toRet, 'D')
+			d = d % (time.Hour * 24)
+		}
+		if d > 0 {
+			toRet = append(toRet, 'T')
+			if d >= time.Hour {
+				toRet = append(toRet, strconv.FormatInt(int64(d/time.Hour))...)
+				toRet = append(toRet, 'H')
+				d = d % time.Hour
+			}
+			if d >= time.Minute {
+				toRet = append(toRet, strconv.FormatInt(int64(d/time.Minute))...)
+				toRet = append(toRet, 'M')
+				d = d % time.Minute
+			}
+			if d >= time.Second {
+				toRet = append(toRet, strconv.FormatInt(int64(d/time.Second))...)
+				toRet = append(toRet, 'S')
+			}
+		}
+	}
+	return string(toRet)
+}
+
 func parseOffset(s string) (int, error) {
 	if len(s) != 5 && len(s) != 7 {
 		return 0, ErrInvalidOffset
