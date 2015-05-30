@@ -6,7 +6,7 @@ import (
 )
 
 type completed struct {
-	time.Time
+	dateTime
 }
 
 func (p *parser) readCompletedProperty() (property, error) {
@@ -20,6 +20,17 @@ func (p *parser) readCompletedProperty() (property, error) {
 		return nil, err
 	}
 	return c, nil
+}
+
+func (c completed) Validate() bool {
+	return c.Location() == time.UTC
+}
+
+func (c completed) Data() propertyData {
+	return propertyData{
+		Name:  completedp,
+		Value: c.String(),
+	}
 }
 
 type dateTimeEnd struct {
@@ -64,12 +75,35 @@ func (p *parser) readDateTimeOrTime() (t dateTime, err error) {
 	return t, err
 }
 
+func dateTimeOrTimeData(name string, d dateTime) propertyData {
+	params := make(map[string]attribute)
+	if d.justDate {
+		params[valuetypeparam] = valueDate
+	}
+	if d.Location() != time.UTC {
+		params[tzidparam] = d.Location().String()
+	}
+	return propertyData{
+		Name:   name,
+		Params: params,
+		Value:  d.String(),
+	}
+}
+
 func (p *parser) readDateTimeEndProperty() (property, error) {
 	t, err := p.readDateTimeOrTime()
 	if err != nil {
 		return nil, err
 	}
 	return dateTimeEnd{t}, nil
+}
+
+func (d dateTimeEnd) Validate() bool {
+	return true
+}
+
+func (d dateTimeEnd) Date() propertyData {
+	return dateTimeOrTimeData(dtendp, d.dateTime)
 }
 
 type dateTimeDue struct {
@@ -84,6 +118,14 @@ func (p *parser) readDateTimeDueProperty() (property, error) {
 	return dateTimeDue{t}, nil
 }
 
+func (d dateTimeDue) Validate() bool {
+	return true
+}
+
+func (d dateTimeDue) Data() propertyData {
+	return dateTimeOrTimeData(duep, d.dateTime)
+}
+
 type dateTimeStart struct {
 	dateTime dateTime
 }
@@ -94,6 +136,14 @@ func (p *parser) readDateTimeStartProperty() (property, error) {
 		return nil, err
 	}
 	return dateTimeStart{t}, nil
+}
+
+func (d dateTimeStart) Validate() bool {
+	return true
+}
+
+func (d dateTimeStart) Data() propertyData {
+	return dateTimeOrTimeData(dtstartp, d.dateTime)
 }
 
 type duration struct {
@@ -111,6 +161,17 @@ func (p *parser) readDurationProperty() (property, error) {
 		return nil, err
 	}
 	return d, nil
+}
+
+func (d duration) Validate() bool {
+	return true
+}
+
+func (d duration) Data() propertyData {
+	return propertyData{
+		Name:  durationp,
+		Value: durationString(d.Duration),
+	}
 }
 
 type freeBusyTime struct {
@@ -186,6 +247,31 @@ func (p *parser) readFreeBusyTimeProperty() (property, error) {
 	}, nil
 }
 
+func (f freeBusyTime) Validate() bool {
+	return f.Typ >= fbBusy && f.Typ <= fbBusyTentative
+}
+
+func (f freeBusyTime) Data() propertyData {
+	params := make(map[string]attribute)
+	params[fbtypeparam] = f.Typ
+	var val []byte
+	for _, period := range f.Periods {
+		val = append(val, ',')
+		val = append(val, period.Start.String()...)
+		val = append(val, '/')
+		if period.FixedDuration {
+			val = append(val, durationString(period.End.Sub(period.Start.Time))...)
+		} else {
+			val = append(val, period.End.String()...)
+		}
+	}
+	return propertyData{
+		Name:   freebusyp,
+		Params: params,
+		Value:  string(val),
+	}
+}
+
 const (
 	TTOpaque timeTransparency = iota
 	TTTransparent
@@ -205,5 +291,32 @@ func (p *parser) readTimeTransparencyProperty() (property, error) {
 		return TTTransparent, nil
 	default:
 		return nil, ErrUnsupportedValue
+	}
+}
+
+func (t timeTransparency) String() string {
+	switch t {
+	case TTOpaque:
+		return "OPAQUE"
+	case TTTransparent:
+		return "TRANSPARENT"
+	default:
+		return "UNKNOWN"
+	}
+}
+
+func (t timeTransparency) Validate() bool {
+	switch t {
+	case TTOpaque, TTTransparent:
+		return true
+	default:
+		return false
+	}
+}
+
+func (t timeTransparency) Data() propertyData {
+	return propertyData{
+		Name:  transpp,
+		Value: t.String(),
 	}
 }
