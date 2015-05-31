@@ -267,8 +267,10 @@ func (f freeBusyTime) Data() propertyData {
 	params := make(map[string]attribute)
 	params[fbtypeparam] = f.Typ
 	val := make([]byte, 0, len(f.Periods)*64)
-	for _, period := range f.Periods {
-		val = append(val, ',')
+	for n, period := range f.Periods {
+		if n > 0 {
+			val = append(val, ',')
+		}
 		val = append(val, period.Bytes()...)
 	}
 	return propertyData{
