@@ -184,6 +184,18 @@ type period struct {
 	Start, End    dateTime
 }
 
+func (p period) Bytes() []byte {
+	val := make([]byte, 0, 64)
+	val = append(val, p.Start.String()...)
+	val = append(val, '/')
+	if p.FixedDuration {
+		val = append(val, durationString(p.End.Sub(p.Start.Time))...)
+	} else {
+		val = append(val, p.End.String()...)
+	}
+	return val
+}
+
 func parsePeriods(v string, l *time.Location) ([]period, error) {
 	periods := make([]period, 0, 1)
 
@@ -254,16 +266,10 @@ func (f freeBusyTime) Validate() bool {
 func (f freeBusyTime) Data() propertyData {
 	params := make(map[string]attribute)
 	params[fbtypeparam] = f.Typ
-	var val []byte
+	val := make([]byte, 0, len(f.Periods)*64)
 	for _, period := range f.Periods {
 		val = append(val, ',')
-		val = append(val, period.Start.String()...)
-		val = append(val, '/')
-		if period.FixedDuration {
-			val = append(val, durationString(period.End.Sub(period.Start.Time))...)
-		} else {
-			val = append(val, period.End.String()...)
-		}
+		val = append(val, period.Bytes()...)
 	}
 	return propertyData{
 		Name:   freebusyp,
