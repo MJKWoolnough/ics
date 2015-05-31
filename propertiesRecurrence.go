@@ -9,8 +9,7 @@ import (
 )
 
 type exceptionDate struct {
-	JustDate bool
-	DateTime dateTime
+	dateTime
 }
 
 func (p *parser) readExceptionDateProperty() (property, error) {
@@ -42,6 +41,25 @@ func (p *parser) readExceptionDateProperty() (property, error) {
 		return nil, err
 	}
 	return e, nil
+}
+
+func (e exceptionDate) Validate() bool {
+	return true
+}
+
+func (e exceptionDate) Data() propertyData {
+	params := make(map[string]attribute)
+	if e.justDate {
+		params[valuetypeparam] = valueDate
+	}
+	if e.Location() != time.UTC {
+		params[tzidparam] = e.Location().String()
+	}
+	return propertyData{
+		Name:   exdatep,
+		Params: params,
+		Value:  e.String(),
+	}
 }
 
 type recurrenceDate struct {
@@ -98,6 +116,39 @@ func (p *parser) readRecurrenceDateProperty() (property, error) {
 	return r, nil
 }
 
+func (r recurrenceDate) Validate() bool {
+	return true
+}
+
+func (r recurrenceDate) Data() propertyData {
+	params := make(map[string]attribute)
+	val := make([]byte, len(r.Periods)*32)
+	if r.Periods[0].End.IsZero() {
+		if r.JustDate {
+			params[valuetypeparam] = valueDate
+		}
+		for n, p := range r.Periods {
+			if n > 0 {
+				val = append(val, ',')
+			}
+			val = append(val, p.Start.String()...)
+		}
+	} else {
+		params[valuetypeparam] = valuePeriod
+		for n, p := range r.Periods {
+			if n > 0 {
+				val = append(val, ',')
+			}
+			val = append(val, p.Bytes()...)
+		}
+	}
+	return propertyData{
+		Name:   rdatep,
+		Params: params,
+		Value:  string(val),
+	}
+}
+
 const (
 	freqSecondly frequency = iota + 1
 	freqMinutely
@@ -109,6 +160,27 @@ const (
 )
 
 type frequency int
+
+func (f frequency) String() string {
+	switch f {
+	case freqSecondly:
+		return "SECONDLY"
+	case freqMinutely:
+		return "MINETELY"
+	case freqHourly:
+		return "HOURLY"
+	case freqDaily:
+		return "DAILY"
+	case freqWeekly:
+		return "WEEKLY"
+	case freqMonthly:
+		return "MONTHLY"
+	case freqYearly:
+		return "YEARLY"
+	default:
+		return "UNKNOWN"
+	}
+}
 
 type recurrenceRule struct {
 	Frequency                                                                      frequency
@@ -380,4 +452,133 @@ func (p *parser) readRecurrenceRuleProperty() (property, error) {
 		return nil, ErrUnsupportedValue
 	}
 	return r, nil
+}
+
+func (r recurrenceRule) Validate() bool {
+	return true
+}
+
+func (r recurrenceRule) Data() propertyData {
+	val := make([]byte, 0, 1024)
+	val = append(val, 'F', 'R', 'E', 'Q', '=')
+	val = append(val, r.Frequency.String()...)
+	if r.Count > 0 {
+		val = append(val, ';', 'C', 'O', 'U', 'N', 'T', '=')
+		val = append(val, strconv.Itoa(int(r.Count))...)
+	} else if !r.Until.IsZero() {
+		val = append(val, ';', 'U', 'N', 'T', 'I', 'L', '=')
+		val = append(val, r.Until.String())
+	}
+	if r.Interval > 0 {
+		val = append(val, ';', 'I', 'N', 'T', 'E', 'R', 'V', 'A', 'L', '=')
+		val = append(val, strconv.Itoa(int(r.Interval))...)
+	}
+
+	if r.WeekStart > 0 {
+		val = append(val, ';', 'W', 'K', 'S', 'T', '=')
+		val = append(val, strconv.Itoa(int(r.WeekStart))...)
+	}
+	if len(r.BySecond) > 0 {
+		val = append(val, ';', 'B', 'Y', 'S', 'E', 'C', 'O', 'N', 'D', '=')
+		for n, s := range r.BySecond {
+			if n > 0 {
+				val = append(val, ',')
+			}
+			val = append(val, strconv.Itoa(int(s))...)
+		}
+	}
+	if len(r.ByMinute) > 0 {
+		val = append(val, ';', 'B', 'Y', 'M', 'I', 'N', 'U', 'T', 'E', '=')
+		for n, m := range r.ByMinute {
+			if n > 0 {
+				val = append(val, ',')
+			}
+			val = append(val, strconv.Itoa(int(m))...)
+		}
+	}
+	if len(r.ByHour) > 0 {
+		val = append(val, ';', 'B', 'Y', 'H', 'O', 'U', 'R', '=')
+		for n, h := range r.ByHour {
+			if n > 0 {
+				val = append(val, ',')
+			}
+			val = append(val, strconv.Itoa(int(h))...)
+		}
+	}
+	if len(r.ByDay) > 0 {
+		val = append(val, ';', 'B', 'Y', 'D', 'A', 'Y', '=')
+		for n, d := range r.ByDay {
+			if n > 0 {
+				val = append(val, ',')
+			}
+			if d[0] != 0 {
+				val = append(val, strconv.Itoa(int(d[0]))...)
+			}
+			switch d[1] {
+			case 0:
+				val = append(val, 'S', 'U')
+			case 1:
+				val = append(val, 'M', 'O')
+			case 2:
+				val = append(val, 'T', 'U')
+			case 3:
+				val = append(val, 'W', 'E')
+			case 4:
+				val = append(val, 'T', 'H')
+			case 5:
+				val = append(val, 'F', 'R')
+			case 6:
+				val = append(val, 'S', 'A')
+			}
+		}
+	}
+	if len(r.ByMonthDay) > 0 {
+		val = append(val, ';', 'B', 'Y', 'M', 'O', 'N', 'T', 'H', 'D', 'A', 'Y', '=')
+		for n, m := range r.ByMonthDay {
+			if n > 0 {
+				val = append(val, ',')
+			}
+			val = append(val, strconv.Itoa(int(m))...)
+		}
+	}
+	if len(r.ByYearDay) > 0 {
+		val = append(val, ';', 'B', 'Y', 'Y', 'E', 'A', 'R', 'D', 'A', 'Y', '=')
+		for n, y := range r.BySecond {
+			if n > 0 {
+				val = append(val, ',')
+			}
+			val = append(val, strconv.Itoa(int(y))...)
+		}
+	}
+	if len(r.ByWeekNo) > 0 {
+		val = append(val, ';', 'B', 'Y', 'W', 'E', 'E', 'K', 'N', 'O', '=')
+		for n, w := range r.ByWeekNo {
+			if n > 0 {
+				val = append(val, ',')
+			}
+			val = append(val, strconv.Itoa(int(w))...)
+		}
+	}
+	if len(r.ByMonth) > 0 {
+		val = append(val, ';', 'B', 'Y', 'M', 'O', 'N', 'T', 'H', '=')
+		for n, m := range r.ByMonth {
+			if n > 0 {
+				val = append(val, ',')
+			}
+			val = append(val, strconv.Itoa(int(m))...)
+		}
+	}
+	if len(r.BySetPos) > 0 {
+		val = append(val, ';', 'B', 'Y', 'S', 'E', 'T', 'P', 'O', 'S', '=')
+		for n, s := range r.BySetPos {
+			if n > 0 {
+				val = append(val, ',')
+			}
+			val = append(val, strconv.Itoa(int(s))...)
+		}
+	}
+	return propertyData{
+		Name:  rrulep,
+		Value: string(val),
+	}
 }
