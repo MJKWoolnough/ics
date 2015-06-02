@@ -214,6 +214,52 @@ func (p propertyData) Bytes() []byte {
 	return buf.Bytes()
 }
 
+type altrepLanguageData struct {
+	AltRep, Language, Data string
+}
+
+func (p *parser) readAltrepLanguageData() (altrepLanguageData, error) {
+	as, err := p.readAttributes(altrepparam, languageparam)
+	if err != nil {
+		return altrepLanguageData{}, err
+	}
+	var altRep, languageStr string
+	if alt, ok := as[altrepparam]; ok {
+		altRep = string(alt.(altrep))
+	}
+	if l, ok := as[languageparam]; ok {
+		languageStr = string(l.(language))
+	}
+	v, err := p.readValue()
+	if err != nil {
+		return altrepLanguageData{}, err
+	}
+	return altrepLanguageData{
+		altRep,
+		languageStr,
+		string(unescape(v)),
+	}, nil
+}
+
+func (a altrepLanguageData) Validate() bool {
+	return true
+}
+
+func (a altrepLanguageData) data(name string) propertyData {
+	params := make(map[string]attributes)
+	if a.AltRep != "" {
+		params[altrepparam] = altrep(a.AltRep)
+	}
+	if a.Language != "" {
+		params[languageparam] = language(a.Language)
+	}
+	return propertyData{
+		Name:   name,
+		Params: params,
+		Value:  a.Data,
+	}
+}
+
 // Errors
 
 var (
