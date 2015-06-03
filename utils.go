@@ -321,6 +321,23 @@ func parseOffset(s string) (int, error) {
 	return val, nil
 }
 
+func offsetString(o int) string {
+	toRet := make([]byte, 1, 7)
+	if o < 0 {
+		toRet[0] = '-'
+		o = -o
+	} else {
+		toRet[0] = '+'
+	}
+	toRet = append(toRet, strconv.Itoa(o/3600)...)
+	toRet = append(toRet, strconv.Itoa((o%3600)/60)...)
+	seconds = o % 60
+	if seconds > 0 {
+		toRet = append(toRet, strconv.Itoa(seconds)...)
+	}
+	return string(toRet)
+}
+
 func dquote(p []byte) []byte {
 	q := make([]byte, 0, len(p)+2)
 	q = append(q, '"')
