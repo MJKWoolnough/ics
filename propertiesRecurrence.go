@@ -32,10 +32,10 @@ func (p *parser) readExceptionDateProperty() (property, error) {
 		}
 	}
 	if val, ok := as[valuetypeparam]; ok && val.(value) == valueDate {
-		e.JustDate = true
-		e.DateTime, err = parseDate(v)
+		e.justDate = true
+		e.dateTime, err = parseDate(v)
 	} else {
-		e.DateTime, err = parseDateTime(v, l)
+		e.dateTime, err = parseDateTime(v, l)
 	}
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (e exceptionDate) Data() propertyData {
 		params[valuetypeparam] = valueDate
 	}
 	if e.Location() != time.UTC {
-		params[tzidparam] = e.Location().String()
+		params[tzidparam] = timezoneID(e.Location().String())
 	}
 	return propertyData{
 		Name:   exdatep,
@@ -467,7 +467,7 @@ func (r recurrenceRule) Data() propertyData {
 		val = append(val, strconv.Itoa(int(r.Count))...)
 	} else if !r.Until.IsZero() {
 		val = append(val, ';', 'U', 'N', 'T', 'I', 'L', '=')
-		val = append(val, r.Until.String())
+		val = append(val, r.Until.String()...)
 	}
 	if r.Interval > 0 {
 		val = append(val, ';', 'I', 'N', 'T', 'E', 'R', 'V', 'A', 'L', '=')

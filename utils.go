@@ -131,7 +131,7 @@ func (dt dateTime) String() string {
 	if dt.justDate {
 		return dt.Format("20060102")
 	}
-	switch dt.Location {
+	switch dt.Location() {
 	case nil, time.UTC:
 		return dt.Format("20060102T150405Z")
 	default:
@@ -260,28 +260,28 @@ func durationString(d time.Duration) string {
 	}
 	toRet = append(toRet, 'P')
 	if d%(time.Hour*24*7) == 0 {
-		toRet = append(toRet, strconv.FormatInt(int64(d/(time.Hour*24*7)))...)
+		toRet = append(toRet, strconv.FormatInt(int64(d/(time.Hour*24*7)), 10)...)
 		toRet = append(toRet, 'W')
 	} else {
 		if d >= time.Hour*24 {
-			toRet = append(toRet, strconv.FormatInt(int64(d/(time.Hour*24)))...)
+			toRet = append(toRet, strconv.FormatInt(int64(d/(time.Hour*24)), 10)...)
 			toRet = append(toRet, 'D')
 			d = d % (time.Hour * 24)
 		}
 		if d > 0 {
 			toRet = append(toRet, 'T')
 			if d >= time.Hour {
-				toRet = append(toRet, strconv.FormatInt(int64(d/time.Hour))...)
+				toRet = append(toRet, strconv.FormatInt(int64(d/time.Hour), 10)...)
 				toRet = append(toRet, 'H')
 				d = d % time.Hour
 			}
 			if d >= time.Minute {
-				toRet = append(toRet, strconv.FormatInt(int64(d/time.Minute))...)
+				toRet = append(toRet, strconv.FormatInt(int64(d/time.Minute), 10)...)
 				toRet = append(toRet, 'M')
 				d = d % time.Minute
 			}
 			if d >= time.Second {
-				toRet = append(toRet, strconv.FormatInt(int64(d/time.Second))...)
+				toRet = append(toRet, strconv.FormatInt(int64(d/time.Second), 10)...)
 				toRet = append(toRet, 'S')
 			}
 		}
@@ -331,7 +331,7 @@ func offsetString(o int) string {
 	}
 	toRet = append(toRet, strconv.Itoa(o/3600)...)
 	toRet = append(toRet, strconv.Itoa((o%3600)/60)...)
-	seconds = o % 60
+	seconds := o % 60
 	if seconds > 0 {
 		toRet = append(toRet, strconv.Itoa(seconds)...)
 	}

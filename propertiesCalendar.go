@@ -95,6 +95,6 @@ func (v version) Data() propertyData {
 	}
 	return propertyData{
 		Name:  versionp,
-		Value: escape(val),
+		Value: string(escape(val)),
 	}
 }

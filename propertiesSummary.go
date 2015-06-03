@@ -6,9 +6,9 @@ import (
 )
 
 type attach struct {
-	URI  bool
-	Mime string
-	Data []byte
+	URI   bool
+	Mime  string
+	Bytes []byte
 }
 
 func (p *parser) readAttachProperty() (property, error) {
@@ -62,7 +62,7 @@ func (a attach) Data() propertyData {
 	return propertyData{
 		Name:   attachp,
 		Params: params,
-		Value:  string(a.Data),
+		Value:  string(a.Bytes),
 	}
 }
 
@@ -95,7 +95,7 @@ func (c categories) Validate() bool {
 }
 
 func (c categories) Data() propertyData {
-	params := make(map[string]params)
+	params := make(map[string]attribute)
 	if c.Language != "" {
 		params[languageparam] = language(c.Language)
 	}
@@ -191,7 +191,7 @@ func (p *parser) readDescriptionProperty() (property, error) {
 }
 
 func (d description) Data() propertyData {
-	return c.data(descriptionp)
+	return d.data(descriptionp)
 }
 
 type geo struct {
@@ -242,7 +242,7 @@ func (p *parser) readLocationProperty() (property, error) {
 }
 
 func (l location) Data() propertyData {
-	return c.data(locationp)
+	return l.data(locationp)
 }
 
 type percentComplete int
@@ -294,7 +294,7 @@ func (p priority) Validate() bool {
 	return p >= 0 && p <= 9
 }
 
-func (p percentComplete) Data() propertyData {
+func (p priority) Data() propertyData {
 	return propertyData{
 		Name:  priorityp,
 		Value: strconv.Itoa(int(p)),
@@ -302,7 +302,7 @@ func (p percentComplete) Data() propertyData {
 }
 
 type resources struct {
-	Altrep, Language string
+	AltRep, Language string
 	Resources        []string
 }
 
@@ -334,19 +334,19 @@ func (r resources) Validate() bool {
 }
 
 func (r resources) Data() propertyData {
-	params := make(map[string]attributes)
-	if a.AltRep != "" {
-		params[altrepparam] = altrep(a.AltRep)
+	params := make(map[string]attribute)
+	if r.AltRep != "" {
+		params[altrepparam] = altrep(r.AltRep)
 	}
-	if a.Language != "" {
-		params[languageparam] = language(a.Language)
+	if r.Language != "" {
+		params[languageparam] = language(r.Language)
 	}
 	val := make([]byte, 0, 1024)
 	for n, res := range r.Resources {
 		if n > 0 {
 			val = append(val, ',')
 		}
-		val = append(val, encode(res)...)
+		val = append(val, escape(res)...)
 	}
 	return propertyData{
 		Name:   resourcesp,
@@ -413,6 +413,8 @@ func (s status) String() string {
 		return "FINAL"
 	case statusCancelled:
 		return "CANCELLED"
+	default:
+		return "uknown"
 	}
 }
 
@@ -427,7 +429,9 @@ func (s status) Data() propertyData {
 	}
 }
 
-type summary altrepLanguageData
+type summary struct {
+	altrepLanguageData
+}
 
 func (p *parser) readSummaryProperty() (property, error) {
 	a, err := p.readAltrepLanguageData()
@@ -438,5 +442,5 @@ func (p *parser) readSummaryProperty() (property, error) {
 }
 
 func (s summary) Data() propertyData {
-	return c.data(summaryp)
+	return s.data(summaryp)
 }

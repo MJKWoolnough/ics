@@ -17,7 +17,7 @@ type FreeBusy struct {
 	URL           url
 	Attendees     []attendee
 	Comments      []comment
-	FreeBusy      []freeBusy
+	FreeBusy      []freeBusyTime
 	RequestStatus []requestStatus
 }
 
@@ -69,7 +69,7 @@ func (c *Calendar) decodeFreeBusy(d Decoder) error {
 			f.Attendees = append(f.Attendees, p)
 		case comment:
 			f.Comments = append(f.Comments, p)
-		case freeBusy:
+		case freeBusyTime:
 			f.FreeBusy = append(f.FreeBusy, p)
 		case requestStatus:
 			f.RequestStatus = append(f.RequestStatus, p)

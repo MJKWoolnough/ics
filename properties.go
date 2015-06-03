@@ -109,7 +109,7 @@ func (e end) Validate() bool {
 func (e end) Data() propertyData {
 	return propertyData{
 		Name:  endp,
-		Value: string(b),
+		Value: string(e),
 	}
 }
 
@@ -200,6 +200,10 @@ func (p *parser) readUnknownProperty(name string) (property, error) {
 	}, err
 }
 
+func (p propertyData) Validate() bool {
+	return true
+}
+
 func (p propertyData) Bytes() []byte {
 	var buf bytes.Buffer
 	buf.WriteString(p.Name)
@@ -214,8 +218,12 @@ func (p propertyData) Bytes() []byte {
 	return buf.Bytes()
 }
 
+func (p propertyData) Data() propertyData {
+	return p
+}
+
 type altrepLanguageData struct {
-	AltRep, Language, Data string
+	AltRep, Language, String string
 }
 
 func (p *parser) readAltrepLanguageData() (altrepLanguageData, error) {
@@ -246,7 +254,7 @@ func (a altrepLanguageData) Validate() bool {
 }
 
 func (a altrepLanguageData) data(name string) propertyData {
-	params := make(map[string]attributes)
+	params := make(map[string]attribute)
 	if a.AltRep != "" {
 		params[altrepparam] = altrep(a.AltRep)
 	}
@@ -256,7 +264,7 @@ func (a altrepLanguageData) data(name string) propertyData {
 	return propertyData{
 		Name:   name,
 		Params: params,
-		Value:  a.Data,
+		Value:  a.String,
 	}
 }
 

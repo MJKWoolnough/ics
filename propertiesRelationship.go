@@ -233,7 +233,7 @@ func (r recurrenceID) Data() propertyData {
 	} else if r.DateTime.Location() != time.UTC {
 		params[tzidparam] = timezoneID(r.DateTime.Location().String())
 	}
-	params[rangeParam] = r.Range
+	params[rangeparam] = r.Range
 	return propertyData{
 		Name:   recuridp,
 		Params: params,

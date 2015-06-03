@@ -81,7 +81,7 @@ func dateTimeOrTimeData(name string, d dateTime) propertyData {
 		params[valuetypeparam] = valueDate
 	}
 	if d.Location() != time.UTC {
-		params[tzidparam] = d.Location().String()
+		params[tzidparam] = timezoneID(d.Location().String())
 	}
 	return propertyData{
 		Name:   name,
@@ -102,7 +102,7 @@ func (d dateTimeEnd) Validate() bool {
 	return true
 }
 
-func (d dateTimeEnd) Date() propertyData {
+func (d dateTimeEnd) Data() propertyData {
 	return dateTimeOrTimeData(dtendp, d.dateTime)
 }
 

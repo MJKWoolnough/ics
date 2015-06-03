@@ -25,7 +25,7 @@ func (p *parser) readCreatedProperty() (property, error) {
 }
 
 func (c created) Validate() bool {
-	return c.Location == time.UTC
+	return c.Location() == time.UTC
 }
 
 func (c created) Data() propertyData {
@@ -56,7 +56,7 @@ func (p *parser) readDateStampProperty() (property, error) {
 }
 
 func (d dateStamp) Validate() bool {
-	return d.Location == time.UTC
+	return d.Location() == time.UTC
 }
 
 func (d dateStamp) Data() propertyData {
@@ -87,7 +87,7 @@ func (p *parser) readLastModifiedProperty() (property, error) {
 }
 
 func (l lastModified) Validate() bool {
-	return l.Location == time.UTC
+	return l.Location() == time.UTC
 }
 
 func (l lastModified) Data() propertyData {
@@ -119,7 +119,7 @@ func (s sequence) Validate() bool {
 }
 
 func (s sequence) Data() propertyData {
-	return propertData{
+	return propertyData{
 		Name:  seqp,
 		Value: strconv.Itoa(int(s)),
 	}

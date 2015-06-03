@@ -26,7 +26,7 @@ const (
 )
 
 type attribute interface {
-	Bytes() string
+	Bytes() []byte
 	String() string
 }
 
@@ -169,7 +169,7 @@ func (d delegatee) Bytes() []byte {
 		}
 		ds = append(ds, dquote(escape6868(dg))...)
 	}
-	return string(ds)
+	return ds
 }
 
 func (d delegatee) String() string {
