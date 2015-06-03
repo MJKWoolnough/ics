@@ -64,29 +64,63 @@ func (p *parser) readAttendeeProperty() (property, error) {
 	return a, nil
 }
 
-type contact altrepLanguageData
+func (a attendee) Validate() bool {
+	return a.CalendarUserType >= cuIndividual && a.CalendarUserType <= cuUnknown && a.ParticipationStatus >= psNeedsAction && a.ParticipationStatus <= psInProgress
+}
+
+func (a attendee) Data() propertyData {
+	params := make(map[string]attribute)
+	if a.CalendarUserType != cuUnknown {
+		params[cutypeparam] = a.CalendarUserType
+	}
+	if len(a.Members) > 0 {
+		params[memberparam] = a.Members
+	}
+	if a.Role != prRequiredParticipant {
+		params[roleparam] = a.Role
+	}
+	if a.ParticipationStatus != psNeedsAction {
+		params[partstatparam] = a.ParticipationStatus
+	}
+	if a.RSVP {
+		params[rsvpparam] = a.RSVP
+	}
+	if len(a.Delegatee) > 0 {
+		params[deltoparam] = a.Delegatee
+	}
+	if len(a.Delegator) > 0 {
+		params[delfromparam] = a.Delegator
+	}
+	if a.SentBy != "" {
+		params[sentbyparam] = a.SentBy
+	}
+	if a.DirectoryEntryRef != "" {
+		params[dirparam] = a.DirectoryEntryRef
+	}
+	if a.Language != "" {
+		params[languageparam] = a.Language
+	}
+	return propertyData{
+		Name:   attendeep,
+		Params: params,
+		Value:  string(escape(a.Address)),
+	}
+}
+
+type contact struct {
+	altrepLanguageData
+}
 
 func (p *parser) readContactProperty() (property, error) {
-	as, err := p.readAttributes(altrepparam, languageparam)
+	a, err := p.readAltrepLanguageData()
 	if err != nil {
 		return nil, err
 	}
-	var altRep, languageStr string
-	if alt, ok := as[altrepparam]; ok {
-		altRep = string(alt.(altrep))
-	}
-	if l, ok := as[languageparam]; ok {
-		languageStr = string(l.(language))
-	}
-	v, err := p.readValue()
-	if err != nil {
-		return nil, err
-	}
-	return contact{
-		altRep,
-		languageStr,
-		string(unescape(v)),
-	}, nil
+	return contact{a}, nil
+}
+
+func (c contact) Data() propertyData {
+	return c.data(contactp)
 }
 
 type organizer struct {
@@ -121,6 +155,31 @@ func (p *parser) readOrganizerProperty() (property, error) {
 		o.Language = pm.(language)
 	}
 	return o, nil
+}
+
+func (o organizer) Validate() bool {
+	return true
+}
+
+func (o organizer) Data() propertyData {
+	params := make(map[string]attribute)
+	if o.CommonName != "" {
+		params[cnparam] = o.CommonName
+	}
+	if o.DirectoryEntryRef != "" {
+		params[dirparam] = o.DirectoryEntryRef
+	}
+	if o.SentBy != "" {
+		params[sentbyparam] = o.SentBy
+	}
+	if o.Language != "" {
+		params[languageparam] = o.Language
+	}
+	return propertyData{
+		Name:   organizerp,
+		Params: params,
+		Value:  string(escape(o.Name)),
+	}
 }
 
 type recurrenceID struct {
@@ -163,6 +222,25 @@ func (p *parser) readRecurrenceIDProperty() (property, error) {
 	return r, nil
 }
 
+func (r recurrenceID) Validate() bool {
+	return r.Range == rngThisAndFuture || r.Range == rngThisAndPrior
+}
+
+func (r recurrenceID) Data() propertyData {
+	params := make(map[string]attribute)
+	if r.JustDate {
+		params[valuetypeparam] = valueDate
+	} else if r.DateTime.Location() != time.UTC {
+		params[tzidparam] = timezoneID(r.DateTime.Location().String())
+	}
+	params[rangeParam] = r.Range
+	return propertyData{
+		Name:   recuridp,
+		Params: params,
+		Value:  r.DateTime.String(),
+	}
+}
+
 type relatedTo struct {
 	RelationshipType relationshipType
 	Value            string
@@ -184,6 +262,22 @@ func (p *parser) readRelatedToProperty() (property, error) {
 	return r, nil
 }
 
+func (r relatedTo) Validate() bool {
+	return r.RelationshipType >= rtParent && r.RelationshipType <= rtSibling
+}
+
+func (r relatedTo) Data() propertyData {
+	params := make(map[string]attribute)
+	if r.RelationshipType != rtParent {
+		params[reltypeparam] = r.RelationshipType
+	}
+	return propertyData{
+		Name:   relatedp,
+		Params: params,
+		Value:  r.Value,
+	}
+}
+
 type url string
 
 func (p *parser) readURLProperty() (property, error) {
@@ -194,6 +288,17 @@ func (p *parser) readURLProperty() (property, error) {
 	return url(v), nil
 }
 
+func (u url) Validate() bool {
+	return true
+}
+
+func (u url) Data() propertyData {
+	return propertyData{
+		Name:  uidp,
+		Value: string(u),
+	}
+}
+
 type uid string
 
 func (p *parser) readUIDProperty() (property, error) {
@@ -202,4 +307,15 @@ func (p *parser) readUIDProperty() (property, error) {
 		return nil, err
 	}
 	return uid(v), nil
+}
+
+func (u uid) Validate() bool {
+	return true
+}
+
+func (u uid) Data() propertyData {
+	return propertyData{
+		Name:  uidp,
+		Value: string(u),
+	}
 }
