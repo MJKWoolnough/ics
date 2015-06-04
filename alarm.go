@@ -9,6 +9,7 @@ import (
 const vAlarm = "VALARM"
 
 type Alarm interface {
+	alarmData() []property
 }
 
 func (c *Calendar) decodeAlarm(d Decoder) (Alarm, error) {
@@ -99,6 +100,10 @@ func (a *AudioAlarm) decode(ps []property) error {
 	return nil
 }
 
+func (a AudioAlarm) alarmData() []property {
+	return nil
+}
+
 type DisplayAlarm struct {
 	Description description
 	Trigger     trigger
@@ -135,6 +140,10 @@ func (d *DisplayAlarm) decode(ps []property) error {
 	if !bm.Get(0) || !bm.Get(1) || bm.Get(2) != bm.Get(3) {
 		return ErrRequiredMissing
 	}
+	return nil
+}
+
+func (d DisplayAlarm) alarmData() []property {
 	return nil
 }
 
@@ -187,5 +196,9 @@ func (e *EmailAlarm) decode(ps []property) error {
 	if !bm.Get(0) || !bm.Get(1) || !bm.Get(2) || !bm.Get(3) || bm.Get(4) != bm.Get(5) || !bm.Get(6) {
 		return ErrRequiredMissing
 	}
+	return nil
+}
+
+func (e EmailAlarm) alarmData() []property {
 	return nil
 }
