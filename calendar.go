@@ -92,32 +92,30 @@ func (c *Calendar) decode(d Decoder) error {
 }
 
 func (c *Calendar) encode(e Encoder) error {
-	be := propertyData{
-		"BEGIN",
-		nil,
-		vCalendar,
-	}
-	err := e.writeLine(be.Bytes())
+	err := e.writeLine(begin(vCalendar).Data().Bytes())
 	if err != nil {
 		return err
 	}
-	if err = c.encodeTimezones(e); err != nil {
+	err = e.writeLine(productID(c.ProductID).Data().Bytes())
+	if err != nil {
 		return err
 	}
-	if err = c.encodeEvents(e); err != nil {
+	err = e.writeLine((version{"2.0", "2.0"}).Data().Bytes())
+	if err != nil {
 		return err
 	}
-	if err = c.encodeFreeBusys(e); err != nil {
-		return err
+	for _, getData := range []func() []property{c.timezoneData, c.eventData, c.freeBusyData, c.todoData} {
+		for _, data := range getData() {
+			if !data.Validate() {
+				return ErrInvalidProperty
+			}
+			err = e.writeLine(data.Data().Bytes())
+			if err != nil {
+				return err
+			}
+		}
 	}
-	if err = c.encodeJournals(e); err != nil {
-		return err
-	}
-	if err = c.encodeTodos(e); err != nil {
-		return err
-	}
-	be.Name = "END"
-	err = e.writeLine(be.Bytes())
+	err = e.writeLine(end(vCalendar).Data().Bytes())
 	if err != nil {
 		return err
 	}
@@ -129,4 +127,5 @@ func (c *Calendar) encode(e Encoder) error {
 var (
 	ErrUnsupportedCalendar = errors.New("unsupported calendar")
 	ErrUnsupportedVersion  = errors.New("unsupported ics version")
+	ErrInvalidProperty     = errors.New("invalid property data")
 )
