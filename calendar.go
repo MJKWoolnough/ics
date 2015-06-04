@@ -101,7 +101,7 @@ func (c *Calendar) encode(e Encoder) error {
 	if err != nil {
 		return err
 	}
-	/*if err = c.encodeTimezones(e); err != nil {
+	if err = c.encodeTimezones(e); err != nil {
 		return err
 	}
 	if err = c.encodeEvents(e); err != nil {
@@ -115,7 +115,7 @@ func (c *Calendar) encode(e Encoder) error {
 	}
 	if err = c.encodeTodos(e); err != nil {
 		return err
-	}*/
+	}
 	be.Name = "END"
 	err = e.writeLine(be.Bytes())
 	if err != nil {
