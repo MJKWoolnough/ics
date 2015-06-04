@@ -142,3 +142,7 @@ func (t *TimezoneData) decode(d Decoder) error {
 		}
 	}
 }
+
+func (c *Calendar) encodeTimezones(e Encoder) error {
+	return nil
+}

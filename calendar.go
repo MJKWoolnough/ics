@@ -91,6 +91,39 @@ func (c *Calendar) decode(d Decoder) error {
 	}
 }
 
+func (c *Calendar) encode(e Encoder) error {
+	be := propertyData{
+		"BEGIN",
+		nil,
+		vCalendar,
+	}
+	err := e.writeLine(be.Bytes())
+	if err != nil {
+		return err
+	}
+	/*if err = c.encodeTimezones(e); err != nil {
+		return err
+	}
+	if err = c.encodeEvents(e); err != nil {
+		return err
+	}
+	if err = c.encodeFreeBusys(e); err != nil {
+		return err
+	}
+	if err = c.encodeJournals(e); err != nil {
+		return err
+	}
+	if err = c.encodeTodos(e); err != nil {
+		return err
+	}*/
+	be.Name = "END"
+	err = e.writeLine(be.Bytes())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // Errors
 
 var (

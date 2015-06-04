@@ -145,3 +145,7 @@ func (c *Calendar) decodeJournal(d Decoder) error {
 	}
 	return nil
 }
+
+func (c *Calendar) encodeJournals(e Encoder) error {
+	return nil
+}

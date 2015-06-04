@@ -200,3 +200,7 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 	}
 	return nil
 }
+
+func (c *Calendar) encodeTodos(e Encoder) error {
+	return nil
+}

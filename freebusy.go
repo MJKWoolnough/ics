@@ -90,3 +90,7 @@ func (c *Calendar) decodeFreeBusy(d Decoder) error {
 	}
 	return nil
 }
+
+func (c *Calendar) encodeFreeBusys(e Encoder) error {
+	return nil
+}
