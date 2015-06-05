@@ -144,5 +144,5 @@ func (t *TimezoneData) decode(d Decoder) error {
 }
 
 func (c *Calendar) timezoneData() []property {
-	return nil
+	return []property{}
 }

@@ -1,6 +1,7 @@
 package ics
 
 import (
+	"math"
 	"time"
 
 	"github.com/MJKWoolnough/bitmask"
@@ -11,8 +12,8 @@ const vEvent = "VEVENT"
 type Event struct {
 	LastModified, Created time.Time
 	UID                   string
-	Start                 dateTime
-	class                 class
+	Start                 dateTimeStart
+	Class                 class
 	Description           description
 	Geo                   geo
 	Location              location
@@ -25,8 +26,8 @@ type Event struct {
 	URL                   url
 	RecurrenceID          recurrenceID
 	RecurrenceRule        recurrenceRule
-	End                   dateTime
-	Duration              time.Duration
+	End                   dateTimeEnd
+	Duration              duration
 	Attachments           []attach
 	Attendees             []attendee
 	Categories            map[string][]string
@@ -43,6 +44,14 @@ type Event struct {
 func (c *Calendar) decodeEvent(d Decoder) error {
 	bm := bitmask.New(19)
 	var e Event
+	e.Geo.Latitude = math.NaN()
+	e.Geo.Longitude = math.NaN()
+	e.Priority = -1
+	e.Class = -1
+	e.TimeTransparency = -1
+	e.Sequence = -1
+	e.Status = -1
+	e.RecurrenceRule.Frequency = -1
 	for {
 		p, err := d.p.GetProperty()
 		if err != nil {
@@ -65,12 +74,12 @@ func (c *Calendar) decodeEvent(d Decoder) error {
 			if !bm.SetIfNot(2, true) {
 				return ErrMultipleUnique
 			}
-			e.Start = p.dateTime
+			e.Start = p
 		case class:
 			if !bm.SetIfNot(3, true) {
 				return ErrMultipleUnique
 			}
-			e.class = p
+			e.Class = p
 		case created:
 			if !bm.SetIfNot(4, true) {
 				return ErrMultipleUnique
@@ -145,7 +154,7 @@ func (c *Calendar) decodeEvent(d Decoder) error {
 			if !bm.SetIfNot(17, true) {
 				return ErrMultipleUnique
 			}
-			e.End = p.dateTime
+			e.End = p
 		case duration:
 			if bm.Get(17) {
 				return ErrInvalidComponentCombination
@@ -153,7 +162,7 @@ func (c *Calendar) decodeEvent(d Decoder) error {
 			if !bm.SetIfNot(18, true) {
 				return ErrMultipleUnique
 			}
-			e.Duration = p.Duration
+			e.Duration = p
 		case attach:
 			e.Attachments = append(e.Attachments, p)
 		case attendee:
@@ -204,5 +213,99 @@ func (c *Calendar) decodeEvent(d Decoder) error {
 }
 
 func (c *Calendar) eventData() []property {
-	return nil
+	data := make([]property, 0, 1024)
+	for _, e := range c.Events {
+		data = append(data, begin(vEvent))
+		data = append(data, dateStamp{dateTime{Time: e.LastModified}}, uid(e.UID))
+		if c.Method == "" || !e.Start.dateTime.IsZero() {
+			data = append(data, e.Start)
+		}
+		if e.Class >= 0 {
+			data = append(data, e.Class)
+		}
+		if !e.Created.IsZero() {
+			data = append(data, created{dateTime{Time: e.Created}})
+		}
+		if e.Description.String != "" {
+			data = append(data, e.Description)
+		}
+		if e.Geo.Latitude == e.Geo.Latitude && e.Geo.Longitude == e.Geo.Longitude {
+			data = append(data, e.Geo)
+		}
+		if e.Location.String != "" {
+			data = append(data, e.Location)
+		}
+		if e.Organizer.Name != "" {
+			data = append(data, e.Organizer)
+		}
+		if e.Priority >= 0 {
+			data = append(data, e.Priority)
+		}
+		if e.Sequence >= 0 {
+			data = append(data, e.Sequence)
+		}
+		if e.Status >= 0 {
+			data = append(data, e.Status)
+		}
+		if e.Summary.String != "" {
+			data = append(data, e.Summary)
+		}
+		if e.TimeTransparency >= 0 {
+			data = append(data, e.TimeTransparency)
+		}
+		if e.URL != "" {
+			data = append(data, e.URL)
+		}
+		if !e.RecurrenceID.DateTime.IsZero() {
+			data = append(data, e.RecurrenceID)
+		}
+		if e.RecurrenceRule.Frequency >= 0 {
+			data = append(data, e.RecurrenceRule)
+		}
+		if !e.End.IsZero() {
+			data = append(data, e.End)
+		} else if e.Duration.Duration > 0 {
+			data = append(data, e.Duration)
+		}
+		for _, p := range e.Attachments {
+			data = append(data, p)
+		}
+		for _, p := range e.Attendees {
+			data = append(data, p)
+		}
+		for l, cs := range e.Categories {
+			data = append(data, categories{
+				Language:   l,
+				Categories: cs,
+			})
+		}
+		for _, p := range e.Comments {
+			data = append(data, p)
+		}
+		for _, p := range e.Contacts {
+			data = append(data, p)
+		}
+		for _, p := range e.ExceptionDates {
+			data = append(data, p)
+		}
+		for _, p := range e.RequestStatus {
+			data = append(data, p)
+		}
+		for _, p := range e.RelatedTo {
+			data = append(data, p)
+		}
+		for _, p := range e.Resources {
+			data = append(data, p)
+		}
+		for _, p := range e.RecurrenceDate {
+			data = append(data, p)
+		}
+		for _, a := range e.Alarms {
+			data = append(data, begin(vAlarm))
+			data = append(data, a.alarmData()...)
+			data = append(data, end(vAlarm))
+		}
+		data = append(data, end(vEvent))
+	}
+	return data
 }
