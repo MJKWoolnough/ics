@@ -1,10 +1,6 @@
 package ics
 
-import (
-	"time"
-
-	"github.com/MJKWoolnough/bitmask"
-)
+import "github.com/MJKWoolnough/bitmask"
 
 const vAlarm = "VALARM"
 
@@ -63,7 +59,7 @@ func (c *Calendar) decodeAlarm(d Decoder) (Alarm, error) {
 
 type AudioAlarm struct {
 	Trigger    trigger
-	Duration   time.Duration
+	Duration   duration
 	Repeat     repeat
 	Attachment attach
 }
@@ -81,7 +77,7 @@ func (a *AudioAlarm) decode(ps []property) error {
 			if !bm.SetIfNot(1, true) {
 				return ErrMultipleUnique
 			}
-			a.Duration = p.Duration
+			a.Duration = p
 		case repeat:
 			if !bm.SetIfNot(2, true) {
 				return ErrMultipleUnique
@@ -101,12 +97,21 @@ func (a *AudioAlarm) decode(ps []property) error {
 }
 
 func (a AudioAlarm) writeAlarmData(e *Encoder) {
+	e.writeProperty(actionAudio)
+	e.writeProperty(a.Trigger)
+	if a.Repeat > 0 {
+		e.writeProperty(a.Duration)
+		e.writeProperty(a.Repeat)
+	}
+	if len(a.Attachment.Bytes) != 0 {
+		e.writeProperty(a.Attachment)
+	}
 }
 
 type DisplayAlarm struct {
 	Description description
 	Trigger     trigger
-	Duration    time.Duration
+	Duration    duration
 	Repeat      repeat
 }
 
@@ -128,7 +133,7 @@ func (d *DisplayAlarm) decode(ps []property) error {
 			if !bm.SetIfNot(2, true) {
 				return ErrMultipleUnique
 			}
-			d.Duration = p.Duration
+			d.Duration = p
 		case repeat:
 			if !bm.SetIfNot(3, true) {
 				return ErrMultipleUnique
@@ -143,6 +148,13 @@ func (d *DisplayAlarm) decode(ps []property) error {
 }
 
 func (d DisplayAlarm) writeAlarmData(e *Encoder) {
+	e.writeProperty(actionDisplay)
+	e.writeProperty(d.Description)
+	e.writeProperty(d.Trigger)
+	if d.Repeat > 0 {
+		e.writeProperty(d.Duration)
+		e.writeProperty(d.Repeat)
+	}
 }
 
 type EmailAlarm struct {
@@ -150,7 +162,7 @@ type EmailAlarm struct {
 	Trigger     trigger
 	Summary     summary
 	Attendee    attendee
-	Duration    time.Duration
+	Duration    duration
 	Repeat      repeat
 	Attachments []attach
 }
@@ -181,7 +193,7 @@ func (e *EmailAlarm) decode(ps []property) error {
 			if !bm.SetIfNot(4, true) {
 				return ErrMultipleUnique
 			}
-			e.Duration = p.Duration
+			e.Duration = p
 		case repeat:
 			if !bm.SetIfNot(5, true) {
 				return ErrMultipleUnique
@@ -198,4 +210,16 @@ func (e *EmailAlarm) decode(ps []property) error {
 }
 
 func (ea EmailAlarm) writeAlarmData(e *Encoder) {
+	e.writeProperty(actionEmail)
+	e.writeProperty(ea.Description)
+	e.writeProperty(ea.Trigger)
+	e.writeProperty(ea.Summary)
+	e.writeProperty(ea.Attendee)
+	if ea.Repeat > 0 {
+		e.writeProperty(ea.Duration)
+		e.writeProperty(ea.Repeat)
+	}
+	for _, a := range ea.Attachments {
+		e.writeProperty(a)
+	}
 }
