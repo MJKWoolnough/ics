@@ -1,7 +1,6 @@
 package ics
 
 import (
-	"bufio"
 	"io"
 	"unicode/utf8"
 )
@@ -15,35 +14,33 @@ var (
 )
 
 type folder struct {
-	bw *bufio.Writer
+	w io.Writer
 }
 
 func newFolder(w io.Writer) folder {
-	return folder{bufio.NewWriter(w)}
+	return folder{w}
 }
 
 func (f folder) writeLine(p []byte) (err error) {
 	pos := 0
+	var utf [5]byte
 	for len(p) > 0 {
 		r, s := utf8.DecodeRune(p)
 		if pos+s > lineLength {
-			f.bw.Write(continuation)
+			f.w.Write(continuation)
 			pos = 1
 		}
-		_, err = f.bw.WriteRune(r)
+		l := utf8.EncodeRune(utf[:], r)
+		_, err = f.w.Write(utf[:l])
 		if err != nil {
 			return err
 		}
 		pos += s
 		p = p[s:]
 	}
-	_, err = f.bw.Write(endLine)
+	_, err = f.w.Write(endLine)
 	if err != nil {
 		return err
 	}
 	return nil
-}
-
-func (f folder) flush() error {
-	return f.bw.Flush()
 }
