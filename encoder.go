@@ -1,21 +1,37 @@
 package ics
 
-import "io"
+import (
+	"errors"
+	"io"
+)
 
 type Encoder struct {
-	folder
+	f   folder
+	err error
 }
 
-func NewEncoder(w io.Writer) Encoder {
-	return Encoder{
-		folder: newFolder(w),
+func NewEncoder(w io.Writer) *Encoder {
+	return &Encoder{
+		f: newFolder(w),
 	}
 }
 
-func (e Encoder) Encode(c *Calendar) error {
-	err := c.encode(e)
-	if err != nil {
-		return err
-	}
-	return e.folder.flush()
+func (e *Encoder) Encode(c *Calendar) error {
+	c.encode(e)
+	return e.err
 }
+
+func (e *Encoder) writeProperty(p property) {
+	if e.err != nil {
+		return
+	}
+	if !p.Validate() {
+		e.err = ErrInvalidProperty
+		return
+	}
+	e.err = e.f.writeLine(p.Data().Bytes())
+}
+
+// Errors
+
+var ErrInvalidProperty = errors.New("property failed to validate")
