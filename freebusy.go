@@ -92,4 +92,37 @@ func (c *Calendar) decodeFreeBusy(d Decoder) error {
 }
 
 func (c *Calendar) writeFreeBusyData(e *Encoder) {
+	for _, f := range c.FreeBusy {
+		e.writeProperty(begin(vFreeBusy))
+		e.writeProperty(dateStamp{dateTime{Time: f.LastModified}})
+		e.writeProperty(uid(f.UID))
+		if f.Contact.String != "" {
+			e.writeProperty(f.Contact)
+		}
+		if !f.Start.IsZero() {
+			e.writeProperty(dateTimeStart{f.Start})
+		}
+		if !f.End.IsZero() {
+			e.writeProperty(dateTimeEnd{f.End})
+		}
+		if f.Organizer.Name != "" {
+			e.writeProperty(f.Organizer)
+		}
+		if f.URL != "" {
+			e.writeProperty(f.URL)
+		}
+		for _, p := range f.Attendees {
+			e.writeProperty(p)
+		}
+		for _, p := range f.Comments {
+			e.writeProperty(p)
+		}
+		for _, p := range f.FreeBusy {
+			e.writeProperty(p)
+		}
+		for _, p := range f.RequestStatus {
+			e.writeProperty(p)
+		}
+		e.writeProperty(end(vFreeBusy))
+	}
 }
