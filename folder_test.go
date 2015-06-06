@@ -27,10 +27,6 @@ func TestFolder(t *testing.T) {
 		if err != nil {
 			t.Errorf("test %d: unexpected error: %s", n+1, err)
 		}
-		err = f.flush()
-		if err != nil {
-			t.Errorf("test %d: unexpected error: %s", n+1, err)
-		}
 		if bytes.Compare(buf.Bytes(), test.output) != 0 {
 			t.Errorf("test %d: expecting: -\n%s\ngot :-\n%s", n+1, test.output, buf.Bytes())
 		}
