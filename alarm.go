@@ -9,7 +9,7 @@ import (
 const vAlarm = "VALARM"
 
 type Alarm interface {
-	alarmData() []property
+	writeAlarmData(*Encoder)
 }
 
 func (c *Calendar) decodeAlarm(d Decoder) (Alarm, error) {
@@ -100,8 +100,7 @@ func (a *AudioAlarm) decode(ps []property) error {
 	return nil
 }
 
-func (a AudioAlarm) alarmData() []property {
-	return nil
+func (a AudioAlarm) writeAlarmData(e *Encoder) {
 }
 
 type DisplayAlarm struct {
@@ -143,8 +142,7 @@ func (d *DisplayAlarm) decode(ps []property) error {
 	return nil
 }
 
-func (d DisplayAlarm) alarmData() []property {
-	return nil
+func (d DisplayAlarm) writeAlarmData(e *Encoder) {
 }
 
 type EmailAlarm struct {
@@ -199,6 +197,5 @@ func (e *EmailAlarm) decode(ps []property) error {
 	return nil
 }
 
-func (e EmailAlarm) alarmData() []property {
-	return nil
+func (ea EmailAlarm) writeAlarmData(e *Encoder) {
 }

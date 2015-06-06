@@ -146,6 +146,5 @@ func (c *Calendar) decodeJournal(d Decoder) error {
 	return nil
 }
 
-func (c *Calendar) journalData() []property {
-	return nil
+func (c *Calendar) writeJournalData(e *Encoder) {
 }

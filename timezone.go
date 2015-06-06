@@ -143,6 +143,5 @@ func (t *TimezoneData) decode(d Decoder) error {
 	}
 }
 
-func (c *Calendar) timezoneData() []property {
-	return []property{}
+func (c *Calendar) writeTimezoneData(e *Encoder) {
 }

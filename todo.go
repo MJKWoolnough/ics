@@ -201,6 +201,5 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 	return nil
 }
 
-func (c *Calendar) todoData() []property {
-	return nil
+func (c *Calendar) writeTodoData(e *Encoder) {
 }

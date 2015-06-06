@@ -91,6 +91,5 @@ func (c *Calendar) decodeFreeBusy(d Decoder) error {
 	return nil
 }
 
-func (c *Calendar) freeBusyData() []property {
-	return nil
+func (c *Calendar) writeFreeBusyData(e *Encoder) {
 }

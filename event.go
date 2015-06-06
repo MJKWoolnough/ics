@@ -212,100 +212,99 @@ func (c *Calendar) decodeEvent(d Decoder) error {
 	return nil
 }
 
-func (c *Calendar) eventData() []property {
-	data := make([]property, 0, 1024)
-	for _, e := range c.Events {
-		data = append(data, begin(vEvent))
-		data = append(data, dateStamp{dateTime{Time: e.LastModified}}, uid(e.UID))
-		if c.Method == "" || !e.Start.dateTime.IsZero() {
-			data = append(data, e.Start)
+func (c *Calendar) writeEventData(e *Encoder) {
+	for _, ev := range c.Events {
+		e.writeProperty(begin(vEvent))
+		e.writeProperty(dateStamp{dateTime{Time: ev.LastModified}})
+		e.writeProperty(uid(ev.UID))
+		if c.Method == "" || !ev.Start.dateTime.IsZero() {
+			e.writeProperty(ev.Start)
 		}
-		if e.Class >= 0 {
-			data = append(data, e.Class)
+		if ev.Class >= 0 {
+			e.writeProperty(ev.Class)
 		}
-		if !e.Created.IsZero() {
-			data = append(data, created{dateTime{Time: e.Created}})
+		if !ev.Created.IsZero() {
+			e.writeProperty(created{dateTime{Time: ev.Created}})
 		}
-		if e.Description.String != "" {
-			data = append(data, e.Description)
+		if ev.Description.String != "" {
+			e.writeProperty(ev.Description)
 		}
-		if e.Geo.Latitude == e.Geo.Latitude && e.Geo.Longitude == e.Geo.Longitude {
-			data = append(data, e.Geo)
+		if ev.Geo.Latitude == ev.Geo.Latitude && ev.Geo.Longitude == ev.Geo.Longitude {
+			e.writeProperty(ev.Geo)
 		}
-		if e.Location.String != "" {
-			data = append(data, e.Location)
+		if ev.Location.String != "" {
+			e.writeProperty(ev.Location)
 		}
-		if e.Organizer.Name != "" {
-			data = append(data, e.Organizer)
+		if ev.Organizer.Name != "" {
+			e.writeProperty(ev.Organizer)
 		}
-		if e.Priority >= 0 {
-			data = append(data, e.Priority)
+		if ev.Priority >= 0 {
+			e.writeProperty(ev.Priority)
 		}
-		if e.Sequence >= 0 {
-			data = append(data, e.Sequence)
+		if ev.Sequence >= 0 {
+			e.writeProperty(ev.Sequence)
 		}
-		if e.Status >= 0 {
-			data = append(data, e.Status)
+		if ev.Status >= 0 {
+			e.writeProperty(ev.Status)
 		}
-		if e.Summary.String != "" {
-			data = append(data, e.Summary)
+		if ev.Summary.String != "" {
+			e.writeProperty(ev.Summary)
 		}
-		if e.TimeTransparency >= 0 {
-			data = append(data, e.TimeTransparency)
+		if ev.TimeTransparency >= 0 {
+			e.writeProperty(ev.TimeTransparency)
 		}
-		if e.URL != "" {
-			data = append(data, e.URL)
+		if ev.URL != "" {
+			e.writeProperty(ev.URL)
 		}
-		if !e.RecurrenceID.DateTime.IsZero() {
-			data = append(data, e.RecurrenceID)
+		if !ev.RecurrenceID.DateTime.IsZero() {
+			e.writeProperty(ev.RecurrenceID)
 		}
-		if e.RecurrenceRule.Frequency >= 0 {
-			data = append(data, e.RecurrenceRule)
+		if ev.RecurrenceRule.Frequency >= 0 {
+			e.writeProperty(ev.RecurrenceRule)
 		}
-		if !e.End.IsZero() {
-			data = append(data, e.End)
-		} else if e.Duration.Duration > 0 {
-			data = append(data, e.Duration)
+		if !ev.End.IsZero() {
+			e.writeProperty(ev.End)
+		} else if ev.Duration.Duration > 0 {
+			e.writeProperty(ev.Duration)
 		}
-		for _, p := range e.Attachments {
-			data = append(data, p)
+		for _, p := range ev.Attachments {
+			e.writeProperty(p)
 		}
-		for _, p := range e.Attendees {
-			data = append(data, p)
+		for _, p := range ev.Attendees {
+			e.writeProperty(p)
 		}
-		for l, cs := range e.Categories {
-			data = append(data, categories{
+		for l, cs := range ev.Categories {
+			e.writeProperty(categories{
 				Language:   l,
 				Categories: cs,
 			})
 		}
-		for _, p := range e.Comments {
-			data = append(data, p)
+		for _, p := range ev.Comments {
+			e.writeProperty(p)
 		}
-		for _, p := range e.Contacts {
-			data = append(data, p)
+		for _, p := range ev.Contacts {
+			e.writeProperty(p)
 		}
-		for _, p := range e.ExceptionDates {
-			data = append(data, p)
+		for _, p := range ev.ExceptionDates {
+			e.writeProperty(p)
 		}
-		for _, p := range e.RequestStatus {
-			data = append(data, p)
+		for _, p := range ev.RequestStatus {
+			e.writeProperty(p)
 		}
-		for _, p := range e.RelatedTo {
-			data = append(data, p)
+		for _, p := range ev.RelatedTo {
+			e.writeProperty(p)
 		}
-		for _, p := range e.Resources {
-			data = append(data, p)
+		for _, p := range ev.Resources {
+			e.writeProperty(p)
 		}
-		for _, p := range e.RecurrenceDate {
-			data = append(data, p)
+		for _, p := range ev.RecurrenceDate {
+			e.writeProperty(p)
 		}
-		for _, a := range e.Alarms {
-			data = append(data, begin(vAlarm))
-			data = append(data, a.alarmData()...)
-			data = append(data, end(vAlarm))
+		for _, a := range ev.Alarms {
+			e.writeProperty(begin(vAlarm))
+			a.writeAlarmData(e)
+			e.writeProperty(end(vAlarm))
 		}
-		data = append(data, end(vEvent))
+		e.writeProperty(end(vEvent))
 	}
-	return data
 }
