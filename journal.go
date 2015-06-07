@@ -32,13 +32,18 @@ type Journal struct {
 	RequestStatus         []requestStatus
 }
 
-func (c *Calendar) decodeJournal(d Decoder) error {
-	bm := bitmask.New(12)
+func NewJournal() Journal {
 	var j Journal
 	j.Class = -1
 	j.Sequence = -1
 	j.Status = -1
 	j.RecurrenceRule.Frequency = -1
+	return j
+}
+
+func (c *Calendar) decodeJournal(d Decoder) error {
+	bm := bitmask.New(12)
+	j := NewJournal()
 	for {
 		p, err := d.p.GetProperty()
 		if err != nil {

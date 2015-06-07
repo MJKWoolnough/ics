@@ -40,8 +40,7 @@ type Todo struct {
 	RecurrenceDates    []recurrenceDate
 }
 
-func (c *Calendar) decodeTodo(d Decoder) error {
-	bm := bitmask.New(20)
+func NewTodo() Todo {
 	var t Todo
 	t.Geo.Latitude = math.NaN()
 	t.Geo.Longitude = math.NaN()
@@ -49,6 +48,12 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 	t.Sequence = -1
 	t.Status = -1
 	t.RecurrenceRule.Frequency = -1
+	return t
+}
+
+func (c *Calendar) decodeTodo(d Decoder) error {
+	bm := bitmask.New(20)
+	t := NewTodo()
 	for {
 		p, err := d.p.GetProperty()
 		if err != nil {

@@ -41,8 +41,7 @@ type Event struct {
 	Alarms                []Alarm
 }
 
-func (c *Calendar) decodeEvent(d Decoder) error {
-	bm := bitmask.New(19)
+func NewEvent() Event {
 	var e Event
 	e.Geo.Latitude = math.NaN()
 	e.Geo.Longitude = math.NaN()
@@ -52,6 +51,12 @@ func (c *Calendar) decodeEvent(d Decoder) error {
 	e.Sequence = -1
 	e.Status = -1
 	e.RecurrenceRule.Frequency = -1
+	return e
+}
+
+func (c *Calendar) decodeEvent(d Decoder) error {
+	bm := bitmask.New(19)
+	e := NewEvent()
 	for {
 		p, err := d.p.GetProperty()
 		if err != nil {
