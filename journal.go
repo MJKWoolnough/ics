@@ -35,6 +35,10 @@ type Journal struct {
 func (c *Calendar) decodeJournal(d Decoder) error {
 	bm := bitmask.New(12)
 	var j Journal
+	j.Class = -1
+	j.Sequence = -1
+	j.Status = -1
+	j.RecurrenceRule.Frequency = -1
 	for {
 		p, err := d.p.GetProperty()
 		if err != nil {
@@ -147,4 +151,73 @@ func (c *Calendar) decodeJournal(d Decoder) error {
 }
 
 func (c *Calendar) writeJournalData(e *Encoder) {
+	for _, j := range c.Journals {
+		e.writeProperty(begin(vJournal))
+		e.writeProperty(dateStamp{dateTime{Time: j.LastModified}})
+		e.writeProperty(uid(j.UID))
+		if j.Class >= 0 {
+			e.writeProperty(j.Class)
+		}
+		if !j.Created.IsZero() {
+			e.writeProperty(created{dateTime{Time: j.Created}})
+		}
+		if !j.Start.IsZero() {
+			e.writeProperty(dateTimeStart{j.Start})
+		}
+		if j.Organizer.Name != "" {
+			e.writeProperty(j.Organizer)
+		}
+		if !j.RecurrenceID.DateTime.IsZero() {
+			e.writeProperty(j.RecurrenceID)
+		}
+		if j.Sequence >= 0 {
+			e.writeProperty(j.Sequence)
+		}
+		if j.Status >= 0 {
+			e.writeProperty(j.Status)
+		}
+		if j.Summary.String != "" {
+			e.writeProperty(j.Summary)
+		}
+		if j.URL != "" {
+			e.writeProperty(j.URL)
+		}
+		if j.RecurrenceRule.Frequency != -1 {
+			e.writeProperty(j.RecurrenceRule)
+		}
+		for _, p := range j.Attachments {
+			e.writeProperty(p)
+		}
+		for _, p := range j.Attendees {
+			e.writeProperty(p)
+		}
+		for l, cs := range j.Categories {
+			e.writeProperty(categories{
+				Language:   l,
+				Categories: cs,
+			})
+		}
+		for _, p := range j.Comments {
+			e.writeProperty(p)
+		}
+		for _, p := range j.Contacts {
+			e.writeProperty(p)
+		}
+		for _, p := range j.Descriptions {
+			e.writeProperty(p)
+		}
+		for _, p := range j.ExceptionDates {
+			e.writeProperty(p)
+		}
+		for _, p := range j.RelatedTo {
+			e.writeProperty(p)
+		}
+		for _, p := range j.RecurrenceDates {
+			e.writeProperty(p)
+		}
+		for _, p := range j.RequestStatus {
+			e.writeProperty(p)
+		}
+		e.writeProperty(end(vJournal))
+	}
 }
