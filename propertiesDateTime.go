@@ -80,7 +80,7 @@ func dateTimeOrTimeData(name string, d dateTime) propertyData {
 	if d.justDate {
 		params[valuetypeparam] = valueDate
 	}
-	if d.Location() != time.UTC {
+	if l := d.Location(); l != time.UTC && l != time.Local {
 		params[tzidparam] = timezoneID(d.Location().String())
 	}
 	return propertyData{
