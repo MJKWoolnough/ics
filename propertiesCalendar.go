@@ -88,13 +88,13 @@ func (v version) Validate() bool {
 
 func (v version) Data() propertyData {
 	var val string
-	if v.Min != v.Max {
-		val = v.Min
+	if v.Min == v.Max {
+		val = string(escape(v.Min))
 	} else {
-		val = v.Min + ";" + v.Max
+		val = string(escape(v.Min)) + ";" + string(escape(v.Max))
 	}
 	return propertyData{
 		Name:  versionp,
-		Value: string(escape(val)),
+		Value: string(val),
 	}
 }
