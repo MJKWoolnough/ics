@@ -1,6 +1,7 @@
 package ics
 
 import (
+	"math"
 	"time"
 
 	"github.com/MJKWoolnough/bitmask"
@@ -15,7 +16,7 @@ type Todo struct {
 	Completed, Created time.Time
 	Description        description
 	Start, End         dateTime
-	Duration           time.Duration
+	Duration           duration
 	Geo                geo
 	Location           location
 	Organizer          organizer
@@ -42,6 +43,12 @@ type Todo struct {
 func (c *Calendar) decodeTodo(d Decoder) error {
 	bm := bitmask.New(20)
 	var t Todo
+	t.Geo.Latitude = math.NaN()
+	t.Geo.Longitude = math.NaN()
+	t.Class = -1
+	t.Sequence = -1
+	t.Status = -1
+	t.RecurrenceRule.Frequency = -1
 	for {
 		p, err := d.p.GetProperty()
 		if err != nil {
@@ -155,7 +162,7 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 			if bm.SetIfNot(19, true) {
 				return ErrMultipleUnique
 			}
-			t.Duration = p.Duration
+			t.Duration = p
 		case attach:
 			t.Attachments = append(t.Attachments, p)
 		case attendee:
@@ -189,10 +196,11 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 			if p != vTodo {
 				return ErrInvalidEnd
 			}
-			for i := 0; i < 17; i++ {
-				if !bm.Get(i) {
-					return ErrRequiredMissing
-				}
+			if !bm.Get(0) || !bm.Get(1) {
+				return ErrRequiredMissing
+			}
+			if bm.Get(6) != bm.Get(19) {
+				return ErrInvalidComponentCombination
 			}
 			c.Todo = append(c.Todo, t)
 			return nil
@@ -202,4 +210,99 @@ func (c *Calendar) decodeTodo(d Decoder) error {
 }
 
 func (c *Calendar) writeTodoData(e *Encoder) {
+	for _, t := range c.Todo {
+		e.writeProperty(begin(vTodo))
+		e.writeProperty(dateStamp{dateTime{Time: t.LastModified}})
+		e.writeProperty(uid(t.UID))
+		if t.Class >= 0 {
+			e.writeProperty(t.Class)
+		}
+		if !t.Completed.IsZero() {
+			e.writeProperty(completed{dateTime{Time: t.Completed}})
+		}
+		if !t.Created.IsZero() {
+			e.writeProperty(created{dateTime{Time: t.Completed}})
+		}
+		if t.Description.String != "" {
+			e.writeProperty(t.Description)
+		}
+		if !t.Start.IsZero() {
+			e.writeProperty(dateTimeStart{t.Start})
+		}
+		if t.Geo.Latitude == t.Geo.Latitude && t.Geo.Longitude == t.Geo.Longitude {
+			e.writeProperty(t.Geo)
+		}
+		if !t.LastModified.IsZero() {
+			e.writeProperty(lastModified{dateTime{Time: t.LastModified}})
+		}
+		if t.Location.String != "" {
+			e.writeProperty(t.Location)
+		}
+		if t.Organizer.Name != "" {
+			e.writeProperty(t.Organizer)
+		}
+		if t.PercentComplete > 0 {
+			e.writeProperty(t.PercentComplete)
+		}
+		if t.Priority > 0 {
+			e.writeProperty(t.Priority)
+		}
+		if !t.RecurrenceID.DateTime.IsZero() {
+			e.writeProperty(t.RecurrenceID)
+		}
+		if t.Sequence >= 0 {
+			e.writeProperty(t.Sequence)
+		}
+		if t.Status >= 0 {
+			e.writeProperty(t.Status)
+		}
+		if t.Summary.String != "" {
+			e.writeProperty(t.Summary)
+		}
+		if t.URL != "" {
+			e.writeProperty(t.URL)
+		}
+		if t.RecurrenceRule.Frequency >= 0 {
+			e.writeProperty(t.RecurrenceRule)
+		}
+		if !t.End.IsZero() {
+			e.writeProperty(dateTimeDue{t.End})
+		} else if !t.Start.IsZero() && t.Duration.Duration != 0 {
+			e.writeProperty(t.Duration)
+		}
+		for _, p := range t.Attachments {
+			e.writeProperty(p)
+		}
+		for _, p := range t.Attendees {
+			e.writeProperty(p)
+		}
+		for l, cs := range t.Categories {
+			e.writeProperty(categories{
+				Language:   l,
+				Categories: cs,
+			})
+		}
+		for _, p := range t.Comments {
+			e.writeProperty(p)
+		}
+		for _, p := range t.Contacts {
+			e.writeProperty(p)
+		}
+		for _, p := range t.ExceptionDates {
+			e.writeProperty(p)
+		}
+		for _, p := range t.RequestStatuses {
+			e.writeProperty(p)
+		}
+		for _, p := range t.RelatedTo {
+			e.writeProperty(p)
+		}
+		for _, p := range t.Resources {
+			e.writeProperty(p)
+		}
+		for _, p := range t.RecurrenceDates {
+			e.writeProperty(p)
+		}
+		e.writeProperty(end(vTodo))
+	}
 }
