@@ -95,6 +95,9 @@ func (c *Calendar) encode(e *Encoder) {
 	e.writeProperty(begin(vCalendar))
 	e.writeProperty(productID(c.ProductID))
 	e.writeProperty(version{"2.0", "2.0"})
+	if c.Method != "" {
+		e.writeProperty(method(c.Method))
+	}
 	c.writeTimezoneData(e)
 	c.writeEventData(e)
 	c.writeFreeBusyData(e)
