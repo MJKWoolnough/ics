@@ -107,7 +107,7 @@ func (d dateTimeEnd) Data() propertyData {
 }
 
 type dateTimeDue struct {
-	dateTime dateTime
+	dateTime
 }
 
 func (p *parser) readDateTimeDueProperty() (property, error) {
@@ -127,7 +127,7 @@ func (d dateTimeDue) Data() propertyData {
 }
 
 type dateTimeStart struct {
-	dateTime dateTime
+	dateTime
 }
 
 func (p *parser) readDateTimeStartProperty() (property, error) {
