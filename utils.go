@@ -257,6 +257,7 @@ func durationString(d time.Duration) string {
 	toRet := make([]byte, 0, 16)
 	if d < 0 {
 		toRet = append(toRet, '-')
+		d = -d
 	}
 	toRet = append(toRet, 'P')
 	if d%(time.Hour*24*7) == 0 {
