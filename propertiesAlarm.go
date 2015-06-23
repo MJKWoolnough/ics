@@ -136,7 +136,7 @@ func (t trigger) Data() propertyData {
 	}
 	var val string
 	if t.DateTime.IsZero() {
-		val = strconv.FormatInt(int64(t.Duration), 10)
+		val = durationString(t.Duration)
 	} else {
 		params[valuetypeparam] = valueDateTime
 		val = t.DateTime.String()
