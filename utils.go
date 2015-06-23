@@ -134,6 +134,8 @@ func (dt dateTime) String() string {
 	switch dt.Location() {
 	case nil, time.UTC:
 		return dt.Format("20060102T150405Z")
+	case time.Local:
+		return dt.In(time.UTC).Format("20060102T150405")
 	default:
 		return dt.Format("20060102T150405")
 	}
