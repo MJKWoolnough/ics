@@ -123,7 +123,7 @@ func (dt dateTime) AddDate(years, months, days int) dateTime {
 }
 
 func (dt dateTime) In(loc *time.Location) dateTime {
-	dt.Time.In(loc)
+	dt.Time = dt.Time.In(loc)
 	return dt
 }
 
