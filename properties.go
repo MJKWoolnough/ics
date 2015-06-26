@@ -264,7 +264,7 @@ func (a altrepLanguageData) data(name string) propertyData {
 	return propertyData{
 		Name:   name,
 		Params: params,
-		Value:  a.String,
+		Value:  string(escape(a.String)),
 	}
 }
 
