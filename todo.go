@@ -234,7 +234,7 @@ func (c *Calendar) writeTodoData(e *Encoder) {
 		if !t.Start.IsZero() {
 			e.writeProperty(dateTimeStart{t.Start})
 		}
-		if t.Geo.Latitude == t.Geo.Latitude && t.Geo.Longitude == t.Geo.Longitude {
+		if !math.IsNaN(t.Geo.Latitude) && !math.IsNaN(t.Geo.Longitude) {
 			e.writeProperty(t.Geo)
 		}
 		if !t.LastModified.IsZero() {

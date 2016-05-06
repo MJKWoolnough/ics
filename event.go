@@ -234,7 +234,7 @@ func (c *Calendar) writeEventData(e *Encoder) {
 		if ev.Description.String != "" {
 			e.writeProperty(ev.Description)
 		}
-		if ev.Geo.Latitude == ev.Geo.Latitude && ev.Geo.Longitude == ev.Geo.Longitude {
+		if !math.IsNaN(ev.Geo.Latitude) && !math.IsNaN(ev.Geo.Longitude) {
 			e.writeProperty(ev.Geo)
 		}
 		if ev.Location.String != "" {
