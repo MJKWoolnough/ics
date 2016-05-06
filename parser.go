@@ -3,11 +3,13 @@ package ics
 import (
 	"errors"
 	"io"
+
+	readerParser "github.com/MJKWoolnough/parser"
 )
 
 type parser struct {
 	l *lexer
-	t token
+	t readerParser.Token
 }
 
 func newParser(r io.Reader) *parser {
@@ -117,21 +119,21 @@ func (p *parser) GetProperty() (c property, err error) {
 	case rstatusp:
 		return p.readRequestStatusProperty()
 	default:
-		return p.readUnknownProperty(p.t.data)
+		return p.readUnknownProperty(p.t.Data)
 	}
 }
 
 func (p *parser) readName() (string, error) {
-	if p.t.typ != tokenName {
+	if p.t.Type != tokenName {
 		var err error
 		p.t, err = p.l.GetToken()
 		if err != nil {
 			return "", err
-		} else if p.t.typ != tokenName {
+		} else if p.t.Type != tokenName {
 			return "", ErrInvalidToken
 		}
 	}
-	return p.t.data, nil
+	return p.t.Data, nil
 
 }
 
@@ -145,29 +147,29 @@ func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, er
 		all = true
 	}
 	for {
-		if p.t.typ != tokenParamName {
+		if p.t.Type != tokenParamName {
 			p.t, err = p.l.GetToken()
 			if err != nil {
 				return nil, err
 			}
-			if p.t.typ == tokenValue {
+			if p.t.Type == tokenValue {
 				return as, nil
 			}
 		}
 		pt := p.t
-		vs := make([]token, 0, 1)
+		vs := make([]readerParser.Token, 0, 1)
 		for {
 			t, err := p.l.GetToken()
 			if err != nil {
 				return nil, err
 			}
-			if t.typ != tokenParamValue && t.typ != tokenParamQValue {
+			if t.Type != tokenParamValue && t.Type != tokenParamQValue {
 				p.t = t
 				break
 			}
 			vs = append(vs, t)
 		}
-		switch pt.data {
+		switch pt.Data {
 		case altrepparam:
 			a, err = newAltRepParam(vs)
 		case cnparam:
@@ -215,27 +217,27 @@ func (p *parser) readAttributes(accepted ...string) (as map[string]attribute, er
 			return nil, err
 		}
 		for _, pn := range accepted {
-			if all || pn == pt.data {
-				if _, ok := as[pt.data]; ok {
+			if all || pn == pt.Data {
+				if _, ok := as[pt.Data]; ok {
 					return nil, ErrDuplicateParam
 				}
-				as[pt.data] = a
+				as[pt.Data] = a
 			}
 		}
-		if p.t.typ != tokenParamName {
+		if p.t.Type != tokenParamName {
 			return as, nil
 		}
 	}
 }
 
 func (p *parser) readValue() (v string, err error) {
-	if p.t.typ != tokenValue {
+	if p.t.Type != tokenValue {
 		_, err = p.readAttributes()
-		if err == nil && p.t.typ != tokenValue {
+		if err == nil && p.t.Type != tokenValue {
 			err = ErrInvalidToken
 		}
 	}
-	return p.t.data, err
+	return p.t.Data, err
 }
 
 // Errors

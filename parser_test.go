@@ -15,6 +15,7 @@ func TestParserParts(t *testing.T) {
 	}
 	if n != "NO" {
 		t.Errorf("expecting name %q, got %q", "NO", n)
+		return
 	}
 	val, err := p.readValue()
 	if err != nil {

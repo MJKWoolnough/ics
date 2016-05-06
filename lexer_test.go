@@ -4,21 +4,23 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	readerParser "github.com/MJKWoolnough/parser"
 )
 
 func TestLexer(t *testing.T) {
 	tests := []struct {
 		input  string
-		tokens []token
+		tokens []readerParser.Token
 	}{
 		{"HELLO:World\r\n",
-			[]token{
+			[]readerParser.Token{
 				{tokenName, "HELLO"},
 				{tokenValue, "World"},
 			},
 		},
 		{"BEEP;PN=PV;QN=\"QV\",RV:Value\r\n  Keeps \r\n Going\r\nTestQuoted;ONE=A^nB^^C^';TWO=\"A^nB^^C^'\":\r\n",
-			[]token{
+			[]readerParser.Token{
 				{tokenName, "BEEP"},
 				{tokenParamName, "PN"},
 				{tokenParamValue, "PV"},

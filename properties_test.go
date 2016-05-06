@@ -4,6 +4,8 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+
+	readerParser "github.com/MJKWoolnough/parser"
 )
 
 func propertyTester(t *testing.T, testStr string, tests []property) {
@@ -52,7 +54,7 @@ func TestUnknownproperty(t *testing.T) {
 	propertyTester(t,
 		"SOMECOMP;LANGUAGE=\"FRENCH\";COLA=CHERRY:SomeValue\r\n",
 		[]property{
-			propertyData{Name: "SOMECOMP", Params: map[string]attribute{"LANGUAGE": language("FRENCH"), "COLA": unknownParam{token{tokenParamValue, "CHERRY"}}}, Value: "SomeValue"},
+			propertyData{Name: "SOMECOMP", Params: map[string]attribute{"LANGUAGE": language("FRENCH"), "COLA": unknownParam{readerParser.Token{tokenParamValue, "CHERRY"}}}, Value: "SomeValue"},
 		},
 	)
 }

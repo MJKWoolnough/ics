@@ -1,6 +1,10 @@
 package ics
 
-import "errors"
+import (
+	"errors"
+
+	readerParser "github.com/MJKWoolnough/parser"
+)
 
 const (
 	altrepparam    = "ALTREP"
@@ -32,14 +36,14 @@ type attribute interface {
 
 type altrep string
 
-func newAltRepParam(vs []token) (attribute, error) {
+func newAltRepParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	if vs[0].typ != tokenParamQValue {
+	if vs[0].Type != tokenParamQValue {
 		return nil, ErrIncorrectParamValueType
 	}
-	return altrep(vs[0].data), nil
+	return altrep(vs[0].Data), nil
 }
 
 func (a altrep) Bytes() []byte {
@@ -52,11 +56,11 @@ func (a altrep) String() string {
 
 type commonName string
 
-func newCommonNameParam(vs []token) (attribute, error) {
+func newCommonNameParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	return commonName(vs[0].data), nil
+	return commonName(vs[0].Data), nil
 }
 
 func (c commonName) Bytes() []byte {
@@ -77,11 +81,11 @@ const (
 
 type calendarUserType int
 
-func newCalendarUserTypeParam(vs []token) (attribute, error) {
+func newCalendarUserTypeParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	switch vs[0].data {
+	switch vs[0].Data {
 	case "INDIVIDUAL":
 		return cuIndividual, nil
 	case "GROUP":
@@ -116,16 +120,16 @@ func (c calendarUserType) String() string {
 
 type delegators []string
 
-func newDelegatorsParam(vs []token) (attribute, error) {
+func newDelegatorsParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) == 0 {
 		return nil, ErrIncorrectNumParamValues
 	}
 	d := make(delegators, 0, 1)
 	for _, v := range vs {
-		if v.typ != tokenParamQValue {
+		if v.Type != tokenParamQValue {
 			return nil, ErrIncorrectParamValueType
 		}
-		d = append(d, v.data)
+		d = append(d, v.Data)
 	}
 	return d, nil
 }
@@ -147,16 +151,16 @@ func (d delegators) String() string {
 
 type delegatee []string
 
-func newDelegateeParam(vs []token) (attribute, error) {
+func newDelegateeParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) == 0 {
 		return nil, ErrIncorrectNumParamValues
 	}
 	d := make(delegatee, 0, 1)
 	for _, v := range vs {
-		if v.typ != tokenParamQValue {
+		if v.Type != tokenParamQValue {
 			return nil, ErrIncorrectParamValueType
 		}
-		d = append(d, v.data)
+		d = append(d, v.Data)
 	}
 	return d, nil
 }
@@ -178,14 +182,14 @@ func (d delegatee) String() string {
 
 type directoryEntryRef string
 
-func newDirectoryEntryRefParam(vs []token) (attribute, error) {
+func newDirectoryEntryRefParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	if vs[0].typ != tokenParamQValue {
+	if vs[0].Type != tokenParamQValue {
 		return nil, ErrIncorrectParamValueType
 	}
-	return directoryEntryRef(vs[0].data), nil
+	return directoryEntryRef(vs[0].Data), nil
 }
 
 func (d directoryEntryRef) Bytes() []byte {
@@ -203,11 +207,11 @@ const (
 
 type encoding int
 
-func newEncodingParam(vs []token) (attribute, error) {
+func newEncodingParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	switch vs[0].data {
+	switch vs[0].Data {
 	case "8BIT":
 		return encoding8Bit, nil
 	case "BASE64":
@@ -234,12 +238,12 @@ func (e encoding) String() string {
 
 type fmtType string
 
-func newFmtTypeParam(vs []token) (attribute, error) {
+func newFmtTypeParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
 	//validate value
-	return fmtType(vs[0].data), nil
+	return fmtType(vs[0].Data), nil
 }
 
 func (f fmtType) Bytes() []byte {
@@ -259,11 +263,11 @@ const (
 
 type freeBusy int
 
-func newFreeBusyParam(vs []token) (attribute, error) {
+func newFreeBusyParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	switch vs[0].data {
+	switch vs[0].Data {
 	case "BUSY":
 		return fbBusy, nil
 	case "FREE":
@@ -298,14 +302,14 @@ func (fb freeBusy) String() string {
 
 type language string
 
-func newLanguageParam(vs []token) (attribute, error) {
+func newLanguageParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	if vs[0].typ != tokenParamQValue {
+	if vs[0].Type != tokenParamQValue {
 		return nil, ErrIncorrectParamValueType
 	}
-	return language(vs[0].data), nil
+	return language(vs[0].Data), nil
 }
 
 func (l language) Bytes() []byte {
@@ -318,16 +322,16 @@ func (l language) String() string {
 
 type members []string
 
-func newMemberParam(vs []token) (attribute, error) {
+func newMemberParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) == 0 {
 		return nil, ErrIncorrectNumParamValues
 	}
 	m := make(members, 0, 1)
 	for _, v := range vs {
-		if v.typ != tokenParamQValue {
+		if v.Type != tokenParamQValue {
 			return nil, ErrIncorrectParamValueType
 		}
-		m = append(m, v.data)
+		m = append(m, v.Data)
 	}
 	return m, nil
 }
@@ -359,11 +363,11 @@ const (
 
 type participationStatus int
 
-func newParticipationStatusParam(vs []token) (attribute, error) {
+func newParticipationStatusParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	switch vs[0].data {
+	switch vs[0].Data {
 	case "NEEDS-ACTION":
 		return psNeedsAction, nil
 	case "ACCEPTED":
@@ -442,11 +446,11 @@ const (
 
 type rangeParam int
 
-func newRangeParam(vs []token) (attribute, error) {
+func newRangeParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	switch vs[0].data {
+	switch vs[0].Data {
 	case "THISANDFUTURE":
 		return rngThisAndFuture, nil
 	case "THISANDPRIOR":
@@ -478,11 +482,11 @@ const (
 
 type alarmTriggerRelationship int
 
-func newAlarmTriggerRelationshipParam(vs []token) (attribute, error) {
+func newAlarmTriggerRelationshipParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	switch vs[0].data {
+	switch vs[0].Data {
 	case "START":
 		return atrStart, nil
 	case "END":
@@ -515,11 +519,11 @@ const (
 
 type relationshipType int
 
-func newRelationshipTypeParam(vs []token) (attribute, error) {
+func newRelationshipTypeParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	switch vs[0].data {
+	switch vs[0].Data {
 	case "PARENT":
 		return rtParent, nil
 	case "CHILD":
@@ -557,11 +561,11 @@ const (
 
 type participationRole int
 
-func newParticipationRoleParam(vs []token) (attribute, error) {
+func newParticipationRoleParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	switch vs[0].data {
+	switch vs[0].Data {
 	case "REQ-PARTICIPANT":
 		return prRequiredParticipant, nil
 	case "CHAIR":
@@ -596,11 +600,11 @@ func (p participationRole) String() string {
 
 type rsvp bool
 
-func newRSVPExpectationParam(vs []token) (attribute, error) {
+func newRSVPExpectationParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	switch vs[0].data {
+	switch vs[0].Data {
 	case "TRUE":
 		return rsvp(true), nil
 	case "FALSE":
@@ -624,14 +628,14 @@ func (r rsvp) String() string {
 
 type sentBy string
 
-func newSentByParam(vs []token) (attribute, error) {
+func newSentByParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	if vs[0].typ != tokenParamQValue {
+	if vs[0].Type != tokenParamQValue {
 		return nil, ErrIncorrectParamValueType
 	}
-	return sentBy(vs[0].data), nil
+	return sentBy(vs[0].Data), nil
 }
 
 func (s sentBy) Bytes() []byte {
@@ -644,14 +648,14 @@ func (s sentBy) String() string {
 
 type timezoneID string
 
-func newTimezoneIDParam(vs []token) (attribute, error) {
+func newTimezoneIDParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	if vs[0].typ != tokenParamQValue {
+	if vs[0].Type != tokenParamQValue {
 		return nil, ErrIncorrectParamValueType
 	}
-	return timezoneID(vs[0].data), nil
+	return timezoneID(vs[0].Data), nil
 }
 
 func (t timezoneID) Bytes() []byte {
@@ -681,11 +685,11 @@ const (
 
 type value int
 
-func newValueParam(vs []token) (attribute, error) {
+func newValueParam(vs []readerParser.Token) (attribute, error) {
 	if len(vs) != 1 {
 		return nil, ErrIncorrectNumParamValues
 	}
-	switch vs[0].data {
+	switch vs[0].Data {
 	case "BINARY":
 		return valueBinary, nil
 	case "BOOLEAN":
@@ -758,9 +762,9 @@ func (v value) String() string {
 	}
 }
 
-type unknownParam []token
+type unknownParam []readerParser.Token
 
-func newUnknownParam(vs []token) (attribute, error) {
+func newUnknownParam(vs []readerParser.Token) (attribute, error) {
 	return unknownParam(vs), nil
 }
 
@@ -770,10 +774,10 @@ func (u unknownParam) Bytes() []byte {
 		if n > 0 {
 			toRet = append(toRet, ',')
 		}
-		if uv.typ == tokenParamQValue {
-			toRet = append(toRet, dquote(escape6868(uv.data))...)
+		if uv.Type == tokenParamQValue {
+			toRet = append(toRet, dquote(escape6868(uv.Data))...)
 		} else {
-			toRet = append(toRet, escape6868(uv.data)...)
+			toRet = append(toRet, escape6868(uv.Data)...)
 		}
 	}
 	return toRet
