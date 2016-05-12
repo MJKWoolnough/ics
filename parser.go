@@ -8,7 +8,7 @@ import (
 )
 
 type parser struct {
-	l *lexer
+	l *readerParser.Parser
 	t readerParser.Token
 }
 

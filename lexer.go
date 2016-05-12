@@ -35,25 +35,17 @@ type lexer struct {
 	readerParser.Parser
 }
 
-func newLexer(r io.Reader) *lexer {
-	l := &lexer{
-		Parser: readerParser.NewReaderParser(&unfolder{r: r}),
-	}
-	l.State = l.lexName
-	return l
+func newLexer(r io.Reader) *readerParser.Parser {
+	l := readerParser.New(readerParser.NewReaderTokeniser(&unfolder{r: r}))
+	l.TokeniserState(lexName)
+	return &l
 }
 
-func (l *lexer) GetToken() (readerParser.Token, error) {
-	t, err := l.Parser.GetToken()
-	l.Get()
-	return t, err
-}
-
-func (l *lexer) lexName() (readerParser.Token, readerParser.StateFn) {
+func lexName(l *readerParser.Tokeniser) (readerParser.Token, readerParser.TokenFunc) {
 	l.AcceptRun(ianaTokenChars)
 	t := readerParser.Token{
 		tokenName,
-		strings.ToUpper(l.Get()),
+		strings.ToUpper(l.Lexeme()),
 	}
 	if len(t.Data) == 0 {
 		if l.Err == io.EOF {
@@ -61,34 +53,36 @@ func (l *lexer) lexName() (readerParser.Token, readerParser.StateFn) {
 		}
 		l.Err = ErrNoName
 	} else if l.Accept(paramDelim) {
-		return t, l.lexParamName
+		return t, lexParamName
 	} else if l.Accept(nameValueDelim) {
-		return t, l.lexValue
+		return t, lexValue
 	} else if l.Err == nil {
 		l.Err = ErrInvalidChar
 	}
 	return l.Error()
 }
 
-func (l *lexer) lexParamName() (readerParser.Token, readerParser.StateFn) {
+func lexParamName(l *readerParser.Tokeniser) (readerParser.Token, readerParser.TokenFunc) {
+	l.Lexeme()
 	l.AcceptRun(ianaTokenChars)
 	t := readerParser.Token{
 		tokenParamName,
-		strings.ToUpper(l.Get()),
+		strings.ToUpper(l.Lexeme()),
 	}
 	if len(t.Data) == 0 {
 		l.Err = ErrNoParamName
 	} else if !utf8.ValidString(t.Data) {
 		l.Err = ErrNotUTF8
 	} else if l.Accept(paramValueDelim) {
-		return t, l.lexParamValue
+		return t, lexParamValue
 	} else if l.Err == nil {
 		l.Err = ErrInvalidChar
 	}
 	return l.Error()
 }
 
-func (l *lexer) lexParamValue() (readerParser.Token, readerParser.StateFn) {
+func lexParamValue(l *readerParser.Tokeniser) (readerParser.Token, readerParser.TokenFunc) {
+	l.Lexeme()
 	var t readerParser.Token
 	if l.Accept(dQuote) {
 		l.ExceptRun(invQSafeChars)
@@ -97,28 +91,30 @@ func (l *lexer) lexParamValue() (readerParser.Token, readerParser.StateFn) {
 			return l.Error()
 		}
 		t.Type = tokenParamQValue
-		t.Data = l.Get()
+		t.Data = l.Lexeme()
 		t.Data = string(unescape6868(t.Data[1 : len(t.Data)-1]))
 	} else {
 		l.ExceptRun(invSafeChars)
 		t.Type = tokenParamValue
-		t.Data = string(bytes.ToUpper(unescape6868(l.Get())))
+		t.Data = string(bytes.ToUpper(unescape6868(l.Lexeme())))
 	}
 	if !utf8.ValidString(t.Data) {
 		l.Err = ErrNotUTF8
 	} else if l.Accept(paramMultipleValueDelim) {
-		return t, l.lexParamValue
+		return t, lexParamValue
 	} else if l.Accept(paramDelim) {
-		return t, l.lexParamName
+		return t, lexParamName
 	} else if l.Accept(nameValueDelim) {
-		return t, l.lexValue
+
+		return t, lexValue
 	} else if l.Err == nil {
 		l.Err = ErrInvalidChar
 	}
 	return l.Error()
 }
 
-func (l *lexer) lexValue() (readerParser.Token, readerParser.StateFn) {
+func lexValue(l *readerParser.Tokeniser) (readerParser.Token, readerParser.TokenFunc) {
+	l.Lexeme()
 	l.ExceptRun(invValueChars)
 	if !l.Accept(crlf[:1]) || !l.Accept(crlf[1:]) {
 		if l.Err == nil {
@@ -126,7 +122,7 @@ func (l *lexer) lexValue() (readerParser.Token, readerParser.StateFn) {
 		}
 		return l.Error()
 	}
-	toRet := l.Get()
+	toRet := l.Lexeme()
 	toRet = toRet[:len(toRet)-2]
 	if !utf8.ValidString(toRet) {
 		l.Err = ErrNotUTF8
@@ -135,16 +131,16 @@ func (l *lexer) lexValue() (readerParser.Token, readerParser.StateFn) {
 	return readerParser.Token{
 		tokenValue,
 		toRet,
-	}, l.lexName
+	}, lexName
 }
 
-func (l *lexer) clearLine() (readerParser.Token, readerParser.StateFn) {
+func clearLine(l *readerParser.Tokeniser) (readerParser.Token, readerParser.TokenFunc) {
 	for {
 		l.ExceptRun(crlf[:1])
 		if l.Err != nil {
 			return l.Error()
 		} else if l.Accept(crlf[:1]) && l.Accept(crlf[1:]) {
-			return l.lexName()
+			return lexName(l)
 		}
 	}
 }

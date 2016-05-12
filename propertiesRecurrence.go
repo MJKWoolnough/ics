@@ -317,7 +317,7 @@ func (p *parser) readRecurrenceRuleProperty() (property, error) {
 			}
 			bdSet = true
 			for _, day := range strings.Split(parts[1], ",") {
-				p := strparse.NewStringParser(day)
+				p := strparse.NewStringTokeniser(day)
 				var (
 					neg, num bool
 					n, w     int
@@ -328,14 +328,14 @@ func (p *parser) readRecurrenceRuleProperty() (property, error) {
 				} else if p.Accept("+") {
 					num = true
 				}
-				pos := len(p.Get())
+				pos := len(p.Lexeme())
 				p.AcceptRun("0123456789")
 				if p.Len() == 0 {
 					if num {
 						return nil, ErrUnsupportedValue
 					}
 				} else {
-					numStr := p.Get()
+					numStr := p.Lexeme()
 					pos += len(numStr)
 					n, _ = strconv.Atoi(numStr)
 					if neg {

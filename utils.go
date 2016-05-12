@@ -177,7 +177,7 @@ func parseTime(s string, l *time.Location) (time.Time, error) {
 const nums = "0123456789"
 
 func parseDuration(s string) (time.Duration, error) {
-	p := strparse.NewStringParser(s)
+	p := strparse.NewStringTokeniser(s)
 	var (
 		dur time.Duration
 		neg bool
@@ -190,16 +190,16 @@ func parseDuration(s string) (time.Duration, error) {
 	if !p.Accept("P") {
 		return 0, ErrInvalidDuration
 	}
-	p.Get()
+	p.Lexeme()
 	if !p.Accept("T") {
 		p.AcceptRun(nums)
-		num := p.Get()
+		num := p.Lexeme()
 		if len(num) == 0 {
 			return 0, ErrInvalidDuration
 		}
 		n, _ := strconv.Atoi(num)
 		p.Accept("DW")
-		switch p.Get() {
+		switch p.Lexeme() {
 		case "D":
 			dur = time.Duration(n) * time.Hour * 24
 		case "W":
@@ -208,7 +208,7 @@ func parseDuration(s string) (time.Duration, error) {
 			return 0, ErrInvalidDuration
 		}
 		p.Except("")
-		switch p.Get() {
+		switch p.Lexeme() {
 		case "":
 			if neg {
 				return -dur, nil
@@ -219,13 +219,13 @@ func parseDuration(s string) (time.Duration, error) {
 			return 0, ErrInvalidDuration
 		}
 	} else {
-		p.Get()
+		p.Lexeme()
 	}
 	toRead := "HMS"
 	var readTime bool
 	for len(toRead) > 0 {
 		p.AcceptRun(nums)
-		num := p.Get()
+		num := p.Lexeme()
 		if len(num) == 0 {
 			if !readTime {
 				return 0, ErrInvalidDuration
@@ -234,7 +234,7 @@ func parseDuration(s string) (time.Duration, error) {
 		}
 		n, _ := strconv.Atoi(num)
 		p.Accept(toRead)
-		switch p.Get() {
+		switch p.Lexeme() {
 		case "H":
 			dur += time.Duration(n) * time.Hour
 			toRead = "MS"
