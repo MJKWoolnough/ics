@@ -45,7 +45,7 @@ func lexName(l *readerParser.Tokeniser) (readerParser.Token, readerParser.TokenF
 	l.AcceptRun(ianaTokenChars)
 	t := readerParser.Token{
 		tokenName,
-		strings.ToUpper(l.Lexeme()),
+		strings.ToUpper(l.Get()),
 	}
 	if len(t.Data) == 0 {
 		if l.Err == io.EOF {
@@ -63,11 +63,11 @@ func lexName(l *readerParser.Tokeniser) (readerParser.Token, readerParser.TokenF
 }
 
 func lexParamName(l *readerParser.Tokeniser) (readerParser.Token, readerParser.TokenFunc) {
-	l.Lexeme()
+	l.Get()
 	l.AcceptRun(ianaTokenChars)
 	t := readerParser.Token{
 		tokenParamName,
-		strings.ToUpper(l.Lexeme()),
+		strings.ToUpper(l.Get()),
 	}
 	if len(t.Data) == 0 {
 		l.Err = ErrNoParamName
@@ -82,7 +82,7 @@ func lexParamName(l *readerParser.Tokeniser) (readerParser.Token, readerParser.T
 }
 
 func lexParamValue(l *readerParser.Tokeniser) (readerParser.Token, readerParser.TokenFunc) {
-	l.Lexeme()
+	l.Get()
 	var t readerParser.Token
 	if l.Accept(dQuote) {
 		l.ExceptRun(invQSafeChars)
@@ -91,12 +91,12 @@ func lexParamValue(l *readerParser.Tokeniser) (readerParser.Token, readerParser.
 			return l.Error()
 		}
 		t.Type = tokenParamQValue
-		t.Data = l.Lexeme()
+		t.Data = l.Get()
 		t.Data = string(unescape6868(t.Data[1 : len(t.Data)-1]))
 	} else {
 		l.ExceptRun(invSafeChars)
 		t.Type = tokenParamValue
-		t.Data = string(bytes.ToUpper(unescape6868(l.Lexeme())))
+		t.Data = string(bytes.ToUpper(unescape6868(l.Get())))
 	}
 	if !utf8.ValidString(t.Data) {
 		l.Err = ErrNotUTF8
@@ -114,7 +114,7 @@ func lexParamValue(l *readerParser.Tokeniser) (readerParser.Token, readerParser.
 }
 
 func lexValue(l *readerParser.Tokeniser) (readerParser.Token, readerParser.TokenFunc) {
-	l.Lexeme()
+	l.Get()
 	l.ExceptRun(invValueChars)
 	if !l.Accept(crlf[:1]) || !l.Accept(crlf[1:]) {
 		if l.Err == nil {
@@ -122,7 +122,7 @@ func lexValue(l *readerParser.Tokeniser) (readerParser.Token, readerParser.Token
 		}
 		return l.Error()
 	}
-	toRet := l.Lexeme()
+	toRet := l.Get()
 	toRet = toRet[:len(toRet)-2]
 	if !utf8.ValidString(toRet) {
 		l.Err = ErrNotUTF8

@@ -190,16 +190,16 @@ func parseDuration(s string) (time.Duration, error) {
 	if !p.Accept("P") {
 		return 0, ErrInvalidDuration
 	}
-	p.Lexeme()
+	p.Get()
 	if !p.Accept("T") {
 		p.AcceptRun(nums)
-		num := p.Lexeme()
+		num := p.Get()
 		if len(num) == 0 {
 			return 0, ErrInvalidDuration
 		}
 		n, _ := strconv.Atoi(num)
 		p.Accept("DW")
-		switch p.Lexeme() {
+		switch p.Get() {
 		case "D":
 			dur = time.Duration(n) * time.Hour * 24
 		case "W":
@@ -208,7 +208,7 @@ func parseDuration(s string) (time.Duration, error) {
 			return 0, ErrInvalidDuration
 		}
 		p.Except("")
-		switch p.Lexeme() {
+		switch p.Get() {
 		case "":
 			if neg {
 				return -dur, nil
@@ -219,13 +219,13 @@ func parseDuration(s string) (time.Duration, error) {
 			return 0, ErrInvalidDuration
 		}
 	} else {
-		p.Lexeme()
+		p.Get()
 	}
 	toRead := "HMS"
 	var readTime bool
 	for len(toRead) > 0 {
 		p.AcceptRun(nums)
-		num := p.Lexeme()
+		num := p.Get()
 		if len(num) == 0 {
 			if !readTime {
 				return 0, ErrInvalidDuration
@@ -234,7 +234,7 @@ func parseDuration(s string) (time.Duration, error) {
 		}
 		n, _ := strconv.Atoi(num)
 		p.Accept(toRead)
-		switch p.Lexeme() {
+		switch p.Get() {
 		case "H":
 			dur += time.Duration(n) * time.Hour
 			toRead = "MS"

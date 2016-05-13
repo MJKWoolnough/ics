@@ -328,14 +328,14 @@ func (p *parser) readRecurrenceRuleProperty() (property, error) {
 				} else if p.Accept("+") {
 					num = true
 				}
-				pos := len(p.Lexeme())
+				pos := len(p.Get())
 				p.AcceptRun("0123456789")
 				if p.Len() == 0 {
 					if num {
 						return nil, ErrUnsupportedValue
 					}
 				} else {
-					numStr := p.Lexeme()
+					numStr := p.Get()
 					pos += len(numStr)
 					n, _ = strconv.Atoi(numStr)
 					if neg {
