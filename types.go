@@ -363,7 +363,26 @@ Loop:
 }
 
 func (t *Text) Encode(w io.Writer) {
-
+	d := make([]byte, 0, len(data)+256)
+	for _, c := range *t {
+		switch c {
+		case '\\':
+			d = append(d, '\\', '\\')
+		case '\n':
+			d = append(d, '\\', 'n')
+		case ';':
+			d = append(d, '\\', ';')
+		case ',':
+			d = append(d, '\\', ',')
+		case '^':
+			d = append(d, '^', '^')
+		case '"':
+			d = append(d, '^', '\'')
+		default:
+			d = append(d, c)
+		}
+	}
+	w.Write(d)
 }
 
 type Time struct {
