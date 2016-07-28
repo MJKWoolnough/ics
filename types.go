@@ -347,7 +347,7 @@ Loop:
 			switch c := t.Except(""); c {
 			case 'n':
 				d = append(d, '\n')
-			case '^':
+			case -1, '^':
 				d = append(d, '^')
 			case '\'':
 				d = append(d, '"')
