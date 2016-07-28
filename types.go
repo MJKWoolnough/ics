@@ -272,7 +272,7 @@ func (i *Integer) Decode(params map[string]string, data string) error {
 }
 
 func (i *Integer) Encode(w io.Writer) {
-
+	w.Write([]byte(strconv.FormatInt(int64(*i), 10)))
 }
 
 type Period struct {
