@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/MJKWoolnough/parser"
 )
 
 type Binary []byte
@@ -120,6 +122,69 @@ type Duration struct {
 }
 
 func (d *Duration) Decode(params map[string]string, data string) error {
+	t := parser.NewStringTokeniser(data)
+	var neg bool
+	if t.Accept("-") {
+		neg = true
+	} else {
+		t.Accept("+")
+	}
+	if !t.Accept("P") {
+		return ErrInvalidDuration
+	}
+	var level uint8
+	for t.Peek() != -1 {
+		t.Get()
+		mode := t.AcceptRun("0123456789")
+		num, err := strconv.ParseUint(t.Get(), 10, 0)
+		if err != nil {
+			return err
+		}
+		switch mode {
+		case 'W':
+			t.Accept("W")
+			if t.Peek() != -1 {
+				return ErrInvalidDuration
+			}
+			d.Weeks = num
+			return nil
+		case 'D':
+			if level > 0 {
+				return ErrInvalidDuration
+			}
+			t.Accept("D")
+			d.Days = num
+			level = 1
+		case 'H':
+			if level > 1 {
+				return ErrInvalidDuration
+			}
+			t.Accept("H")
+			d.Hours = num
+			level = 2
+		case 'M':
+			if level > 2 {
+				return ErrInvalidDuration
+			}
+			t.Accept("M")
+			d.Minutes = num
+			level = 3
+		case 'S':
+			if level > 3 {
+				return ErrInvalidDuration
+			}
+			t.Accept("S")
+			if t.Peek() != -1 {
+				return ErrInvalidDuration
+			}
+			d.Seconds = num
+		default:
+			return ErrInvalidDuration
+		}
+	}
+	if level == 0 {
+		return ErrInvalidDuration
+	}
 	return nil
 }
 
@@ -303,4 +368,5 @@ func (u *UTCOffset) Encode(w io.Writer) {
 var (
 	ErrInvalidEncoding = errors.New("invalid binary encoding")
 	ErrInvalidPeriod   = errors.New("invalid period")
+	ErrInvalidDuration = errors.New("invalid duration")
 )
