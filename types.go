@@ -390,11 +390,43 @@ type Time struct {
 }
 
 func (t *Time) Decode(params map[string]string, data string) error {
+	if tz, ok := params["TZID"]; ok {
+		l, err := time.LoadLocation(tz)
+		if err != nil {
+			return err
+		}
+		ct, err := time.ParseInLocation("150405", data, l)
+		if err != nil {
+			return err
+		}
+		t.Time = ct
+	} else if len(data) > 0 && data[len(data)-1] == 'Z' {
+		ct, err := time.ParseInLocation("150405Z", data, time.UTC)
+		if err != nil {
+			return err
+		}
+		t.Time = ct
+	} else {
+		ct, err := time.ParseInLocation("150405", data, time.Local)
+		if err != nil {
+			return err
+		}
+		t.Time = ct
+	}
 	return nil
 }
 
 func (t *Time) Encode(w io.Writer) {
-
+	b := make([]byte, 0, 7)
+	switch d.Location() {
+	case time.UTC:
+		b = d.AppendFormat(b, "150405Z")
+	case time.Local:
+		b = d.AppendFormat(b, "150405")
+	default:
+		b = d.AppendFormat(b, "150405")
+	}
+	w.Write(b)
 }
 
 type URI struct {
