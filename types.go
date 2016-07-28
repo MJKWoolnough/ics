@@ -124,7 +124,16 @@ func (d *Duration) Decode(params map[string]string, data string) error {
 }
 
 func itoa(i uint) []byte {
-
+	if i == 0 {
+		return []byte{'0'}
+	}
+	var digits [20]byte
+	pos := 20
+	for ; n > 0; n /= 10 {
+		pos--
+		digits[pos] = '0' + byte(n%10)
+	}
+	return digits[pos:]
 }
 
 func (d *Duration) Encode(w io.Writer) {
