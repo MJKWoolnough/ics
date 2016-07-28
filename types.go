@@ -319,6 +319,46 @@ func (r *Recur) Encode(w io.Writer) {
 type Text string
 
 func (t *Text) Decode(params map[string]string, data string) error {
+	t := parser.NewStringTokeniser(data)
+	d := make([]byte, 0, len(data))
+Loop:
+	for {
+		c := t.ExceptRun("\";:\\,^")
+		d = append(d, t.Get()...)
+		switch c {
+		case -1:
+			break Loop
+		case '\\':
+			t.Accept("\\")
+			switch t.Except("") {
+			case '\\':
+				d = append(d, '\\')
+			case ';':
+				d = append(d, ';')
+			case ',':
+				d = append(d, ',')
+			case 'N', 'n':
+				d = append(d, '\n')
+			default:
+				return ErrInvalidText
+			}
+		case '^':
+			t.Accept("^")
+			switch c := t.Except(""); c {
+			case 'n':
+				d = append(d, '\n')
+			case '^':
+				d = append(d, '^')
+			case '\'':
+				d = append(d, '"')
+			default:
+				d = append(d, '^', c)
+			}
+		default:
+			return ErrInvalidText
+		}
+	}
+	*t = Text(d)
 	return nil
 }
 
@@ -370,4 +410,5 @@ var (
 	ErrInvalidEncoding = errors.New("invalid binary encoding")
 	ErrInvalidPeriod   = errors.New("invalid period")
 	ErrInvalidDuration = errors.New("invalid duration")
+	ErrInvalidText     = errors.New("invalid encoded text")
 )
