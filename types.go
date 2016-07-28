@@ -297,6 +297,7 @@ func (p *Period) Decode(params map[string]string, data string) error {
 
 func (p *Period) Encode(w io.Writer) {
 	p.Start.Encode(w)
+	w.Write([]byte{'/'})
 	if p.End.IsZero() {
 		p.Duration.Encode(w)
 	} else {
