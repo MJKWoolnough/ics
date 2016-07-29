@@ -5,6 +5,7 @@ import (
 	"io"
 	"reflect"
 	"testing"
+	"time"
 )
 
 type typeTest struct {
@@ -87,5 +88,18 @@ func TestBoolean(t *testing.T) {
 }
 
 func TestDate(t *testing.T) {
-
+	testType(t, []typeTest{
+		{
+			Data:   "20011225",
+			Input:  &Date{},
+			Match:  &Date{time.Date(2001, 12, 25, 0, 0, 0, 0, time.UTC)},
+			Output: "20011225",
+		},
+		{
+			Data:   "20081111",
+			Input:  &Date{},
+			Match:  &Date{time.Date(2008, 11, 11, 0, 0, 0, 0, time.UTC)},
+			Output: "20081111",
+		},
+	})
 }
