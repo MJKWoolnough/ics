@@ -35,7 +35,10 @@ type Boolean bool
 func (b *Boolean) Decode(params map[string]string, data string) error {
 	cb, err := strconv.ParseBool(data)
 	*b = Boolean(cb)
-	return err
+	if err != nil {
+		return ErrInvalidBoolean
+	}
+	return nil
 }
 
 var (
@@ -470,4 +473,5 @@ var (
 	ErrInvalidPeriod   = errors.New("invalid period")
 	ErrInvalidDuration = errors.New("invalid duration")
 	ErrInvalidText     = errors.New("invalid encoded text")
+	ErrInvalidBoolean  = errors.New("invalid boolean")
 )

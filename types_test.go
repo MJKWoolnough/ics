@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"io"
 	"reflect"
-	"strconv"
 	"testing"
 )
 
@@ -82,11 +81,11 @@ func TestBoolean(t *testing.T) {
 			Input:  fa,
 			Match:  fa,
 			Output: "FALSE",
-			Error: &strconv.NumError{
-				Func: "ParseBool",
-				Num:  "HotDog",
-				Err:  strconv.ErrSyntax,
-			},
+			Error:  ErrInvalidBoolean,
 		},
 	})
+}
+
+func TestDate(t *testing.T) {
+
 }
