@@ -597,8 +597,8 @@ func (r *Recur) Decode(params map[string]string, data string) error {
 			months := strings.Split(parts[1], ",")
 			monthList := make([]Month, len(months))
 			for n, month := range months {
-				i, err := strconv.ParseInt(month, 10, 8)
-				if err != nil || i == 0 || i > 12 || i < -12 {
+				i, err := strconv.ParseUint(month, 10, 8)
+				if err != nil || i == 0 || i > 12 {
 					return ErrInvalidRecur
 				}
 				monthList[n] = Month(i)
@@ -651,7 +651,226 @@ func (r *Recur) Decode(params map[string]string, data string) error {
 }
 
 func (r *Recur) Encode(w io.Writer) {
+	comma := []byte{','}
+	switch r.Frequency {
+	case Secondly:
+		w.Write([]byte("FREQ=SECONDLY"))
+	case Minutely:
+		w.Write([]byte("FREQ=MINUTELY"))
+	case Hourly:
+		w.Write([]byte("FREQ=HOURLY"))
+	case Daily:
+		w.Write([]byte("FREQ=DAILY"))
+	case Weekly:
+		w.Write([]byte("FREQ=WEEKLY"))
+	case Monthly:
+		w.Write([]byte("FREQ=MONTHLY"))
+	case Yearly:
+		w.Write([]byte("FREQ=YEARLY"))
+	default:
+		w.Write([]byte("FREQ=SECONDLY"))
+	}
+	if r.Count == 0 {
+		w.Write([]byte(";UNTIL="))
+		if r.UntilTime {
+			d := DateTime{r.Until}
+			d.Encode(w)
+		} else {
+			d := Date{r.Until}
+			d.Encode(w)
+		}
+	} else {
+		w.Write([]byte(";COUNT="))
+		w.Write([]byte(strconv.FormatUint(r.Count, 10)))
+	}
+	if r.Interval != 0 {
+		w.Write([]byte(";INTERVAL="))
+		w.Write([]byte(strconv.FormatUint(r.Interval, 10)))
+	}
+	if len(r.BySecond) > 0 {
+		w.Write([]byte(";BYSECOND="))
+		for n, second := range r.BySecond {
+			if n > 0 {
+				w.Write(comma)
+			}
+			w.Write([]byte(strconv.FormatUint(uint64(second), 10)))
+		}
+	}
+	if len(r.ByMinute) > 0 {
+		w.Write([]byte(";BYMINUTE="))
+		for n, minute := range r.ByMinute {
+			if n > 0 {
+				w.Write(comma)
+			}
+			w.Write([]byte(strconv.FormatUint(uint64(minute), 10)))
+		}
+	}
+	if len(r.ByHour) > 0 {
+		w.Write([]byte(";BYHOUR="))
+		for n, hour := range r.ByHour {
+			if n > 0 {
+				w.Write(comma)
+			}
+			w.Write([]byte(strconv.FormatUint(uint64(hour), 10)))
+		}
+	}
+	if len(r.ByDay) > 0 {
+		w.Write([]byte(";BYDAY="))
+		for n, day := range r.ByDay {
+			if n > 0 {
+				w.Write(comma)
+			}
+			if day.Occurence != 0 {
+				w.Write([]byte(strconv.FormatInt(int64(day.Day), 10)))
+			}
+			switch day.Day {
+			case Sunday:
+				w.Write([]byte{'S', 'U'})
+			case Monday:
+				w.Write([]byte{'M', 'O'})
+			case Tuesday:
+				w.Write([]byte{'T', 'U'})
+			case Wednesday:
+				w.Write([]byte{'W', 'E'})
+			case Thursday:
+				w.Write([]byte{'T', 'H'})
+			case Friday:
+				w.Write([]byte{'F', 'R'})
+			case Saturday:
+				w.Write([]byte{'S', 'A'})
+			}
+		}
+	}
+	if len(r.ByMonthDay) > 0 {
+		w.Write([]byte(";BYMONTHDAY="))
+		for n, month := range r.ByMonthDay {
+			if n > 0 {
+				w.Write(comma)
+			}
+			w.Write([]byte(strconv.FormatInt(int64(month), 10)))
+		}
+	}
+	if len(r.ByYearDay) > 0 {
+		w.Write([]byte(";BYYEARDAY="))
+		for n, year := range r.ByYearDay {
+			if n > 0 {
+				w.Write(comma)
+			}
+			w.Write([]byte(strconv.FormatInt(int64(year), 10)))
+		}
+	}
+	if len(r.ByWeekNum) > 0 {
+		w.Write([]byte(";BYWEEKNO="))
+		for n, week := range r.ByWeekNum {
+			if n > 0 {
+				w.Write(comma)
+			}
+			w.Write([]byte(strconv.FormatInt(int64(week), 10)))
+		}
+	}
+	if len(r.ByMonth) > 0 {
+		w.Write([]byte(";BYMONTH="))
+		for n, month := range r.ByMonth {
+			if n > 0 {
+				w.Write(comma)
+			}
+			w.Write([]byte(strconv.FormatUint(uint64(month), 10)))
+		}
+	}
+	if len(r.BySetPos) > 0 {
+		w.Write([]byte(";BYSETPOS="))
+		for n, setPos := range r.BySetPos {
+			if n > 0 {
+				w.Write(comma)
+			}
+			w.Write([]byte(strconv.FormatInt(int64(setPos), 10)))
+		}
+	}
+	if r.WeekDay != UnknownDay {
+		w.Write([]byte(";WKST="))
+		switch r.WeekDay {
+		case Sunday:
+			w.Write([]byte{'S', 'U'})
+		case Monday:
+			w.Write([]byte{'M', 'O'})
+		case Tuesday:
+			w.Write([]byte{'T', 'U'})
+		case Wednesday:
+			w.Write([]byte{'W', 'E'})
+		case Thursday:
+			w.Write([]byte{'T', 'H'})
+		case Friday:
+			w.Write([]byte{'F', 'R'})
+		case Saturday:
+			w.Write([]byte{'S', 'A'})
+		}
+	}
+}
 
+func (r *Recur) Valid() bool {
+	switch r.Frequency {
+	case Secondly, Minutely, Hourly, Daily, Weekly, Monthly, Yearly:
+	default:
+		return false
+	}
+	if r.Count == 0 && r.Until.IsZero() {
+		return false
+	}
+	for _, second := range r.BySecond {
+		if second > 60 {
+			return false
+		}
+	}
+	for _, minute := range r.ByMinute {
+		if minute > 59 {
+			return false
+		}
+	}
+	for _, hour := range r.ByHour {
+		if hour > 23 {
+			return false
+		}
+	}
+	for _, day := range r.ByDay {
+		switch day.Day {
+		case Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday:
+		default:
+			return false
+		}
+	}
+	for _, monthDay := range r.ByMonthDay {
+		if monthDay == 0 || monthDay > 31 || monthDay < -31 {
+			return false
+		}
+	}
+	for _, yearDay := range r.ByYearDay {
+		if yearDay == 0 || yearDay > 366 || yearDay < -366 {
+			return false
+		}
+	}
+	for _, week := range r.ByWeekNum {
+		if week == 0 || week > 53 || week < -53 {
+			return false
+		}
+	}
+	for _, month := range r.ByMonth {
+		if month == 0 || month > 12 {
+			return false
+		}
+	}
+	for _, setPos := range r.BySetPos {
+		if setPos == 0 || setPos > 366 || setPos <= -366 {
+			return false
+		}
+	}
+	if r.WeekDay != UnknownDay {
+		switch r.WeekDay {
+		case Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday:
+		default:
+			return false
+		}
+	}
+	return true
 }
 
 type Text string
