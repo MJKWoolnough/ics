@@ -340,3 +340,107 @@ func TestTime(t *testing.T) {
 		},
 	})
 }
+
+func TestUTCOffset(t *testing.T) {
+	newUTC := func(i int) *UTCOffset {
+		u := UTCOffset(i)
+		return &u
+	}
+	testType(t, []typeTest{
+		{
+			Data:   "0100",
+			Input:  new(UTCOffset),
+			Match:  newUTC(3600),
+			Output: "0100",
+		},
+		{
+			Data:   "0230",
+			Input:  new(UTCOffset),
+			Match:  newUTC(9000),
+			Output: "0230",
+		},
+		{
+			Data:   "023045",
+			Input:  new(UTCOffset),
+			Match:  newUTC(9045),
+			Output: "023045",
+		},
+		{
+			Data:   "+0230",
+			Input:  new(UTCOffset),
+			Match:  newUTC(9000),
+			Output: "0230",
+		},
+		{
+			Data:   "-0230",
+			Input:  new(UTCOffset),
+			Match:  newUTC(-9000),
+			Output: "-0230",
+		},
+		{
+			Data:  "0260",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "020060",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "0261",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "020061",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "0",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "00",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "000",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "00000",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "T",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "0000T",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "000000T",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "-0000",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+		{
+			Data:  "-000000",
+			Input: new(UTCOffset),
+			Error: ErrInvalidOffset,
+		},
+	})
+}
