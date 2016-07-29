@@ -103,3 +103,34 @@ func TestDate(t *testing.T) {
 		},
 	})
 }
+
+func TestDateTime(t *testing.T) {
+	l, err := time.LoadLocation("America/New_York")
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+		return
+	}
+	testType(t, []typeTest{
+		{
+			Params: map[string]string{},
+			Data:   "20011225T131415",
+			Input:  &DateTime{},
+			Match:  &DateTime{time.Date(2001, 12, 25, 13, 14, 15, 0, time.Local)},
+			Output: "20011225T131415",
+		},
+		{
+			Params: map[string]string{},
+			Data:   "20011225T131415Z",
+			Input:  &DateTime{},
+			Match:  &DateTime{time.Date(2001, 12, 25, 13, 14, 15, 0, time.UTC)},
+			Output: "20011225T131415Z",
+		},
+		{
+			Params: map[string]string{"TZID": "America/New_York"},
+			Data:   "20011225T131415",
+			Input:  &DateTime{},
+			Match:  &DateTime{time.Date(2001, 12, 25, 13, 14, 15, 0, l)},
+			Output: "20011225T131415",
+		},
+	})
+}
