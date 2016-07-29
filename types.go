@@ -137,6 +137,9 @@ func (d *Duration) Decode(params map[string]string, data string) error {
 	}
 	var level uint8
 	for t.Peek() != -1 {
+		if t.Accept("T") {
+			level = 1
+		}
 		t.Get()
 		mode := t.AcceptRun("0123456789")
 		n, err := strconv.ParseUint(t.Get(), 10, 0)
@@ -146,6 +149,9 @@ func (d *Duration) Decode(params map[string]string, data string) error {
 		}
 		switch mode {
 		case 'W':
+			if level > 0 {
+				return ErrInvalidDuration
+			}
 			t.Accept("W")
 			if t.Peek() != -1 {
 				return ErrInvalidDuration
