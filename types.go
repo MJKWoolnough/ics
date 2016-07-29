@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/MJKWoolnough/parser"
 )
@@ -33,7 +34,7 @@ type Boolean bool
 
 func (b *Boolean) Decode(params map[string]string, data string) error {
 	cb, err := strconv.ParseBool(data)
-	*b = cb
+	*b = Boolean(cb)
 	return err
 }
 
@@ -123,9 +124,8 @@ type Duration struct {
 
 func (d *Duration) Decode(params map[string]string, data string) error {
 	t := parser.NewStringTokeniser(data)
-	var neg bool
 	if t.Accept("-") {
-		neg = true
+		d.Negative = true
 	} else {
 		t.Accept("+")
 	}
@@ -136,7 +136,8 @@ func (d *Duration) Decode(params map[string]string, data string) error {
 	for t.Peek() != -1 {
 		t.Get()
 		mode := t.AcceptRun("0123456789")
-		num, err := strconv.ParseUint(t.Get(), 10, 0)
+		n, err := strconv.ParseUint(t.Get(), 10, 0)
+		num := uint(n)
 		if err != nil {
 			return err
 		}
@@ -188,8 +189,8 @@ func (d *Duration) Decode(params map[string]string, data string) error {
 	return nil
 }
 
-func itoa(i uint) []byte {
-	if i == 0 {
+func itoa(n uint) []byte {
+	if n == 0 {
 		return []byte{'0'}
 	}
 	var digits [20]byte
@@ -210,7 +211,6 @@ func (d *Duration) Encode(w io.Writer) {
 	if d.Weeks != 0 {
 		data = append(data, itoa(d.Weeks)...)
 		data = append(data, 'W')
-		return nil
 	} else {
 		if d.Days != 0 {
 			data = append(data, itoa(d.Days)...)
@@ -257,7 +257,7 @@ func (f *Float) Decode(params map[string]string, data string) error {
 }
 
 func (f *Float) Encode(w io.Writer) {
-	w.Write([]byte(strconv.FormatFloat(float64(*f), 'f', 64)))
+	w.Write([]byte(strconv.FormatFloat(float64(*f), 'f', -1, 64)))
 }
 
 type Integer int32
@@ -319,18 +319,19 @@ func (r *Recur) Encode(w io.Writer) {
 type Text string
 
 func (t *Text) Decode(params map[string]string, data string) error {
-	t := parser.NewStringTokeniser(data)
+	st := parser.NewStringTokeniser(data)
 	d := make([]byte, 0, len(data))
+	ru := make([]byte, 4)
 Loop:
 	for {
-		c := t.ExceptRun("\";:\\,^")
-		d = append(d, t.Get()...)
+		c := st.ExceptRun("\";:\\,^")
+		d = append(d, st.Get()...)
 		switch c {
 		case -1:
 			break Loop
 		case '\\':
-			t.Accept("\\")
-			switch t.Except("") {
+			st.Accept("\\")
+			switch st.Peek() {
 			case '\\':
 				d = append(d, '\\')
 			case ';':
@@ -342,9 +343,10 @@ Loop:
 			default:
 				return ErrInvalidText
 			}
+			st.Except("")
 		case '^':
-			t.Accept("^")
-			switch c := t.Except(""); c {
+			st.Accept("^")
+			switch c := st.Peek(); c {
 			case 'n':
 				d = append(d, '\n')
 			case -1, '^':
@@ -352,8 +354,11 @@ Loop:
 			case '\'':
 				d = append(d, '"')
 			default:
-				d = append(d, '^', c)
+				d = append(d, '^')
+				l := utf8.EncodeRune(ru, c)
+				d = append(d, ru[:l]...)
 			}
+			st.Except("")
 		default:
 			return ErrInvalidText
 		}
@@ -363,7 +368,8 @@ Loop:
 }
 
 func (t *Text) Encode(w io.Writer) {
-	d := make([]byte, 0, len(data)+256)
+	d := make([]byte, 0, len(*t)+256)
+	ru := make([]byte, 4)
 	for _, c := range *t {
 		switch c {
 		case '\\':
@@ -379,7 +385,9 @@ func (t *Text) Encode(w io.Writer) {
 		case '"':
 			d = append(d, '^', '\'')
 		default:
-			d = append(d, c)
+			d = append(d, '^')
+			l := utf8.EncodeRune(ru, c)
+			d = append(d, ru[:l]...)
 		}
 	}
 	w.Write(d)
@@ -418,13 +426,13 @@ func (t *Time) Decode(params map[string]string, data string) error {
 
 func (t *Time) Encode(w io.Writer) {
 	b := make([]byte, 0, 7)
-	switch d.Location() {
+	switch t.Location() {
 	case time.UTC:
-		b = d.AppendFormat(b, "150405Z")
+		b = t.AppendFormat(b, "150405Z")
 	case time.Local:
-		b = d.AppendFormat(b, "150405")
+		b = t.AppendFormat(b, "150405")
 	default:
-		b = d.AppendFormat(b, "150405")
+		b = t.AppendFormat(b, "150405")
 	}
 	w.Write(b)
 }
@@ -438,7 +446,7 @@ func (u *URI) Decode(params map[string]string, data string) error {
 	if err != nil {
 		return err
 	}
-	u.URL = cu
+	u.URL = *cu
 	return nil
 }
 
