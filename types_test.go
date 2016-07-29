@@ -21,9 +21,14 @@ type typeTest struct {
 	Error  error
 }
 
+var emptyMap = make(map[string]string)
+
 func testType(t *testing.T, tests []typeTest) {
 	var buf bytes.Buffer
 	for n, test := range tests {
+		if test.Params == nil {
+			test.Params = emptyMap
+		}
 		err := test.Input.Decode(test.Params, test.Data)
 		if err != test.Error {
 			if !reflect.DeepEqual(err, test.Error) {
@@ -112,14 +117,12 @@ func TestDateTime(t *testing.T) {
 	}
 	testType(t, []typeTest{
 		{
-			Params: map[string]string{},
 			Data:   "20011225T131415",
 			Input:  &DateTime{},
 			Match:  &DateTime{time.Date(2001, 12, 25, 13, 14, 15, 0, time.Local)},
 			Output: "20011225T131415",
 		},
 		{
-			Params: map[string]string{},
 			Data:   "20011225T131415Z",
 			Input:  &DateTime{},
 			Match:  &DateTime{time.Date(2001, 12, 25, 13, 14, 15, 0, time.UTC)},
