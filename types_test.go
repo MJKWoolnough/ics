@@ -212,3 +212,26 @@ func TestDuration(t *testing.T) {
 		},
 	})
 }
+
+func TestPeriod(t *testing.T) {
+	testType(t, []typeTest{
+		{
+			Data:  "19970101T180000Z/19970102T070000Z",
+			Input: &Period{},
+			Match: &Period{
+				Start: DateTime{Time: time.Date(1997, 1, 1, 18, 0, 0, 0, time.UTC)},
+				End:   DateTime{Time: time.Date(1997, 1, 2, 7, 0, 0, 0, time.UTC)},
+			},
+			Output: "19970101T180000Z/19970102T070000Z",
+		},
+		{
+			Data:  "19970101T180000Z/PT5H30M",
+			Input: &Period{},
+			Match: &Period{
+				Start:    DateTime{Time: time.Date(1997, 1, 1, 18, 0, 0, 0, time.UTC)},
+				Duration: Duration{Hours: 5, Minutes: 30},
+			},
+			Output: "19970101T180000Z/PT5H30M",
+		},
+	})
+}
