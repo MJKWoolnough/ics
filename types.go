@@ -371,6 +371,7 @@ Loop:
 		default:
 			return ErrInvalidText
 		}
+		st.Get()
 	}
 	*t = Text(d)
 	return nil
@@ -394,7 +395,6 @@ func (t *Text) Encode(w io.Writer) {
 		case '"':
 			d = append(d, '^', '\'')
 		default:
-			d = append(d, '^')
 			l := utf8.EncodeRune(ru, c)
 			d = append(d, ru[:l]...)
 		}
