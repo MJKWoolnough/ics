@@ -316,7 +316,67 @@ func (p *Period) Encode(w io.Writer) {
 	}
 }
 
+type Frequency uint8
+
+const (
+	Secondly Frequency = iota
+	Minutely
+	Hourly
+	Daily
+	Weekly
+	Monthly
+	Yearly
+)
+
+type WeekDay uint8
+
+const (
+	Unknown WeekDay = iota
+	Sunday
+	Monday
+	Tuesday
+	Wednesday
+	Thursday
+	Friday
+	Saturday
+)
+
+type Month uint8
+
+const (
+	Unknown Month = iota
+	January
+	February
+	March
+	April
+	May
+	June
+	July
+	August
+	September
+	October
+	November
+	December
+)
+
 type Recur struct {
+	Frequency Frequency
+	Until     time.Time
+	Count     uint
+	Interval  uint
+	BySecond  []uint8
+	ByMinute  []uint8
+	ByHour    []uint8
+	ByDay     []struct {
+		Day       WeekDay
+		Occurence int8
+	}
+	ByMonthDay []int8
+	ByYearDay  []int16
+	ByWeekNum  []int8
+	ByMonth    []Month
+	BySetPos   int16
+	WeekDay    WeekDay
 }
 
 func (r *Recur) Decode(params map[string]string, data string) error {
