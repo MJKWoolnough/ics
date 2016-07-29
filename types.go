@@ -416,12 +416,16 @@ func (r *Recur) Decode(params map[string]string, data string) error {
 			}
 			if len(parts[1]) > 10 {
 				var d DateTime
-				d.Decode(params, parts[1])
+				if err := d.Decode(params, parts[1]); err != nil {
+					return ErrInvalidRecur
+				}
 				r.Until = d.Time
 				r.UntilTime = true
 			} else {
 				var d Date
-				d.Decode(params, parts[1])
+				if err := d.Decode(params, parts[1]); err != nil {
+					return ErrInvalidRecur
+				}
 				r.Until = d.Time
 				r.UntilTime = false
 			}
@@ -670,7 +674,10 @@ func (r *Recur) Encode(w io.Writer) {
 	default:
 		w.Write([]byte("FREQ=SECONDLY"))
 	}
-	if r.Count == 0 {
+	if r.Count != 0 {
+		w.Write([]byte(";COUNT="))
+		w.Write([]byte(strconv.FormatUint(r.Count, 10)))
+	} else if !r.Until.IsZero() {
 		w.Write([]byte(";UNTIL="))
 		if r.UntilTime {
 			d := DateTime{r.Until}
@@ -679,9 +686,6 @@ func (r *Recur) Encode(w io.Writer) {
 			d := Date{r.Until}
 			d.Encode(w)
 		}
-	} else {
-		w.Write([]byte(";COUNT="))
-		w.Write([]byte(strconv.FormatUint(r.Count, 10)))
 	}
 	if r.Interval != 0 {
 		w.Write([]byte(";INTERVAL="))
