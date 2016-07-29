@@ -379,7 +379,7 @@ type Recur struct {
 	ByWeekNum  []int8
 	ByMonth    []Month
 	BySetPos   []int16
-	WeekDay    WeekDay
+	WeekStart  WeekDay
 }
 
 func (r *Recur) Decode(params map[string]string, data string) error {
@@ -628,19 +628,19 @@ func (r *Recur) Decode(params map[string]string, data string) error {
 			}
 			switch parts[1] {
 			case "SU":
-				r.WeekDay = Sunday
+				r.WeekStart = Sunday
 			case "MO":
-				r.WeekDay = Monday
+				r.WeekStart = Monday
 			case "TU":
-				r.WeekDay = Tuesday
+				r.WeekStart = Tuesday
 			case "WE":
-				r.WeekDay = Wednesday
+				r.WeekStart = Wednesday
 			case "TH":
-				r.WeekDay = Thursday
+				r.WeekStart = Thursday
 			case "FR":
-				r.WeekDay = Friday
+				r.WeekStart = Friday
 			case "SA":
-				r.WeekDay = Saturday
+				r.WeekStart = Saturday
 			default:
 				return ErrInvalidRecur
 			}
@@ -790,9 +790,9 @@ func (r *Recur) Encode(w io.Writer) {
 			w.Write([]byte(strconv.FormatInt(int64(setPos), 10)))
 		}
 	}
-	if r.WeekDay != UnknownDay {
+	if r.WeekStart != UnknownDay {
 		w.Write([]byte(";WKST="))
-		switch r.WeekDay {
+		switch r.WeekStart {
 		case Sunday:
 			w.Write([]byte{'S', 'U'})
 		case Monday:
