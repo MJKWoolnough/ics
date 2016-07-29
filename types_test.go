@@ -235,3 +235,79 @@ func TestPeriod(t *testing.T) {
 		},
 	})
 }
+
+func TestText(t *testing.T) {
+	newText := func(s string) *Text {
+		nt := Text(s)
+		return &nt
+	}
+	testType(t, []typeTest{
+		{
+			Data:   "",
+			Input:  new(Text),
+			Match:  newText(""),
+			Output: "",
+		},
+		{
+			Data:   "Jackdaws love my big Sphinx of quartz",
+			Input:  new(Text),
+			Match:  newText("Jackdaws love my big Sphinx of quartz"),
+			Output: "Jackdaws love my big Sphinx of quartz",
+		},
+		{
+			Data:   "Project XYZ Final Review\\nConference Room - 3B\\nCome Prepared.",
+			Input:  new(Text),
+			Match:  newText("Project XYZ Final Review\nConference Room - 3B\nCome Prepared."),
+			Output: "Project XYZ Final Review\\nConference Room - 3B\\nCome Prepared.",
+		},
+		{
+			Data:   "\\\\\\;\\,\\N\\n",
+			Input:  new(Text),
+			Match:  newText("\\;,\n\n"),
+			Output: "\\\\\\;\\,\\n\\n",
+		},
+		{
+			Data:  ";",
+			Input: new(Text),
+			Error: ErrInvalidText,
+		},
+		{
+			Data:  ",",
+			Input: new(Text),
+			Error: ErrInvalidText,
+		},
+		{
+			Data:  "\\",
+			Input: new(Text),
+			Error: ErrInvalidText,
+		},
+		{
+			Data:  "\"",
+			Input: new(Text),
+			Error: ErrInvalidText,
+		},
+		{
+			Data:  "\\g",
+			Input: new(Text),
+			Error: ErrInvalidText,
+		},
+		{
+			Data:   "^n",
+			Input:  new(Text),
+			Match:  newText("\n"),
+			Output: "\\n",
+		},
+		{
+			Data:   "^^",
+			Input:  new(Text),
+			Match:  newText("^"),
+			Output: "^^",
+		},
+		{
+			Data:   "^'",
+			Input:  new(Text),
+			Match:  newText("\""),
+			Output: "^'",
+		},
+	})
+}
