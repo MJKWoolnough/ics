@@ -725,7 +725,7 @@ func (r *Recur) Encode(w io.Writer) {
 				w.Write(comma)
 			}
 			if day.Occurence != 0 {
-				w.Write([]byte(strconv.FormatInt(int64(day.Day), 10)))
+				w.Write([]byte(strconv.FormatInt(int64(day.Occurence), 10)))
 			}
 			switch day.Day {
 			case Sunday:
