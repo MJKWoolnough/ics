@@ -13,6 +13,8 @@ import (
 	"github.com/MJKWoolnough/parser"
 )
 
+const dateTimeFormat = "20060102T150405Z"
+
 type Binary []byte
 
 func (b *Binary) Decode(params map[string]string, data string) error {
@@ -63,7 +65,7 @@ type Date struct {
 }
 
 func (d *Date) Decode(params map[string]string, data string) error {
-	t, err := time.Parse("20060102", data)
+	t, err := time.Parse(dateTimeFormat[:8], data)
 	if err != nil {
 		return err
 	}
@@ -73,7 +75,7 @@ func (d *Date) Decode(params map[string]string, data string) error {
 
 func (d *Date) Encode(w io.Writer) {
 	b := make([]byte, 0, 8)
-	w.Write([]byte(d.AppendFormat(b, "20060102")))
+	w.Write([]byte(d.AppendFormat(b, dateTimeFormat[:8])))
 }
 
 type DateTime struct {
@@ -86,19 +88,19 @@ func (d *DateTime) Decode(params map[string]string, data string) error {
 		if err != nil {
 			return err
 		}
-		t, err := time.ParseInLocation("20060102T150405", data, l)
+		t, err := time.ParseInLocation(dateTimeFormat[:15], data, l)
 		if err != nil {
 			return err
 		}
 		d.Time = t
 	} else if len(data) > 0 && data[len(data)-1] == 'Z' {
-		t, err := time.ParseInLocation("20060102T150405Z", data, time.UTC)
+		t, err := time.ParseInLocation(dateTimeFormat, data, time.UTC)
 		if err != nil {
 			return err
 		}
 		d.Time = t
 	} else {
-		t, err := time.ParseInLocation("20060102T150405", data, time.Local)
+		t, err := time.ParseInLocation(dateTimeFormat[:15], data, time.Local)
 		if err != nil {
 			return err
 		}
@@ -111,11 +113,11 @@ func (d *DateTime) Encode(w io.Writer) {
 	b := make([]byte, 0, 16)
 	switch d.Location() {
 	case time.UTC:
-		b = d.AppendFormat(b, "20060102T150405Z")
+		b = d.AppendFormat(b, dateTimeFormat)
 	case time.Local:
-		b = d.AppendFormat(b, "20060102T150405")
+		b = d.AppendFormat(b, dateTimeFormat[:15])
 	default:
-		b = d.AppendFormat(b, "20060102T150405")
+		b = d.AppendFormat(b, dateTimeFormat[:15])
 	}
 	w.Write(b)
 }
@@ -412,19 +414,19 @@ func (t *Time) Decode(params map[string]string, data string) error {
 		if err != nil {
 			return err
 		}
-		ct, err := time.ParseInLocation("150405", data, l)
+		ct, err := time.ParseInLocation(dateTimeFormat[9:15], data, l)
 		if err != nil {
 			return err
 		}
 		t.Time = ct
 	} else if len(data) > 0 && data[len(data)-1] == 'Z' {
-		ct, err := time.ParseInLocation("150405Z", data, time.UTC)
+		ct, err := time.ParseInLocation(dateTimeFormat[9:], data, time.UTC)
 		if err != nil {
 			return err
 		}
 		t.Time = ct
 	} else {
-		ct, err := time.ParseInLocation("150405", data, time.Local)
+		ct, err := time.ParseInLocation(dateTimeFormat[9:15], data, time.Local)
 		if err != nil {
 			return err
 		}
@@ -437,11 +439,11 @@ func (t *Time) Encode(w io.Writer) {
 	b := make([]byte, 0, 7)
 	switch t.Location() {
 	case time.UTC:
-		b = t.AppendFormat(b, "150405Z")
+		b = t.AppendFormat(b, dateTimeFormat[9:])
 	case time.Local:
-		b = t.AppendFormat(b, "150405")
+		b = t.AppendFormat(b, dateTimeFormat[9:15])
 	default:
-		b = t.AppendFormat(b, "150405")
+		b = t.AppendFormat(b, dateTimeFormat[9:15])
 	}
 	w.Write(b)
 }
