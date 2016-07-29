@@ -36,15 +36,17 @@ func testType(t *testing.T, tests []typeTest) {
 				continue
 			}
 		}
-		if !reflect.DeepEqual(test.Input, test.Match) {
-			t.Errorf("test %d: input does not match expected", n+1)
-			continue
+		if test.Error == nil {
+			if !reflect.DeepEqual(test.Input, test.Match) {
+				t.Errorf("test %d: input does not match expected", n+1)
+				continue
+			}
+			test.Match.Encode(&buf)
+			if str := buf.String(); str != test.Output {
+				t.Errorf("test %d: expecting output string %q, got %q", n+1, test.Output, str)
+			}
+			buf.Reset()
 		}
-		test.Match.Encode(&buf)
-		if str := buf.String(); str != test.Output {
-			t.Errorf("test %d: expecting output string %q, got %q", n+1, test.Output, str)
-		}
-		buf.Reset()
 	}
 }
 
@@ -83,11 +85,9 @@ func TestBoolean(t *testing.T) {
 			Output: "TRUE",
 		},
 		{
-			Data:   "HotDog",
-			Input:  fa,
-			Match:  fa,
-			Output: "FALSE",
-			Error:  ErrInvalidBoolean,
+			Data:  "HotDog",
+			Input: fa,
+			Error: ErrInvalidBoolean,
 		},
 	})
 }
@@ -134,6 +134,81 @@ func TestDateTime(t *testing.T) {
 			Input:  &DateTime{},
 			Match:  &DateTime{time.Date(2001, 12, 25, 13, 14, 15, 0, l)},
 			Output: "20011225T131415",
+		},
+	})
+}
+
+func TestDuration(t *testing.T) {
+	testType(t, []typeTest{
+		{
+			Data:   "P1W",
+			Input:  &Duration{},
+			Match:  &Duration{Weeks: 1},
+			Output: "P1W",
+		},
+		{
+			Data:   "P1D",
+			Input:  &Duration{},
+			Match:  &Duration{Days: 1},
+			Output: "P1D",
+		},
+		{
+			Data:   "PT1H",
+			Input:  &Duration{},
+			Match:  &Duration{Hours: 1},
+			Output: "PT1H",
+		},
+		{
+			Data:   "PT1M",
+			Input:  &Duration{},
+			Match:  &Duration{Minutes: 1},
+			Output: "PT1M",
+		},
+		{
+			Data:   "PT1S",
+			Input:  &Duration{},
+			Match:  &Duration{Seconds: 1},
+			Output: "PT1S",
+		},
+		{
+			Data:   "P25W",
+			Input:  &Duration{},
+			Match:  &Duration{Weeks: 25},
+			Output: "P25W",
+		},
+		{
+			Data:  "P25W1D",
+			Input: &Duration{},
+			Error: ErrInvalidDuration,
+		},
+		{
+			Data:  "P25G",
+			Input: &Duration{},
+			Error: ErrInvalidDuration,
+		},
+		{
+			Data:   "P1DT2H3M4S",
+			Input:  &Duration{},
+			Match:  &Duration{Days: 1, Hours: 2, Minutes: 3, Seconds: 4},
+			Output: "P1DT2H3M4S",
+		},
+		{
+			Data:   "PT0S",
+			Input:  &Duration{},
+			Match:  &Duration{},
+			Output: "PT0S",
+		},
+		{
+			Data:   "+P1DT2H3M4S",
+			Input:  &Duration{},
+			Match:  &Duration{Days: 1, Hours: 2, Minutes: 3, Seconds: 4},
+			Output: "P1DT2H3M4S",
+		},
+		{
+			Data:   "-P1DT2H3M4S",
+			Input:  &Duration{},
+			Match:  &Duration{Negative: true, Days: 1, Hours: 2, Minutes: 3, Seconds: 4},
+			Output: "-P1DT2H3M4S",
 		},
 	})
 }
