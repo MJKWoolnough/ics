@@ -468,11 +468,70 @@ func (u *URI) Encode(w io.Writer) {
 type UTCOffset int
 
 func (u *UTCOffset) Decode(params map[string]string, data string) error {
+	t := parser.NewStringTokeniser(data)
+	neg := false
+	if t.Accept("-") {
+		neg = true
+	} else {
+		t.Accept("+")
+	}
+	t.Get()
+	if !t.Accept("0123456789") || !t.Accept("0123456789") {
+		return ErrInvalidOffset
+	}
+	h, _ := strconv.ParseInt(t.Get(), 10, 32)
+	if !t.Accept("0123456789") || !t.Accept("0123456789") {
+		return ErrInvalidOffset
+	}
+	m, _ := strconv.ParseInt(t.Get(), 10, 32)
+	if m >= 60 {
+		return ErrInvalidOffset
+	}
+	var s int64
+	if t.Accept("0123456789") {
+		if !t.Accept("0123456789") || t.Peek() != -1 {
+			return ErrInvalidOffset
+		}
+		s, _ = strconv.ParseInt(t.Get(), 10, 32)
+		if s >= 60 {
+			return ErrInvalidOffset
+		}
+	} else if t.Peek() != -1 {
+		return ErrInvalidOffset
+	}
+	*u = UTCOffset(3600*h + 60*m + s)
+	if neg {
+		if *u == 0 {
+			return ErrInvalidOffset
+		}
+		*u = -(*u)
+	}
 	return nil
 }
 
 func (u *UTCOffset) Encode(w io.Writer) {
-
+	o := int64(*u)
+	b := make([]byte, 0, 7)
+	if o < 0 {
+		b = append(b, '-')
+		o = -o
+	}
+	s := byte(o % 60)
+	o /= 60
+	m := byte(o % 60)
+	h := byte(o / 60)
+	if h > 99 {
+		h = 0
+	}
+	b = append(b, '0'+h/10)
+	b = append(b, '0'+h%10)
+	b = append(b, '0'+m/10)
+	b = append(b, '0'+m%10)
+	if s > 0 {
+		b = append(b, '0'+s/10)
+		b = append(b, '0'+s%10)
+	}
+	w.Write(b)
 }
 
 // Errors
@@ -482,4 +541,5 @@ var (
 	ErrInvalidDuration = errors.New("invalid duration")
 	ErrInvalidText     = errors.New("invalid encoded text")
 	ErrInvalidBoolean  = errors.New("invalid boolean")
+	ErrInvalidOffset   = errors.New("invalid offset")
 )
