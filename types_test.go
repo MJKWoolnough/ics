@@ -236,6 +236,429 @@ func TestPeriod(t *testing.T) {
 	})
 }
 
+func TestRecur(t *testing.T) {
+	testType(t, []typeTest{
+		{
+			Data:   "FREQ=SECONDLY",
+			Input:  &Recur{},
+			Match:  &Recur{},
+			Output: "FREQ=SECONDLY",
+		},
+		{
+			Data:  "FREQ=MINUTELY",
+			Input: &Recur{},
+			Match: &Recur{
+				Frequency: Minutely,
+			},
+			Output: "FREQ=MINUTELY",
+		},
+		{
+			Data:  "FREQ=HOURLY;COUNT=10",
+			Input: &Recur{},
+			Match: &Recur{
+				Frequency: Hourly,
+				Count:     10,
+			},
+			Output: "FREQ=HOURLY;COUNT=10",
+		},
+		{
+			Data:  "FREQ=DAILY;UNTIL=20011125",
+			Input: &Recur{},
+			Match: &Recur{
+				Frequency: Daily,
+				Until:     time.Date(2001, 11, 25, 0, 0, 0, 0, time.UTC),
+			},
+			Output: "FREQ=DAILY;UNTIL=20011125",
+		},
+		{
+			Data:  "FREQ=WEEKLY;UNTIL=20011125T131415",
+			Input: &Recur{},
+			Match: &Recur{
+				Frequency: Weekly,
+				Until:     time.Date(2001, 11, 25, 13, 14, 15, 0, time.Local),
+				UntilTime: true,
+			},
+			Output: "FREQ=WEEKLY;UNTIL=20011125T131415",
+		},
+		{
+			Data:  "UNTIL=20011125;FREQ=MONTHLY",
+			Input: &Recur{},
+			Match: &Recur{
+				Frequency: Monthly,
+				Until:     time.Date(2001, 11, 25, 0, 0, 0, 0, time.UTC),
+			},
+			Output: "FREQ=MONTHLY;UNTIL=20011125",
+		},
+		{
+			Data:  "FREQ=YEARLY;UNTIL=20011125T131415Z",
+			Input: &Recur{},
+			Match: &Recur{
+				Frequency: Yearly,
+				Until:     time.Date(2001, 11, 25, 13, 14, 15, 0, time.UTC),
+				UntilTime: true,
+			},
+			Output: "FREQ=YEARLY;UNTIL=20011125T131415Z",
+		},
+		{
+			Data:  "FREQ=UNKNOWN",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;COUNT=-1",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;UNTIL=ABC",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;INTERVAL=10",
+			Input: &Recur{},
+			Match: &Recur{
+				Interval: 10,
+			},
+			Output: "FREQ=SECONDLY;INTERVAL=10",
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYSECOND=1,2,60",
+			Input: &Recur{},
+			Match: &Recur{
+				BySecond: []uint8{1, 2, 60},
+			},
+			Output: "FREQ=SECONDLY;BYSECOND=1,2,60",
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYSECOND=1,2,61",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYSECOND=1,2,-1",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYSECOND=1,2,A",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMINUTE=1,2,59",
+			Input: &Recur{},
+			Match: &Recur{
+				ByMinute: []uint8{1, 2, 59},
+			},
+			Output: "FREQ=SECONDLY;BYMINUTE=1,2,59",
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMINUTE=1,2,60",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMINUTE=1,2,-1",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMINUTE=1,2,A",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYHOUR=1,2,23",
+			Input: &Recur{},
+			Match: &Recur{
+				ByHour: []uint8{1, 2, 23},
+			},
+			Output: "FREQ=SECONDLY;BYHOUR=1,2,23",
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYHOUR=1,2,24",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYHOUR=1,2,-1",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYHOUR=1,2,A",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYDAY=WE,+2FR,53MO,-53SU,-9TU",
+			Input: &Recur{},
+			Match: &Recur{
+				ByDay: []DayRecur{
+					{Day: Wednesday},
+					{Day: Friday, Occurence: 2},
+					{Day: Monday, Occurence: 53},
+					{Day: Sunday, Occurence: -53},
+					{Day: Tuesday, Occurence: -9},
+				},
+			},
+			Output: "FREQ=SECONDLY;BYDAY=WE,2FR,53MO,-53SU,-9TU",
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYDAY=UN",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYDAY=-54MO",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYDAY=54MO",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYDAY=MON",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYDAY=MO,",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMONTHDAY=1,31,-1,-31",
+			Input: &Recur{},
+			Match: &Recur{
+				ByMonthDay: []int8{1, 31, -1, -31},
+			},
+			Output: "FREQ=SECONDLY;BYMONTHDAY=1,31,-1,-31",
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMONTHDAY=32",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMONTHDAY=-32",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMONTHDAY=0",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMONTHDAY=A",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMONTHDAY=1,",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYYEARDAY=1,366,-1,-366",
+			Input: &Recur{},
+			Match: &Recur{
+				ByYearDay: []int16{1, 366, -1, -366},
+			},
+			Output: "FREQ=SECONDLY;BYYEARDAY=1,366,-1,-366",
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYYEARDAY=0",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYYEARDAY=367",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYYEARDAY=-367",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYYEARDAY=1,",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYYEARDAY=A",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYWEEKNO=1,52,-1,-52",
+			Input: &Recur{},
+			Match: &Recur{
+				ByWeekNum: []int8{1, 52, -1, -52},
+			},
+			Output: "FREQ=SECONDLY;BYWEEKNO=1,52,-1,-52",
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYYWEEKNO=1,0",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYYWEEKNO=54",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYYWEEKNO=-54",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYYWEEKNO=A",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMONTH=1,2,12",
+			Input: &Recur{},
+			Match: &Recur{
+				ByMonth: []Month{January, February, December},
+			},
+			Output: "FREQ=SECONDLY;BYMONTH=1,2,12",
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMONTH=1,2,13",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMONTH=1,2,-1",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYMONTH=1,2,A",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYSETPOS=1,366,-1,-366",
+			Input: &Recur{},
+			Match: &Recur{
+				BySetPos: []int16{1, 366, -1, -366},
+			},
+			Output: "FREQ=SECONDLY;BYSETPOS=1,366,-1,-366",
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYSETPOS=0",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYSETPOS=367",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYSETPOS=-367",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYSETPOS=1,",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;BYSETPOS=A",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;WKST=SU",
+			Input: &Recur{},
+			Match: &Recur{
+				WeekStart: Sunday,
+			},
+			Output: "FREQ=SECONDLY;WKST=SU",
+		},
+		{
+			Data:  "FREQ=SECONDLY;WKST=MO",
+			Input: &Recur{},
+			Match: &Recur{
+				WeekStart: Monday,
+			},
+			Output: "FREQ=SECONDLY;WKST=MO",
+		},
+		{
+			Data:  "FREQ=SECONDLY;WKST=TU",
+			Input: &Recur{},
+			Match: &Recur{
+				WeekStart: Tuesday,
+			},
+			Output: "FREQ=SECONDLY;WKST=TU",
+		},
+		{
+			Data:  "FREQ=SECONDLY;WKST=WE",
+			Input: &Recur{},
+			Match: &Recur{
+				WeekStart: Wednesday,
+			},
+			Output: "FREQ=SECONDLY;WKST=WE",
+		},
+		{
+			Data:  "FREQ=SECONDLY;WKST=TH",
+			Input: &Recur{},
+			Match: &Recur{
+				WeekStart: Thursday,
+			},
+			Output: "FREQ=SECONDLY;WKST=TH",
+		},
+		{
+			Data:  "FREQ=SECONDLY;WKST=FR",
+			Input: &Recur{},
+			Match: &Recur{
+				WeekStart: Friday,
+			},
+			Output: "FREQ=SECONDLY;WKST=FR",
+		},
+		{
+			Data:  "FREQ=SECONDLY;WKST=SA",
+			Input: &Recur{},
+			Match: &Recur{
+				WeekStart: Saturday,
+			},
+			Output: "FREQ=SECONDLY;WKST=SA",
+		},
+		{
+			Data:  "FREQ=SECONDLY;WKST=UN",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;UNKNOWN=1",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{
+			Data:  "FREQ=SECONDLY;UNKOWN",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+	})
+}
+
 func TestText(t *testing.T) {
 	newText := func(s string) *Text {
 		nt := Text(s)
