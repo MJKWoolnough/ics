@@ -311,3 +311,32 @@ func TestText(t *testing.T) {
 		},
 	})
 }
+
+func TestTime(t *testing.T) {
+	l, err := time.LoadLocation("America/New_York")
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+		return
+	}
+	testType(t, []typeTest{
+		{
+			Data:   "010203",
+			Input:  &Time{},
+			Match:  &Time{Time: time.Date(0, 1, 1, 1, 2, 3, 0, time.Local)},
+			Output: "010203",
+		},
+		{
+			Data:   "010203Z",
+			Input:  &Time{},
+			Match:  &Time{Time: time.Date(0, 1, 1, 1, 2, 3, 0, time.UTC)},
+			Output: "010203Z",
+		},
+		{
+			Params: map[string]string{"TZID": "America/New_York"},
+			Data:   "010203",
+			Input:  &Time{},
+			Match:  &Time{Time: time.Date(0, 1, 1, 1, 2, 3, 0, l)},
+			Output: "010203",
+		},
+	})
+}
