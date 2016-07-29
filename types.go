@@ -331,7 +331,7 @@ const (
 type WeekDay uint8
 
 const (
-	Unknown WeekDay = iota
+	UnknownDay WeekDay = iota
 	Sunday
 	Monday
 	Tuesday
@@ -344,7 +344,7 @@ const (
 type Month uint8
 
 const (
-	Unknown Month = iota
+	UnknownMonth Month = iota
 	January
 	February
 	March
@@ -359,27 +359,294 @@ const (
 	December
 )
 
+type DayRecur struct {
+	Day       WeekDay
+	Occurence int8
+}
+
 type Recur struct {
-	Frequency Frequency
-	Until     time.Time
-	Count     uint
-	Interval  uint
-	BySecond  []uint8
-	ByMinute  []uint8
-	ByHour    []uint8
-	ByDay     []struct {
-		Day       WeekDay
-		Occurence int8
-	}
+	Frequency  Frequency
+	Until      time.Time
+	UntilTime  bool
+	Count      uint64
+	Interval   uint64
+	BySecond   []uint8
+	ByMinute   []uint8
+	ByHour     []uint8
+	ByDay      []DayRecur
 	ByMonthDay []int8
 	ByYearDay  []int16
 	ByWeekNum  []int8
 	ByMonth    []Month
-	BySetPos   int16
+	BySetPos   []int16
 	WeekDay    WeekDay
 }
 
 func (r *Recur) Decode(params map[string]string, data string) error {
+	var freq bool
+	for _, rule := range strings.Split(data, ";") {
+		parts := strings.SplitN(rule, "=", 2)
+		if len(parts) != 2 {
+			return ErrInvalidRecur
+		}
+		switch parts[0] {
+		case "FREQ":
+			switch parts[1] {
+			case "SECONDLY":
+				r.Frequency = Secondly
+			case "MINUTELY":
+				r.Frequency = Minutely
+			case "HOURLY":
+				r.Frequency = Hourly
+			case "DAILY":
+				r.Frequency = Daily
+			case "WEEKLY":
+				r.Frequency = Weekly
+			case "MONTHLY":
+				r.Frequency = Monthly
+			case "YEARLY":
+				r.Frequency = Yearly
+			default:
+				return ErrInvalidRecur
+			}
+			freq = true
+		case "UNTIL":
+			if r.Count > 0 {
+				return ErrInvalidRecur
+			}
+			if len(parts[1]) > 10 {
+				var d DateTime
+				d.Decode(params, parts[1])
+				r.Until = d.Time
+				r.UntilTime = true
+			} else {
+				var d Date
+				d.Decode(params, parts[1])
+				r.Until = d.Time
+				r.UntilTime = false
+			}
+		case "COUNT":
+			if !r.Until.IsZero() {
+				return ErrInvalidRecur
+			}
+			n, err := strconv.ParseUint(parts[1], 10, 64)
+			if err != nil {
+				return ErrInvalidRecur
+			}
+			r.Count = n
+		case "INTERVAL":
+			if r.Interval > 0 {
+				return ErrInvalidRecur
+			}
+			n, err := strconv.ParseUint(parts[1], 10, 64)
+			if err != nil {
+				return ErrInvalidRecur
+			}
+			r.Interval = n
+		case "BYSECOND":
+			if r.BySecond != nil {
+				return ErrInvalidRecur
+			}
+			seconds := strings.Split(parts[1], ",")
+			secondList := make([]uint8, len(seconds))
+			for n, second := range seconds {
+				i, err := strconv.ParseUint(second, 10, 8)
+				if err != nil || i > 60 {
+					return ErrInvalidRecur
+				}
+				secondList[n] = uint8(i)
+			}
+			r.BySecond = secondList
+		case "BYMINUTE":
+			if r.ByMinute != nil {
+				return ErrInvalidRecur
+			}
+			minutes := strings.Split(parts[1], ",")
+			minuteList := make([]uint8, len(minutes))
+			for n, minute := range minutes {
+				i, err := strconv.ParseUint(minute, 10, 8)
+				if err != nil || i > 59 {
+					return ErrInvalidRecur
+				}
+				minuteList[n] = uint8(i)
+			}
+			r.ByMinute = minuteList
+		case "BYHOUR":
+			if r.ByHour != nil {
+				return ErrInvalidRecur
+			}
+			hours := strings.Split(parts[1], ",")
+			hourList := make([]uint8, len(hours))
+			for n, hour := range hours {
+				i, err := strconv.ParseUint(hour, 10, 8)
+				if err != nil || i > 23 {
+					return ErrInvalidRecur
+				}
+				hourList[n] = uint8(i)
+			}
+			r.ByHour = hourList
+		case "BYDAY":
+			if r.ByDay != nil {
+				return ErrInvalidRecur
+			}
+			days := strings.Split(parts[1], ",")
+			dayList := make([]DayRecur, len(days))
+			for n, day := range days {
+				neg := false
+				numCheck := true
+				if len(day) < 2 {
+					return ErrInvalidRecur
+				}
+				if day[0] == '+' {
+					day = day[1:]
+				} else if day[0] == '-' {
+					neg = true
+					numCheck = false
+					day = day[1:]
+					if len(day) < 2 {
+						return ErrInvalidRecur
+					}
+				}
+				var num int8
+				if day[0] >= '0' && day[0] <= '9' {
+					numCheck = true
+					num = int8(day[0] - '0')
+					day = day[1:]
+					if day[0] >= '0' && day[0] <= '9' {
+						num *= 10
+						num += int8(day[0] - '0')
+						day = day[1:]
+					}
+					if num == 0 || num > 53 {
+						return ErrInvalidRecur
+					}
+					if neg {
+						num = -num
+					}
+				}
+				if !numCheck || len(day) != 2 {
+					return ErrInvalidRecur
+				}
+				switch day {
+				case "SU":
+					dayList[n].Day = Sunday
+				case "MO":
+					dayList[n].Day = Monday
+				case "TU":
+					dayList[n].Day = Tuesday
+				case "WE":
+					dayList[n].Day = Wednesday
+				case "TH":
+					dayList[n].Day = Thursday
+				case "FR":
+					dayList[n].Day = Friday
+				case "SA":
+					dayList[n].Day = Saturday
+				default:
+					return ErrInvalidRecur
+				}
+				dayList[n].Occurence = num
+			}
+			r.ByDay = dayList
+		case "BYMONTHDAY":
+			if r.ByMonthDay != nil {
+				return ErrInvalidRecur
+			}
+			monthDays := strings.Split(parts[1], ",")
+			monthDayList := make([]int8, len(monthDays))
+			for n, monthDay := range monthDays {
+				i, err := strconv.ParseInt(monthDay, 10, 8)
+				if err != nil || i == 0 || i > 31 || i < -31 {
+					return ErrInvalidRecur
+				}
+				monthDayList[n] = int8(i)
+			}
+			r.ByMonthDay = monthDayList
+		case "BYYEARDAY":
+			if r.ByYearDay != nil {
+				return ErrInvalidRecur
+			}
+			yearDays := strings.Split(parts[1], ",")
+			yearDayList := make([]int16, len(yearDays))
+			for n, yearDay := range yearDays {
+				i, err := strconv.ParseInt(yearDay, 10, 16)
+				if err != nil || i == 0 || i > 366 || i < -366 {
+					return ErrInvalidRecur
+				}
+				yearDayList[n] = int16(i)
+			}
+			r.ByYearDay = yearDayList
+		case "BYWEEKNO":
+			if r.ByWeekNum != nil {
+				return ErrInvalidRecur
+			}
+			weekNums := strings.Split(parts[1], ",")
+			weekNumList := make([]int8, len(weekNums))
+			for n, weekNum := range weekNums {
+				i, err := strconv.ParseInt(weekNum, 10, 8)
+				if err != nil || i == 0 || i > 53 || i < -53 {
+					return ErrInvalidRecur
+				}
+				weekNumList[n] = int8(i)
+			}
+			r.ByWeekNum = weekNumList
+		case "BYMONTH":
+			if r.ByMonth != nil {
+				return ErrInvalidRecur
+			}
+			months := strings.Split(parts[1], ",")
+			monthList := make([]Month, len(months))
+			for n, month := range months {
+				i, err := strconv.ParseInt(month, 10, 8)
+				if err != nil || i == 0 || i > 12 || i < -12 {
+					return ErrInvalidRecur
+				}
+				monthList[n] = Month(i)
+			}
+			r.ByMonth = monthList
+		case "BYSETPOS":
+			if r.BySetPos != nil {
+				return ErrInvalidRecur
+			}
+			setPoss := strings.Split(parts[1], ",")
+			setPosList := make([]int16, len(setPoss))
+			for n, setPos := range setPoss {
+				i, err := strconv.ParseInt(setPos, 10, 16)
+				if err != nil || i == 0 || i > 366 || i < -366 {
+					return ErrInvalidRecur
+				}
+				setPosList[n] = int16(i)
+			}
+			r.BySetPos = setPosList
+		case "WKST":
+			if r.WeekDay != UnknownDay {
+				return ErrInvalidRecur
+			}
+			switch parts[1] {
+			case "SU":
+				r.WeekDay = Sunday
+			case "MO":
+				r.WeekDay = Monday
+			case "TU":
+				r.WeekDay = Tuesday
+			case "WE":
+				r.WeekDay = Wednesday
+			case "TH":
+				r.WeekDay = Thursday
+			case "FR":
+				r.WeekDay = Friday
+			case "SA":
+				r.WeekDay = Saturday
+			default:
+				return ErrInvalidRecur
+			}
+		default:
+			return ErrInvalidRecur
+		}
+	}
+	if !freq {
+		return ErrInvalidRecur
+	}
 	return nil
 }
 
@@ -602,4 +869,5 @@ var (
 	ErrInvalidText     = errors.New("invalid encoded text")
 	ErrInvalidBoolean  = errors.New("invalid boolean")
 	ErrInvalidOffset   = errors.New("invalid offset")
+	ErrInvalidRecur    = errors.New("invalid recur")
 )
