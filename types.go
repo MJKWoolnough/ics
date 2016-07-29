@@ -623,7 +623,7 @@ func (r *Recur) Decode(params map[string]string, data string) error {
 			}
 			r.BySetPos = setPosList
 		case "WKST":
-			if r.WeekDay != UnknownDay {
+			if r.WeekStart != UnknownDay {
 				return ErrInvalidRecur
 			}
 			switch parts[1] {
@@ -867,8 +867,8 @@ func (r *Recur) Valid() bool {
 			return false
 		}
 	}
-	if r.WeekDay != UnknownDay {
-		switch r.WeekDay {
+	if r.WeekStart != UnknownDay {
+		switch r.WeekStart {
 		case Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday:
 		default:
 			return false
