@@ -17,7 +17,7 @@ const dateTimeFormat = "20060102T150405Z"
 
 type Binary []byte
 
-func (b *Binary) Decode(params map[string]string, data string) error {
+func (b *Binary) decode(params map[string]string, data string) error {
 	if params["ENCODING"] != "BASE64" {
 		return ErrInvalidEncoding
 	}
@@ -26,7 +26,7 @@ func (b *Binary) Decode(params map[string]string, data string) error {
 	return err
 }
 
-func (b *Binary) Encode(w io.Writer) {
+func (b *Binary) encode(w io.Writer) {
 	e := base64.NewEncoder(base64.StdEncoding, w)
 	e.Write([]byte(*b))
 	e.Close()
@@ -34,7 +34,7 @@ func (b *Binary) Encode(w io.Writer) {
 
 type Boolean bool
 
-func (b *Boolean) Decode(params map[string]string, data string) error {
+func (b *Boolean) decode(params map[string]string, data string) error {
 	cb, err := strconv.ParseBool(data)
 	*b = Boolean(cb)
 	if err != nil {
@@ -48,7 +48,7 @@ var (
 	booleanFalse = [...]byte{'F', 'A', 'L', 'S', 'E'}
 )
 
-func (b *Boolean) Encode(w io.Writer) {
+func (b *Boolean) encode(w io.Writer) {
 	if *b {
 		w.Write(booleanTrue[:])
 	} else {
@@ -64,7 +64,7 @@ type Date struct {
 	time.Time
 }
 
-func (d *Date) Decode(params map[string]string, data string) error {
+func (d *Date) decode(params map[string]string, data string) error {
 	t, err := time.Parse(dateTimeFormat[:8], data)
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ func (d *Date) Decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (d *Date) Encode(w io.Writer) {
+func (d *Date) encode(w io.Writer) {
 	b := make([]byte, 0, 8)
 	w.Write([]byte(d.AppendFormat(b, dateTimeFormat[:8])))
 }
@@ -82,7 +82,7 @@ type DateTime struct {
 	time.Time
 }
 
-func (d *DateTime) Decode(params map[string]string, data string) error {
+func (d *DateTime) decode(params map[string]string, data string) error {
 	if tz, ok := params["TZID"]; ok {
 		l, err := time.LoadLocation(tz)
 		if err != nil {
@@ -109,7 +109,7 @@ func (d *DateTime) Decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (d *DateTime) Encode(w io.Writer) {
+func (d *DateTime) encode(w io.Writer) {
 	b := make([]byte, 0, 16)
 	switch d.Location() {
 	case time.UTC:
@@ -127,7 +127,7 @@ type Duration struct {
 	Weeks, Days, Hours, Minutes, Seconds uint
 }
 
-func (d *Duration) Decode(params map[string]string, data string) error {
+func (d *Duration) decode(params map[string]string, data string) error {
 	t := parser.NewStringTokeniser(data)
 	if t.Accept("-") {
 		d.Negative = true
@@ -213,7 +213,7 @@ func itoa(n uint) []byte {
 	return digits[pos:]
 }
 
-func (d *Duration) Encode(w io.Writer) {
+func (d *Duration) encode(w io.Writer) {
 	data := make([]byte, 0, 64)
 	if d.Negative {
 		data = append(data, '-')
@@ -258,7 +258,7 @@ func (d *Duration) Encode(w io.Writer) {
 
 type Float float64
 
-func (f *Float) Decode(params map[string]string, data string) error {
+func (f *Float) decode(params map[string]string, data string) error {
 	cf, err := strconv.ParseFloat(data, 64)
 	if err != nil {
 		return err
@@ -267,13 +267,13 @@ func (f *Float) Decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (f *Float) Encode(w io.Writer) {
+func (f *Float) encode(w io.Writer) {
 	w.Write([]byte(strconv.FormatFloat(float64(*f), 'f', -1, 64)))
 }
 
 type Integer int32
 
-func (i *Integer) Decode(params map[string]string, data string) error {
+func (i *Integer) decode(params map[string]string, data string) error {
 	ci, err := strconv.ParseInt(data, 10, 32)
 	if err != nil {
 		return err
@@ -282,7 +282,7 @@ func (i *Integer) Decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (i *Integer) Encode(w io.Writer) {
+func (i *Integer) encode(w io.Writer) {
 	w.Write([]byte(strconv.FormatInt(int64(*i), 10)))
 }
 
@@ -291,28 +291,28 @@ type Period struct {
 	Duration   Duration
 }
 
-func (p *Period) Decode(params map[string]string, data string) error {
+func (p *Period) decode(params map[string]string, data string) error {
 	i := strings.IndexByte(data, '/')
 	if i == -1 || len(data) == i+1 {
 		return ErrInvalidPeriod
 	}
-	err := p.Start.Decode(params, data[:i])
+	err := p.Start.decode(params, data[:i])
 	if err != nil {
 		return err
 	}
 	if data[i+1] == 'P' || data[i+1] == '+' {
-		return p.Duration.Decode(params, data[i+1:])
+		return p.Duration.decode(params, data[i+1:])
 	}
-	return p.End.Decode(params, data[i+1:])
+	return p.End.decode(params, data[i+1:])
 }
 
-func (p *Period) Encode(w io.Writer) {
-	p.Start.Encode(w)
+func (p *Period) encode(w io.Writer) {
+	p.Start.encode(w)
 	w.Write([]byte{'/'})
 	if p.End.IsZero() {
-		p.Duration.Encode(w)
+		p.Duration.encode(w)
 	} else {
-		p.End.Encode(w)
+		p.End.encode(w)
 	}
 }
 
@@ -382,7 +382,7 @@ type Recur struct {
 	WeekStart  WeekDay
 }
 
-func (r *Recur) Decode(params map[string]string, data string) error {
+func (r *Recur) decode(params map[string]string, data string) error {
 	var freq bool
 	for _, rule := range strings.Split(data, ";") {
 		parts := strings.SplitN(rule, "=", 2)
@@ -416,14 +416,14 @@ func (r *Recur) Decode(params map[string]string, data string) error {
 			}
 			if len(parts[1]) > 10 {
 				var d DateTime
-				if err := d.Decode(params, parts[1]); err != nil {
+				if err := d.decode(params, parts[1]); err != nil {
 					return ErrInvalidRecur
 				}
 				r.Until = d.Time
 				r.UntilTime = true
 			} else {
 				var d Date
-				if err := d.Decode(params, parts[1]); err != nil {
+				if err := d.decode(params, parts[1]); err != nil {
 					return ErrInvalidRecur
 				}
 				r.Until = d.Time
@@ -654,7 +654,7 @@ func (r *Recur) Decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (r *Recur) Encode(w io.Writer) {
+func (r *Recur) encode(w io.Writer) {
 	comma := []byte{','}
 	switch r.Frequency {
 	case Secondly:
@@ -681,10 +681,10 @@ func (r *Recur) Encode(w io.Writer) {
 		w.Write([]byte(";UNTIL="))
 		if r.UntilTime {
 			d := DateTime{r.Until}
-			d.Encode(w)
+			d.encode(w)
 		} else {
 			d := Date{r.Until}
-			d.Encode(w)
+			d.encode(w)
 		}
 	}
 	if r.Interval != 0 {
@@ -811,7 +811,7 @@ func (r *Recur) Encode(w io.Writer) {
 	}
 }
 
-func (r *Recur) Valid() bool {
+func (r *Recur) valid() bool {
 	switch r.Frequency {
 	case Secondly, Minutely, Hourly, Daily, Weekly, Monthly, Yearly:
 	default:
@@ -879,7 +879,7 @@ func (r *Recur) Valid() bool {
 
 type Text string
 
-func (t *Text) Decode(params map[string]string, data string) error {
+func (t *Text) decode(params map[string]string, data string) error {
 	st := parser.NewStringTokeniser(data)
 	d := make([]byte, 0, len(data))
 	ru := make([]byte, 4)
@@ -929,7 +929,7 @@ Loop:
 	return nil
 }
 
-func (t *Text) Encode(w io.Writer) {
+func (t *Text) encode(w io.Writer) {
 	d := make([]byte, 0, len(*t)+256)
 	ru := make([]byte, 4)
 	for _, c := range *t {
@@ -958,7 +958,7 @@ type Time struct {
 	time.Time
 }
 
-func (t *Time) Decode(params map[string]string, data string) error {
+func (t *Time) decode(params map[string]string, data string) error {
 	if tz, ok := params["TZID"]; ok {
 		l, err := time.LoadLocation(tz)
 		if err != nil {
@@ -985,7 +985,7 @@ func (t *Time) Decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (t *Time) Encode(w io.Writer) {
+func (t *Time) encode(w io.Writer) {
 	b := make([]byte, 0, 7)
 	switch t.Location() {
 	case time.UTC:
@@ -1002,7 +1002,7 @@ type URI struct {
 	url.URL
 }
 
-func (u *URI) Decode(params map[string]string, data string) error {
+func (u *URI) decode(params map[string]string, data string) error {
 	cu, err := url.Parse(data)
 	if err != nil {
 		return err
@@ -1011,13 +1011,13 @@ func (u *URI) Decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (u *URI) Encode(w io.Writer) {
+func (u *URI) encode(w io.Writer) {
 	w.Write([]byte(u.URL.String()))
 }
 
 type UTCOffset int
 
-func (u *UTCOffset) Decode(params map[string]string, data string) error {
+func (u *UTCOffset) decode(params map[string]string, data string) error {
 	t := parser.NewStringTokeniser(data)
 	neg := false
 	if t.Accept("-") {
@@ -1059,7 +1059,7 @@ func (u *UTCOffset) Decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (u *UTCOffset) Encode(w io.Writer) {
+func (u *UTCOffset) encode(w io.Writer) {
 	o := int64(*u)
 	b := make([]byte, 0, 7)
 	if o < 0 {

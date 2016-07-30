@@ -12,10 +12,10 @@ type typeTest struct {
 	Params map[string]string
 	Data   string
 	Input  interface {
-		Decode(map[string]string, string) error
+		decode(map[string]string, string) error
 	}
 	Match interface {
-		Encode(io.Writer)
+		encode(io.Writer)
 	}
 	Output string
 	Error  error
@@ -29,7 +29,7 @@ func testType(t *testing.T, tests []typeTest) {
 		if test.Params == nil {
 			test.Params = emptyMap
 		}
-		err := test.Input.Decode(test.Params, test.Data)
+		err := test.Input.decode(test.Params, test.Data)
 		if err != test.Error {
 			if !reflect.DeepEqual(err, test.Error) {
 				t.Errorf("test %d: expecting error %s, got %s", n+1, test.Error, err)
@@ -41,7 +41,7 @@ func testType(t *testing.T, tests []typeTest) {
 				t.Errorf("test %d: input does not match expected", n+1)
 				continue
 			}
-			test.Match.Encode(&buf)
+			test.Match.encode(&buf)
 			if str := buf.String(); str != test.Output {
 				t.Errorf("test %d: expecting output string %q, got %q", n+1, test.Output, str)
 			}
