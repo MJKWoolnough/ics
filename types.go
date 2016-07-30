@@ -1056,7 +1056,7 @@ func (t *Time) encode(w io.Writer) {
 }
 
 func (t *Time) valid() error {
-	if !t.IsZero() {
+	if t.IsZero() {
 		return ErrInvalidTime
 	}
 	return nil
