@@ -870,9 +870,6 @@ func (r *Recur) valid() error {
 	default:
 		return ErrInvalidRecurFrequency
 	}
-	if r.Count == 0 && r.Until.IsZero() {
-		return ErrInvalidRecurCountUntil
-	}
 	for _, second := range r.BySecond {
 		if second > 60 {
 			return ErrInvalidRecurBySecond
@@ -1171,7 +1168,6 @@ var (
 	ErrInvalidPeriodDuration  = errors.New("invalid Period duration")
 	ErrInvalidPeriodEnd       = errors.New("invalid end of Period")
 	ErrInvalidRecurFrequency  = errors.New("invalid Recur frequency")
-	ErrInvalidRecurCountUntil = errors.New("invalid Recur Count and Until")
 	ErrInvalidRecurBySecond   = errors.New("invalid Recur BySecond")
 	ErrInvalidRecurByMinute   = errors.New("invalid Recur ByMinute")
 	ErrInvalidRecurByHour     = errors.New("invalid Recur ByHour")
