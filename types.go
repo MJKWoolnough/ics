@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
+	"math"
 	"net/url"
 	"strconv"
 	"strings"
@@ -32,6 +33,10 @@ func (b *Binary) encode(w io.Writer) {
 	e.Close()
 }
 
+func (b *Binary) valid() error {
+	return nil
+}
+
 type Boolean bool
 
 func (b *Boolean) decode(params map[string]string, data string) error {
@@ -56,6 +61,10 @@ func (b *Boolean) encode(w io.Writer) {
 	}
 }
 
+func (b *Boolean) valid() error {
+	return nil
+}
+
 type CalAddress struct {
 	URI
 }
@@ -76,6 +85,13 @@ func (d *Date) decode(params map[string]string, data string) error {
 func (d *Date) encode(w io.Writer) {
 	b := make([]byte, 0, 8)
 	w.Write([]byte(d.AppendFormat(b, dateTimeFormat[:8])))
+}
+
+func (d *Date) valid() error {
+	if d.IsZero() {
+		return ErrInvalidTime
+	}
+	return nil
 }
 
 type DateTime struct {
@@ -120,6 +136,13 @@ func (d *DateTime) encode(w io.Writer) {
 		b = d.AppendFormat(b, dateTimeFormat[:15])
 	}
 	w.Write(b)
+}
+
+func (d *DateTime) valid() error {
+	if d.IsZero() {
+		return ErrInvalidTime
+	}
+	return nil
 }
 
 type Duration struct {
@@ -256,6 +279,10 @@ func (d *Duration) encode(w io.Writer) {
 	w.Write(data)
 }
 
+func (d *Duration) valid() error {
+	return nil
+}
+
 type Float float64
 
 func (f *Float) decode(params map[string]string, data string) error {
@@ -271,6 +298,14 @@ func (f *Float) encode(w io.Writer) {
 	w.Write([]byte(strconv.FormatFloat(float64(*f), 'f', -1, 64)))
 }
 
+func (f *Float) valid() error {
+	d := float64(*f)
+	if !math.IsNaN(d) && !math.IsInf(d, 0) {
+		return ErrInvalidFloat
+	}
+	return nil
+}
+
 type Integer int32
 
 func (i *Integer) decode(params map[string]string, data string) error {
@@ -284,6 +319,10 @@ func (i *Integer) decode(params map[string]string, data string) error {
 
 func (i *Integer) encode(w io.Writer) {
 	w.Write([]byte(strconv.FormatInt(int64(*i), 10)))
+}
+
+func (i *Integer) valid() error {
+	return nil
 }
 
 type Period struct {
@@ -314,6 +353,20 @@ func (p *Period) encode(w io.Writer) {
 	} else {
 		p.End.encode(w)
 	}
+}
+
+func (p *Period) valid() error {
+	if p.Start.IsZero() {
+		return ErrInvalidPeriodStart
+	}
+	if p.End.IsZero() {
+		if p.Duration.Negative {
+			return ErrInvalidPeriodDuration
+		}
+	} else if !p.End.After(p.Start.Time) {
+		return ErrInvalidPeriodEnd
+	}
+	return nil
 }
 
 type Frequency uint8
@@ -811,70 +864,70 @@ func (r *Recur) encode(w io.Writer) {
 	}
 }
 
-func (r *Recur) valid() bool {
+func (r *Recur) valid() error {
 	switch r.Frequency {
 	case Secondly, Minutely, Hourly, Daily, Weekly, Monthly, Yearly:
 	default:
-		return false
+		return ErrInvalidRecurFrequency
 	}
 	if r.Count == 0 && r.Until.IsZero() {
-		return false
+		return ErrInvalidRecurCountUntil
 	}
 	for _, second := range r.BySecond {
 		if second > 60 {
-			return false
+			return ErrInvalidRecurBySecond
 		}
 	}
 	for _, minute := range r.ByMinute {
 		if minute > 59 {
-			return false
+			return ErrInvalidRecurByMinute
 		}
 	}
 	for _, hour := range r.ByHour {
 		if hour > 23 {
-			return false
+			return ErrInvalidRecurByHour
 		}
 	}
 	for _, day := range r.ByDay {
 		switch day.Day {
 		case Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday:
 		default:
-			return false
+			return ErrInvalidRecurByDay
 		}
 	}
 	for _, monthDay := range r.ByMonthDay {
 		if monthDay == 0 || monthDay > 31 || monthDay < -31 {
-			return false
+			return ErrInvalidRecurByMonthDay
 		}
 	}
 	for _, yearDay := range r.ByYearDay {
 		if yearDay == 0 || yearDay > 366 || yearDay < -366 {
-			return false
+			return ErrInvalidRecurByYearDay
 		}
 	}
 	for _, week := range r.ByWeekNum {
 		if week == 0 || week > 53 || week < -53 {
-			return false
+			return ErrInvalidRecurByWeekNum
 		}
 	}
 	for _, month := range r.ByMonth {
 		if month == 0 || month > 12 {
-			return false
+			return ErrInvalidRecurByMonth
 		}
 	}
 	for _, setPos := range r.BySetPos {
 		if setPos == 0 || setPos > 366 || setPos <= -366 {
-			return false
+			return ErrInvalidRecurBySetPos
 		}
 	}
 	if r.WeekStart != UnknownDay {
 		switch r.WeekStart {
 		case Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday:
 		default:
-			return false
+			return ErrInvalidRecurWeekStart
 		}
 	}
-	return true
+	return nil
 }
 
 type Text string
@@ -954,6 +1007,10 @@ func (t *Text) encode(w io.Writer) {
 	w.Write(d)
 }
 
+func (t *Text) valid() error {
+	return nil
+}
+
 type Time struct {
 	time.Time
 }
@@ -998,6 +1055,13 @@ func (t *Time) encode(w io.Writer) {
 	w.Write(b)
 }
 
+func (t *Time) valid() error {
+	if !t.IsZero() {
+		return ErrInvalidTime
+	}
+	return nil
+}
+
 type URI struct {
 	url.URL
 }
@@ -1013,6 +1077,10 @@ func (u *URI) decode(params map[string]string, data string) error {
 
 func (u *URI) encode(w io.Writer) {
 	w.Write([]byte(u.URL.String()))
+}
+
+func (u *URI) valid() error {
+	return nil
 }
 
 type UTCOffset int
@@ -1084,13 +1152,34 @@ func (u *UTCOffset) encode(w io.Writer) {
 	w.Write(b)
 }
 
+func (u *UTCOffset) valid() error {
+	return nil
+}
+
 // Errors
 var (
-	ErrInvalidEncoding = errors.New("invalid binary encoding")
-	ErrInvalidPeriod   = errors.New("invalid period")
-	ErrInvalidDuration = errors.New("invalid duration")
-	ErrInvalidText     = errors.New("invalid encoded text")
-	ErrInvalidBoolean  = errors.New("invalid boolean")
-	ErrInvalidOffset   = errors.New("invalid offset")
-	ErrInvalidRecur    = errors.New("invalid recur")
+	ErrInvalidEncoding        = errors.New("invalid Binary encoding")
+	ErrInvalidPeriod          = errors.New("invalid Period")
+	ErrInvalidDuration        = errors.New("invalid Duration")
+	ErrInvalidText            = errors.New("invalid encoded text")
+	ErrInvalidBoolean         = errors.New("invalid Boolean")
+	ErrInvalidOffset          = errors.New("invalid UTC Offset")
+	ErrInvalidRecur           = errors.New("invalid Recur")
+	ErrInvalidTime            = errors.New("invalid time")
+	ErrInvalidFloat           = errors.New("invalid float")
+	ErrInvalidPeriodStart     = errors.New("invalid start of Period")
+	ErrInvalidPeriodDuration  = errors.New("invalid Period duration")
+	ErrInvalidPeriodEnd       = errors.New("invalid end of Period")
+	ErrInvalidRecurFrequency  = errors.New("invalid Recur frequency")
+	ErrInvalidRecurCountUntil = errors.New("invalid Recur Count and Until")
+	ErrInvalidRecurBySecond   = errors.New("invalid Recur BySecond")
+	ErrInvalidRecurByMinute   = errors.New("invalid Recur ByMinute")
+	ErrInvalidRecurByHour     = errors.New("invalid Recur ByHour")
+	ErrInvalidRecurByDay      = errors.New("invalid Recur ByDay")
+	ErrInvalidRecurByMonthDay = errors.New("invalid Recur ByMonthDay")
+	ErrInvalidRecurByYearDay  = errors.New("invalid Recur ByYearDay")
+	ErrInvalidRecurByWeekNum  = errors.New("invalid Recur ByWeekNum")
+	ErrInvalidRecurByMonth    = errors.New("invalid Recur ByMonth")
+	ErrInvalidRecurBySetPos   = errors.New("invalid Recur BySetPos")
+	ErrInvalidRecurWeekStart  = errors.New("invalid Recur WeekStart")
 )
