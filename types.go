@@ -913,7 +913,7 @@ func (r *Recur) valid() error {
 		}
 	}
 	for _, setPos := range r.BySetPos {
-		if setPos == 0 || setPos > 366 || setPos <= -366 {
+		if setPos == 0 || setPos > 366 || setPos < -366 {
 			return ErrInvalidRecurBySetPos
 		}
 	}
