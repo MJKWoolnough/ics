@@ -16,6 +16,7 @@ type typeTest struct {
 	}
 	Match interface {
 		encode(io.Writer)
+		valid() error
 	}
 	Output string
 	Error  error
@@ -39,6 +40,10 @@ func testType(t *testing.T, tests []typeTest) {
 		if test.Error == nil {
 			if !reflect.DeepEqual(test.Input, test.Match) {
 				t.Errorf("test %d: input does not match expected", n+1)
+				continue
+			}
+			if err := test.Match.valid(); err != nil {
+				t.Errorf("test %d: unexpected validation error: %s", n+1, err)
 				continue
 			}
 			test.Match.encode(&buf)
@@ -238,13 +243,13 @@ func TestPeriod(t *testing.T) {
 
 func TestRecur(t *testing.T) {
 	testType(t, []typeTest{
-		{
+		{ // 1
 			Data:   "FREQ=SECONDLY",
 			Input:  &Recur{},
 			Match:  &Recur{},
 			Output: "FREQ=SECONDLY",
 		},
-		{
+		{ // 2
 			Data:  "FREQ=MINUTELY",
 			Input: &Recur{},
 			Match: &Recur{
@@ -252,7 +257,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=MINUTELY",
 		},
-		{
+		{ // 3
 			Data:  "FREQ=HOURLY;COUNT=10",
 			Input: &Recur{},
 			Match: &Recur{
@@ -261,7 +266,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=HOURLY;COUNT=10",
 		},
-		{
+		{ // 4
 			Data:  "FREQ=DAILY;UNTIL=20011125",
 			Input: &Recur{},
 			Match: &Recur{
@@ -270,7 +275,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=DAILY;UNTIL=20011125",
 		},
-		{
+		{ // 5
 			Data:  "FREQ=WEEKLY;UNTIL=20011125T131415",
 			Input: &Recur{},
 			Match: &Recur{
@@ -280,7 +285,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=WEEKLY;UNTIL=20011125T131415",
 		},
-		{
+		{ // 6
 			Data:  "UNTIL=20011125;FREQ=MONTHLY",
 			Input: &Recur{},
 			Match: &Recur{
@@ -289,7 +294,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=MONTHLY;UNTIL=20011125",
 		},
-		{
+		{ // 7
 			Data:  "FREQ=YEARLY;UNTIL=20011125T131415Z",
 			Input: &Recur{},
 			Match: &Recur{
@@ -299,22 +304,22 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=YEARLY;UNTIL=20011125T131415Z",
 		},
-		{
+		{ // 8
 			Data:  "FREQ=UNKNOWN",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 9
 			Data:  "FREQ=SECONDLY;COUNT=-1",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 10
 			Data:  "FREQ=SECONDLY;UNTIL=ABC",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 11
 			Data:  "FREQ=SECONDLY;INTERVAL=10",
 			Input: &Recur{},
 			Match: &Recur{
@@ -322,7 +327,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;INTERVAL=10",
 		},
-		{
+		{ // 12
 			Data:  "FREQ=SECONDLY;BYSECOND=1,2,60",
 			Input: &Recur{},
 			Match: &Recur{
@@ -330,22 +335,22 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;BYSECOND=1,2,60",
 		},
-		{
+		{ // 13
 			Data:  "FREQ=SECONDLY;BYSECOND=1,2,61",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 14
 			Data:  "FREQ=SECONDLY;BYSECOND=1,2,-1",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 15
 			Data:  "FREQ=SECONDLY;BYSECOND=1,2,A",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 16
 			Data:  "FREQ=SECONDLY;BYMINUTE=1,2,59",
 			Input: &Recur{},
 			Match: &Recur{
@@ -353,22 +358,22 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;BYMINUTE=1,2,59",
 		},
-		{
+		{ // 17
 			Data:  "FREQ=SECONDLY;BYMINUTE=1,2,60",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 18
 			Data:  "FREQ=SECONDLY;BYMINUTE=1,2,-1",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 19
 			Data:  "FREQ=SECONDLY;BYMINUTE=1,2,A",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 20
 			Data:  "FREQ=SECONDLY;BYHOUR=1,2,23",
 			Input: &Recur{},
 			Match: &Recur{
@@ -376,22 +381,22 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;BYHOUR=1,2,23",
 		},
-		{
+		{ // 21
 			Data:  "FREQ=SECONDLY;BYHOUR=1,2,24",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 22
 			Data:  "FREQ=SECONDLY;BYHOUR=1,2,-1",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 23
 			Data:  "FREQ=SECONDLY;BYHOUR=1,2,A",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 24
 			Data:  "FREQ=SECONDLY;BYDAY=WE,+2FR,53MO,-53SU,-9TU",
 			Input: &Recur{},
 			Match: &Recur{
@@ -405,32 +410,32 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;BYDAY=WE,2FR,53MO,-53SU,-9TU",
 		},
-		{
+		{ // 25
 			Data:  "FREQ=SECONDLY;BYDAY=UN",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 26
 			Data:  "FREQ=SECONDLY;BYDAY=-54MO",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 27
 			Data:  "FREQ=SECONDLY;BYDAY=54MO",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 28
 			Data:  "FREQ=SECONDLY;BYDAY=MON",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 29
 			Data:  "FREQ=SECONDLY;BYDAY=MO,",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 30
 			Data:  "FREQ=SECONDLY;BYMONTHDAY=1,31,-1,-31",
 			Input: &Recur{},
 			Match: &Recur{
@@ -438,32 +443,32 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;BYMONTHDAY=1,31,-1,-31",
 		},
-		{
+		{ // 31
 			Data:  "FREQ=SECONDLY;BYMONTHDAY=32",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 32
 			Data:  "FREQ=SECONDLY;BYMONTHDAY=-32",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 33
 			Data:  "FREQ=SECONDLY;BYMONTHDAY=0",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 34
 			Data:  "FREQ=SECONDLY;BYMONTHDAY=A",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 35
 			Data:  "FREQ=SECONDLY;BYMONTHDAY=1,",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 36
 			Data:  "FREQ=SECONDLY;BYYEARDAY=1,366,-1,-366",
 			Input: &Recur{},
 			Match: &Recur{
@@ -471,32 +476,32 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;BYYEARDAY=1,366,-1,-366",
 		},
-		{
+		{ // 37
 			Data:  "FREQ=SECONDLY;BYYEARDAY=0",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 38
 			Data:  "FREQ=SECONDLY;BYYEARDAY=367",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 39
 			Data:  "FREQ=SECONDLY;BYYEARDAY=-367",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 40
 			Data:  "FREQ=SECONDLY;BYYEARDAY=1,",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 41
 			Data:  "FREQ=SECONDLY;BYYEARDAY=A",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 42
 			Data:  "FREQ=SECONDLY;BYWEEKNO=1,52,-1,-52",
 			Input: &Recur{},
 			Match: &Recur{
@@ -504,27 +509,27 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;BYWEEKNO=1,52,-1,-52",
 		},
-		{
+		{ // 43
 			Data:  "FREQ=SECONDLY;BYYWEEKNO=1,0",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 44
 			Data:  "FREQ=SECONDLY;BYYWEEKNO=54",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 45
 			Data:  "FREQ=SECONDLY;BYYWEEKNO=-54",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 46
 			Data:  "FREQ=SECONDLY;BYYWEEKNO=A",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 47
 			Data:  "FREQ=SECONDLY;BYMONTH=1,2,12",
 			Input: &Recur{},
 			Match: &Recur{
@@ -532,22 +537,22 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;BYMONTH=1,2,12",
 		},
-		{
+		{ // 48
 			Data:  "FREQ=SECONDLY;BYMONTH=1,2,13",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 49
 			Data:  "FREQ=SECONDLY;BYMONTH=1,2,-1",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 50
 			Data:  "FREQ=SECONDLY;BYMONTH=1,2,A",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 51
 			Data:  "FREQ=SECONDLY;BYSETPOS=1,366,-1,-366",
 			Input: &Recur{},
 			Match: &Recur{
@@ -555,32 +560,32 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;BYSETPOS=1,366,-1,-366",
 		},
-		{
+		{ // 52
 			Data:  "FREQ=SECONDLY;BYSETPOS=0",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 53
 			Data:  "FREQ=SECONDLY;BYSETPOS=367",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 54
 			Data:  "FREQ=SECONDLY;BYSETPOS=-367",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 55
 			Data:  "FREQ=SECONDLY;BYSETPOS=1,",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 56
 			Data:  "FREQ=SECONDLY;BYSETPOS=A",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 57
 			Data:  "FREQ=SECONDLY;WKST=SU",
 			Input: &Recur{},
 			Match: &Recur{
@@ -588,7 +593,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;WKST=SU",
 		},
-		{
+		{ // 58
 			Data:  "FREQ=SECONDLY;WKST=MO",
 			Input: &Recur{},
 			Match: &Recur{
@@ -596,7 +601,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;WKST=MO",
 		},
-		{
+		{ // 59
 			Data:  "FREQ=SECONDLY;WKST=TU",
 			Input: &Recur{},
 			Match: &Recur{
@@ -604,7 +609,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;WKST=TU",
 		},
-		{
+		{ // 60
 			Data:  "FREQ=SECONDLY;WKST=WE",
 			Input: &Recur{},
 			Match: &Recur{
@@ -612,7 +617,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;WKST=WE",
 		},
-		{
+		{ // 61
 			Data:  "FREQ=SECONDLY;WKST=TH",
 			Input: &Recur{},
 			Match: &Recur{
@@ -620,7 +625,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;WKST=TH",
 		},
-		{
+		{ // 62
 			Data:  "FREQ=SECONDLY;WKST=FR",
 			Input: &Recur{},
 			Match: &Recur{
@@ -628,7 +633,7 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;WKST=FR",
 		},
-		{
+		{ // 63
 			Data:  "FREQ=SECONDLY;WKST=SA",
 			Input: &Recur{},
 			Match: &Recur{
@@ -636,22 +641,22 @@ func TestRecur(t *testing.T) {
 			},
 			Output: "FREQ=SECONDLY;WKST=SA",
 		},
-		{
+		{ // 64
 			Data:  "FREQ=SECONDLY;WKST=UN",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 65
 			Data:  "FREQ=SECONDLY;",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 66
 			Data:  "FREQ=SECONDLY;UNKNOWN=1",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
-		{
+		{ // 67
 			Data:  "FREQ=SECONDLY;UNKOWN",
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
