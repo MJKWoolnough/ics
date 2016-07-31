@@ -1,0 +1,15 @@
+EXDATE:DateTime|Date
+	VALUE=DATE
+		:Date
+	VALUE=DATE-TIME
+		:DateTime
+	TZID
+RDATE:DateTime
+	VALUE=DATE
+		:Date
+	VALUE=PERIOD
+		:Period
+	VALUE=DATE-TIME
+		:DateTime
+	TZID
+RRULE:Recur

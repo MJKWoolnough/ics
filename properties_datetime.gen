@@ -1,0 +1,23 @@
+COMPLETED:DateTime
+DTEND:DateTime|Date
+	VALUE=DATE
+		:Date
+	VALUE=DATE-TIME
+		:DateTime
+	TZID
+DUE:DateTime|Date
+	VALUE=DATE
+		:Date
+	VALUE=DATE-TIME
+		:DateTime
+	TZID
+DTSTART:DateTime|Date
+	VALUE=DATE
+		:Date
+	VALUE=DATE-TIME
+		:DateTime
+	TZID
+DURATION:Duration
+FREEBUSY:Period
+	FBTYPE
+TRANSP:OPAQUE|TRANSPARENT
