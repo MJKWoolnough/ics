@@ -204,7 +204,7 @@ func TestTokeniser(t *testing.T) {
 		},
 	}
 	for n, test := range tests {
-		p, err := tokeniser(strings.NewReader(test.Input)).GetPhrase()
+		p, err := newTokeniser(strings.NewReader(test.Input)).GetPhrase()
 		if !reflect.DeepEqual(err, test.Error) {
 			t.Errorf("test %d: expecting error %q, got %q", n+1, test.Error, err)
 		} else if test.Error == nil && !reflect.DeepEqual(p, test.Output) {
