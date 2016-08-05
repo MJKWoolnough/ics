@@ -35,3 +35,4 @@ TZNAME=TimezoneName
 TZOFFSETFROM=TimezoneOffsetFrom
 TZOFFSETTO=TimezoneOffsetTo
 TZURL=TimezoneURL
+REQUEST-STATUS=RequestStatus
