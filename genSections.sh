@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source "names.sh";
+
 declare -a currSection;
 declare -a requirements;
 declare sectionName;
@@ -343,8 +345,6 @@ OFS="$IFS";
 	echo;
 	echo "import \"strings\"";
 	echo;
-
-	source names.sh
 
 	{
 		read sectionName;
