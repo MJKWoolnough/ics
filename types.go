@@ -3,7 +3,6 @@ package ics
 import (
 	"encoding/base64"
 	"errors"
-	"io"
 	"math"
 	"net/url"
 	"strconv"
@@ -27,9 +26,9 @@ func (b *Binary) decode(params map[string]string, data string) error {
 	return err
 }
 
-func (b *Binary) encode(w io.Writer) {
+func (b *Binary) encode(w writer) {
 	e := base64.NewEncoder(base64.StdEncoding, w)
-	e.Write([]byte(*b))
+	e.Write(*b)
 	e.Close()
 }
 
@@ -53,7 +52,7 @@ var (
 	booleanFalse = [...]byte{'F', 'A', 'L', 'S', 'E'}
 )
 
-func (b *Boolean) encode(w io.Writer) {
+func (b *Boolean) encode(w writer) {
 	if *b {
 		w.Write(booleanTrue[:])
 	} else {
@@ -82,9 +81,9 @@ func (d *Date) decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (d *Date) encode(w io.Writer) {
+func (d *Date) encode(w writer) {
 	b := make([]byte, 0, 8)
-	w.Write([]byte(d.AppendFormat(b, dateTimeFormat[:8])))
+	w.Write(d.AppendFormat(b, dateTimeFormat[:8]))
 }
 
 func (d *Date) valid() error {
@@ -125,7 +124,7 @@ func (d *DateTime) decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (d *DateTime) encode(w io.Writer) {
+func (d *DateTime) encode(w writer) {
 	b := make([]byte, 0, 16)
 	switch d.Location() {
 	case time.UTC:
@@ -236,7 +235,7 @@ func itoa(n uint) []byte {
 	return digits[pos:]
 }
 
-func (d *Duration) encode(w io.Writer) {
+func (d *Duration) encode(w writer) {
 	data := make([]byte, 0, 64)
 	if d.Negative {
 		data = append(data, '-')
@@ -294,8 +293,8 @@ func (f *Float) decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (f *Float) encode(w io.Writer) {
-	w.Write([]byte(strconv.FormatFloat(float64(*f), 'f', -1, 64)))
+func (f *Float) encode(w writer) {
+	w.WriteString(strconv.FormatFloat(float64(*f), 'f', -1, 64))
 }
 
 func (f *Float) valid() error {
@@ -317,8 +316,8 @@ func (i *Integer) decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (i *Integer) encode(w io.Writer) {
-	w.Write([]byte(strconv.FormatInt(int64(*i), 10)))
+func (i *Integer) encode(w writer) {
+	w.WriteString(strconv.FormatInt(int64(*i), 10))
 }
 
 func (i *Integer) valid() error {
@@ -345,7 +344,7 @@ func (p *Period) decode(params map[string]string, data string) error {
 	return p.End.decode(params, data[i+1:])
 }
 
-func (p *Period) encode(w io.Writer) {
+func (p *Period) encode(w writer) {
 	p.Start.encode(w)
 	w.Write([]byte{'/'})
 	if p.End.IsZero() {
@@ -707,31 +706,31 @@ func (r *Recur) decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (r *Recur) encode(w io.Writer) {
+func (r *Recur) encode(w writer) {
 	comma := []byte{','}
 	switch r.Frequency {
 	case Secondly:
-		w.Write([]byte("FREQ=SECONDLY"))
+		w.WriteString("FREQ=SECONDLY")
 	case Minutely:
-		w.Write([]byte("FREQ=MINUTELY"))
+		w.WriteString("FREQ=MINUTELY")
 	case Hourly:
-		w.Write([]byte("FREQ=HOURLY"))
+		w.WriteString("FREQ=HOURLY")
 	case Daily:
-		w.Write([]byte("FREQ=DAILY"))
+		w.WriteString("FREQ=DAILY")
 	case Weekly:
-		w.Write([]byte("FREQ=WEEKLY"))
+		w.WriteString("FREQ=WEEKLY")
 	case Monthly:
-		w.Write([]byte("FREQ=MONTHLY"))
+		w.WriteString("FREQ=MONTHLY")
 	case Yearly:
-		w.Write([]byte("FREQ=YEARLY"))
+		w.WriteString("FREQ=YEARLY")
 	default:
-		w.Write([]byte("FREQ=SECONDLY"))
+		w.WriteString("FREQ=SECONDLY")
 	}
 	if r.Count != 0 {
-		w.Write([]byte(";COUNT="))
-		w.Write([]byte(strconv.FormatUint(r.Count, 10)))
+		w.WriteString(";COUNT=")
+		w.WriteString(strconv.FormatUint(r.Count, 10))
 	} else if !r.Until.IsZero() {
-		w.Write([]byte(";UNTIL="))
+		w.WriteString(";UNTIL=")
 		if r.UntilTime {
 			d := DateTime{r.Until}
 			d.encode(w)
@@ -741,44 +740,44 @@ func (r *Recur) encode(w io.Writer) {
 		}
 	}
 	if r.Interval != 0 {
-		w.Write([]byte(";INTERVAL="))
-		w.Write([]byte(strconv.FormatUint(r.Interval, 10)))
+		w.WriteString(";INTERVAL=")
+		w.WriteString(strconv.FormatUint(r.Interval, 10))
 	}
 	if len(r.BySecond) > 0 {
-		w.Write([]byte(";BYSECOND="))
+		w.WriteString(";BYSECOND=")
 		for n, second := range r.BySecond {
 			if n > 0 {
 				w.Write(comma)
 			}
-			w.Write([]byte(strconv.FormatUint(uint64(second), 10)))
+			w.WriteString(strconv.FormatUint(uint64(second), 10))
 		}
 	}
 	if len(r.ByMinute) > 0 {
-		w.Write([]byte(";BYMINUTE="))
+		w.WriteString(";BYMINUTE=")
 		for n, minute := range r.ByMinute {
 			if n > 0 {
 				w.Write(comma)
 			}
-			w.Write([]byte(strconv.FormatUint(uint64(minute), 10)))
+			w.WriteString(strconv.FormatUint(uint64(minute), 10))
 		}
 	}
 	if len(r.ByHour) > 0 {
-		w.Write([]byte(";BYHOUR="))
+		w.WriteString(";BYHOUR=")
 		for n, hour := range r.ByHour {
 			if n > 0 {
 				w.Write(comma)
 			}
-			w.Write([]byte(strconv.FormatUint(uint64(hour), 10)))
+			w.WriteString(strconv.FormatUint(uint64(hour), 10))
 		}
 	}
 	if len(r.ByDay) > 0 {
-		w.Write([]byte(";BYDAY="))
+		w.WriteString(";BYDAY=")
 		for n, day := range r.ByDay {
 			if n > 0 {
 				w.Write(comma)
 			}
 			if day.Occurence != 0 {
-				w.Write([]byte(strconv.FormatInt(int64(day.Occurence), 10)))
+				w.WriteString(strconv.FormatInt(int64(day.Occurence), 10))
 			}
 			switch day.Day {
 			case Sunday:
@@ -799,52 +798,52 @@ func (r *Recur) encode(w io.Writer) {
 		}
 	}
 	if len(r.ByMonthDay) > 0 {
-		w.Write([]byte(";BYMONTHDAY="))
+		w.WriteString(";BYMONTHDAY=")
 		for n, month := range r.ByMonthDay {
 			if n > 0 {
 				w.Write(comma)
 			}
-			w.Write([]byte(strconv.FormatInt(int64(month), 10)))
+			w.WriteString(strconv.FormatInt(int64(month), 10))
 		}
 	}
 	if len(r.ByYearDay) > 0 {
-		w.Write([]byte(";BYYEARDAY="))
+		w.WriteString(";BYYEARDAY=")
 		for n, year := range r.ByYearDay {
 			if n > 0 {
 				w.Write(comma)
 			}
-			w.Write([]byte(strconv.FormatInt(int64(year), 10)))
+			w.WriteString(strconv.FormatInt(int64(year), 10))
 		}
 	}
 	if len(r.ByWeekNum) > 0 {
-		w.Write([]byte(";BYWEEKNO="))
+		w.WriteString(";BYWEEKNO=")
 		for n, week := range r.ByWeekNum {
 			if n > 0 {
 				w.Write(comma)
 			}
-			w.Write([]byte(strconv.FormatInt(int64(week), 10)))
+			w.WriteString(strconv.FormatInt(int64(week), 10))
 		}
 	}
 	if len(r.ByMonth) > 0 {
-		w.Write([]byte(";BYMONTH="))
+		w.WriteString(";BYMONTH=")
 		for n, month := range r.ByMonth {
 			if n > 0 {
 				w.Write(comma)
 			}
-			w.Write([]byte(strconv.FormatUint(uint64(month), 10)))
+			w.WriteString(strconv.FormatUint(uint64(month), 10))
 		}
 	}
 	if len(r.BySetPos) > 0 {
-		w.Write([]byte(";BYSETPOS="))
+		w.WriteString(";BYSETPOS=")
 		for n, setPos := range r.BySetPos {
 			if n > 0 {
 				w.Write(comma)
 			}
-			w.Write([]byte(strconv.FormatInt(int64(setPos), 10)))
+			w.WriteString(strconv.FormatInt(int64(setPos), 10))
 		}
 	}
 	if r.WeekStart != UnknownDay {
-		w.Write([]byte(";WKST="))
+		w.WriteString(";WKST=")
 		switch r.WeekStart {
 		case Sunday:
 			w.Write([]byte{'S', 'U'})
@@ -979,7 +978,7 @@ Loop:
 	return nil
 }
 
-func (t *Text) encode(w io.Writer) {
+func (t *Text) encode(w writer) {
 	d := make([]byte, 0, len(*t)+256)
 	ru := make([]byte, 4)
 	for _, c := range *t {
@@ -1039,7 +1038,7 @@ func (t *Time) decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (t *Time) encode(w io.Writer) {
+func (t *Time) encode(w writer) {
 	b := make([]byte, 0, 7)
 	switch t.Location() {
 	case time.UTC:
@@ -1072,8 +1071,8 @@ func (u *URI) decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (u *URI) encode(w io.Writer) {
-	w.Write([]byte(u.URL.String()))
+func (u *URI) encode(w writer) {
+	w.WriteString(u.URL.String())
 }
 
 func (u *URI) valid() error {
@@ -1124,7 +1123,7 @@ func (u *UTCOffset) decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (u *UTCOffset) encode(w io.Writer) {
+func (u *UTCOffset) encode(w writer) {
 	o := int64(*u)
 	b := make([]byte, 0, 7)
 	if o < 0 {

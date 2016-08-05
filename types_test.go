@@ -2,7 +2,6 @@ package ics
 
 import (
 	"bytes"
-	"io"
 	"reflect"
 	"testing"
 	"time"
@@ -15,7 +14,7 @@ type typeTest struct {
 		decode(map[string]string, string) error
 	}
 	Match interface {
-		encode(io.Writer)
+		encode(writer)
 		valid() error
 	}
 	Output string
