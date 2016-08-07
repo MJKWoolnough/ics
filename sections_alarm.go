@@ -82,11 +82,6 @@ func (AlarmEmail) Type() string {
 	return "EMAIL"
 }
 
-// temporary to compile
-type AlarmAudio struct{ section }
-type AlarmDisplay struct{ section }
-type AlarmEmail struct{ section }
-
 // Errors
 var (
 	ErrInvalidStructure   = errors.New("invalid structure")
