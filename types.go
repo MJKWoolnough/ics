@@ -38,7 +38,7 @@ func (b *Binary) valid() error {
 
 type Boolean bool
 
-func (b *Boolean) decode(params map[string]string, data string) error {
+func (b *Boolean) decode(_ map[string]string, data string) error {
 	cb, err := strconv.ParseBool(data)
 	*b = Boolean(cb)
 	if err != nil {
@@ -72,7 +72,7 @@ type Date struct {
 	time.Time
 }
 
-func (d *Date) decode(params map[string]string, data string) error {
+func (d *Date) decode(_ map[string]string, data string) error {
 	t, err := time.Parse(dateTimeFormat[:8], data)
 	if err != nil {
 		return err
@@ -149,7 +149,7 @@ type Duration struct {
 	Weeks, Days, Hours, Minutes, Seconds uint
 }
 
-func (d *Duration) decode(params map[string]string, data string) error {
+func (d *Duration) decode(_ map[string]string, data string) error {
 	t := parser.NewStringTokeniser(data)
 	if t.Accept("-") {
 		d.Negative = true
@@ -284,7 +284,7 @@ func (d *Duration) valid() error {
 
 type Float float64
 
-func (f *Float) decode(params map[string]string, data string) error {
+func (f *Float) decode(_ map[string]string, data string) error {
 	cf, err := strconv.ParseFloat(data, 64)
 	if err != nil {
 		return err
@@ -307,7 +307,7 @@ func (f *Float) valid() error {
 
 type Integer int32
 
-func (i *Integer) decode(params map[string]string, data string) error {
+func (i *Integer) decode(_ map[string]string, data string) error {
 	ci, err := strconv.ParseInt(data, 10, 32)
 	if err != nil {
 		return err
@@ -928,7 +928,7 @@ func (r *Recur) valid() error {
 
 type Text string
 
-func (t *Text) decode(params map[string]string, data string) error {
+func (t *Text) decode(_ map[string]string, data string) error {
 	st := parser.NewStringTokeniser(data)
 	d := make([]byte, 0, len(data))
 	ru := make([]byte, 4)
@@ -1062,7 +1062,7 @@ type URI struct {
 	url.URL
 }
 
-func (u *URI) decode(params map[string]string, data string) error {
+func (u *URI) decode(_ map[string]string, data string) error {
 	cu, err := url.Parse(data)
 	if err != nil {
 		return err
@@ -1081,7 +1081,7 @@ func (u *URI) valid() error {
 
 type UTCOffset int
 
-func (u *UTCOffset) decode(params map[string]string, data string) error {
+func (u *UTCOffset) decode(_ map[string]string, data string) error {
 	t := parser.NewStringTokeniser(data)
 	neg := false
 	if t.Accept("-") {
