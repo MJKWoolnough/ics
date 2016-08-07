@@ -64,7 +64,7 @@ func (b *Boolean) valid() error {
 	return nil
 }
 
-type CalAddress struct {
+type CalendarAddress struct {
 	URI
 }
 
