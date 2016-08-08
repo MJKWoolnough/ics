@@ -3,11 +3,13 @@
 source "names.sh";
 
 (
+	declare -A regexes;
 	echo "package ics";
 	echo;
 	echo "// File automatically generated with ./genParams.sh";
 	echo;
 	echo "import (";
+	echo "	\"regexp\"";
 	echo "	\"strings\"";
 	echo;
 	echo "	\"github.com/MJKWoolnough/parser\"";
@@ -60,6 +62,11 @@ source "names.sh";
 				vType="$values";
 			elif $string; then
 				echo "string";
+				if [ ! -z "$regex" ]; then
+					echo;
+					echo "var regex$type *regexp.Regexp";
+					regexes[$type]="$values";
+				fi;
 			else
 				if $freeChoice; then
 					choices=( $(echo "Unknown|$values" | tr "|" " ") );
@@ -168,7 +175,9 @@ source "names.sh";
 						echo "	*t = $type(${vName}.Data)";
 					fi;
 				else
-					echo "#REGEX";
+					echo "$indent	if !regex$type.MatchString(${vName}.Data) {";
+					echo "$indent		return ErrInvalidParam";
+					echo "$indent	}";
 				fi;
 			fi;
 			
@@ -186,4 +195,9 @@ source "names.sh";
 			echo;
 		done;
 	} < params.gen
+	echo "func init() {";
+	for key in ${!regexes[@]}; do
+		echo "	regex$key = regexp.MustCompile(\"${regexes[$key]}\")";
+	done;
+	echo "}";
 ) #> params.go
