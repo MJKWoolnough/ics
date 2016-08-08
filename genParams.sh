@@ -9,6 +9,7 @@ source "names.sh";
 	echo "// File automatically generated with ./genParams.sh";
 	echo;
 	echo "import (";
+	echo "	\"errors\"";
 	echo "	\"regexp\"";
 	echo "	\"strings\"";
 	echo;
@@ -277,4 +278,9 @@ source "names.sh";
 		echo "	regex$key = regexp.MustCompile(\"${regexes[$key]}\")";
 	done;
 	echo "}";
+	echo;
+	echo "// Errors";
+	echo "var (";
+	echo "	ErrInvalidParam = errors.New(\"invalid param value\")";
+	echo ")";
 ) > params.go
