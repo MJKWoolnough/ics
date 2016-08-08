@@ -28,6 +28,9 @@ func (t *AlternativeRepresentation) decode(vs []parser.Token) error {
 }
 
 func (t *AlternativeRepresentation) encode(w writer) {
+	if len(t.String()) == 0 {
+		return
+	}
 	w.WriteString(";ALTREP=")
 	q := URI(*t)
 	q.encode(w)
@@ -49,6 +52,9 @@ func (t *CommonName) decode(vs []parser.Token) error {
 }
 
 func (t *CommonName) encode(w writer) {
+	if len(*t) == 0 {
+		return
+	}
 	w.WriteString(";CN=")
 	if strings.ContainsAny(string(*t), nonsafeChars[33:]) {
 		w.WriteString("\"")
@@ -132,6 +138,9 @@ func (t *Delegator) decode(vs []parser.Token) error {
 }
 
 func (t *Delegator) encode(w writer) {
+	if len(*t) == 0 {
+		return
+	}
 	w.WriteString(";DELEGATED-FROM=")
 	for n, v := range *t {
 		if n > 0 {
@@ -165,6 +174,9 @@ func (t *Delagatee) decode(vs []parser.Token) error {
 }
 
 func (t *Delagatee) encode(w writer) {
+	if len(*t) == 0 {
+		return
+	}
 	w.WriteString(";DELEGATED-TO=")
 	for n, v := range *t {
 		if n > 0 {
@@ -195,6 +207,9 @@ func (t *DirectoryEntry) decode(vs []parser.Token) error {
 }
 
 func (t *DirectoryEntry) encode(w writer) {
+	if len(*t) == 0 {
+		return
+	}
 	w.WriteString(";DIR=")
 	w.WriteString("\"")
 	w.WriteString(*t)
@@ -265,6 +280,9 @@ func (t *FormatType) decode(vs []parser.Token) error {
 }
 
 func (t *FormatType) encode(w writer) {
+	if len(*t) == 0 {
+		return
+	}
 	w.WriteString(";FMTTYPE=")
 	if strings.ContainsAny(string(*t), nonsafeChars[33:]) {
 		w.WriteString("\"")
@@ -342,6 +360,9 @@ func (t *Langauge) decode(vs []parser.Token) error {
 }
 
 func (t *Langauge) encode(w writer) {
+	if len(*t) == 0 {
+		return
+	}
 	w.WriteString(";LANGAUGE=")
 	if strings.ContainsAny(string(*t), nonsafeChars[33:]) {
 		w.WriteString("\"")
@@ -372,6 +393,9 @@ func (t *Member) decode(vs []parser.Token) error {
 }
 
 func (t *Member) encode(w writer) {
+	if len(*t) == 0 {
+		return
+	}
 	w.WriteString(";MEMBER=")
 	for n, v := range *t {
 		if n > 0 {
@@ -626,6 +650,9 @@ func (t *RSVP) decode(vs []parser.Token) error {
 }
 
 func (t *RSVP) encode(w writer) {
+	if !*t {
+		return
+	}
 	w.WriteString(";RSVP=")
 	q := Boolean(*t)
 	q.encode(w)
@@ -649,6 +676,9 @@ func (t *SentBy) decode(vs []parser.Token) error {
 }
 
 func (t *SentBy) encode(w writer) {
+	if len(*t) == 0 {
+		return
+	}
 	w.WriteString(";SENT-BY=")
 	w.WriteString("\"")
 	w.WriteString(*t)
@@ -673,6 +703,9 @@ func (t *TimezoneID) decode(vs []parser.Token) error {
 }
 
 func (t *TimezoneID) encode(w writer) {
+	if len(*t) == 0 {
+		return
+	}
 	w.WriteString(";TZID=")
 	if strings.ContainsAny(string(*t), nonsafeChars[33:]) {
 		w.WriteString("\"")

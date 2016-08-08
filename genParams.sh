@@ -175,6 +175,21 @@ source "names.sh";
 			#encoder
 
 			echo "func (t *$type) encode(w writer) {";
+			if [ ${#choices} -eq 0 ] || $multiple; then
+				if [ "$vType" = "CALADDRESS" -o "$vType" = "URI" ]; then
+					echo "	if len(t.String()) == 0 {";
+					echo "		return";
+					echo "	}";
+				elif [ "$vType" = "Boolean" ]; then
+					echo "	if !*t {";
+					echo "		return";
+					echo "	}";
+				else
+					echo "	if len(*t) == 0 {";
+					echo "		return";
+					echo "	}";
+				fi;
+			fi;
 			echo "	w.WriteString(\";${keyword}=\")";
 			if $multiple; then
 				echo "	for n, v := range *t {";
