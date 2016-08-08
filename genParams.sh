@@ -82,22 +82,9 @@ source "names.sh";
 					echo;
 					echo "const (";
 					declare first=true;
-					declare longest=0;
-					for choice in ${choices[@]}; do
-						declare c="$(getName "$choice")";
-						declare l="${#c}";
-						if [ $l -gt $longest ]; then
-							longest=$l;
-						fi;
-					done;
 					for choice in ${choices[@]};do
 						echo -n "	$type$(getName "$choice")";
 						if $first; then
-							if [ ${#choice} -lt $longest ]; then
-								for i in $(seq $(( $longest - ${#choice} ))); do
-									echo -n " ";
-								done;
-							fi;
 							echo -n " $type = iota";
 							first=false;
 						fi;
@@ -290,4 +277,4 @@ source "names.sh";
 		echo "	regex$key = regexp.MustCompile(\"${regexes[$key]}\")";
 	done;
 	echo "}";
-) #> params.go
+) > params.go
