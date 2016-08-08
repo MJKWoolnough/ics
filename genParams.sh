@@ -54,6 +54,7 @@ source "names.sh";
 			elif [ "$fc" = "~" ]; then
 				regex="${values:1}";
 				string=true;
+				values="${values:1}";
 				fc="${values:0:1}";
 			fi;
 			if [ "$fc" = "!" ]; then
@@ -178,6 +179,7 @@ source "names.sh";
 					echo "$indent	if !regex$type.MatchString(${vName}.Data) {";
 					echo "$indent		return ErrInvalidParam";
 					echo "$indent	}";
+					echo "$indent	*t = ${vName}.Data";
 				fi;
 			fi;
 			
@@ -199,6 +201,7 @@ source "names.sh";
 
 			echo "func (t *$type) validate() bool {";
 			echo "}";
+			echo;
 		done;
 	} < params.gen
 	echo "func init() {";
