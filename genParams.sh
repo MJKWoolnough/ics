@@ -191,8 +191,14 @@ source "names.sh";
 			#encoder
 
 			echo "func (t *$type) encode(w writer) {";
+			echo "	w.WriteString(\"${keyword}=\")";
 			echo "}";
 			echo;
+
+			#validator
+
+			echo "func (t *$type) validate() bool {";
+			echo "}";
 		done;
 	} < params.gen
 	echo "func init() {";
