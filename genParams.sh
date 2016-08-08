@@ -188,19 +188,20 @@ source "names.sh";
 
 			echo "func (t *$type) encode(w writer) {";
 			echo "	w.WriteString(\";${keyword}=\")";
-			vName="*t";
 			if $multiple; then
 				echo "	for n, v := range *t {";
 				echo "		if n > 0 {";
 				echo "			w.WriteString(\",\")";
 				echo "		}";
-				vName="v";
+			else
+				vName="*t";
 			fi;
 			if [ ! -z "$vType" ]; then
 				echo "$indent	q := $vType($vName)";
 				echo "$indent	q.encode(w)";
 			elif [ ${#choices[@]} -eq 1 ]; then
 				echo "$indent	w.WriteString(\"${choices[0]}\")";
+				freeChoice=true;
 			elif [ ${#choices[@]} -gt 1 ]; then
 				echo "$indent	switch $vName {";
 				for choice in ${choices[@]}; do
@@ -218,7 +219,7 @@ source "names.sh";
 					echo "$indent	w.WriteString($vName)";
 					echo "$indent	w.WriteString(\"\\\"\")";
 				else
-					echo "$indent	if strings.ContainsAny(string($vName), \"\\\";:,\") {";
+					echo "$indent	if strings.ContainsAny(string($vName), nonsafeChars[33:]) {";
 					echo "$indent		w.WriteString(\"\\\"\")";
 					echo "$indent		w.WriteString($vName)";
 					echo "$indent		w.WriteString(\"\\\"\")";
@@ -236,6 +237,50 @@ source "names.sh";
 			#validator
 
 			echo "func (t *$type) validate() bool {";
+			if [ "$vType" = "Boolean" ]; then
+				echo "	return true";
+			elif [ ${#choices[@]} -eq 0 ] || ! $freeChoice; then
+				if $multiple; then
+					echo "	for _, v := range *t {";
+				fi;
+				if [ ! -z "$vType" ]; then
+					if $multiple; then
+					echo "		return !v.validate()";
+					else
+					echo "	q := $vType(*t)";
+					echo "	return q.validate()";
+					fi;
+				elif [ ${#choices[@]} -gt 0 ]; then
+					echo "$indent	switch $vName {";
+					echo -n "$indent	case ";
+					first=false;
+					for choice in ${choices[@]}; do
+						if $first; then
+							echo -n ", ";
+						fi;
+						first=true;
+						echo -n "$type$(getName "$choice")";
+					done;
+					echo ":";
+					echo "$indent	default:";
+					echo "$indent		return false";
+					echo "$indent	}";
+				elif [ ! -z "$regex" ]; then
+					echo "$indent	if !regex${type}.Match($vName) {";
+					echo "$indent		return false";
+					echo "$indent	}";
+				else
+					echo "$indent	if strings.ContainsAny($vName, nonsafeChars[:33]) {";
+					echo "$indent		return false";
+					echo "$indent	}";
+				fi;
+				if $multiple; then
+					echo "	}";
+				fi;
+			fi;
+			if [ -z "$vType" ] ; then
+				echo "	return true";
+			fi;
 			echo "}";
 			echo;
 		done;
