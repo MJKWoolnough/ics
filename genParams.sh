@@ -152,7 +152,7 @@ source "names.sh";
 				for choice in ${choices[@]}; do
 					echo "$indent	case \"$choice\":";
 					if $multiple; then
-						echo "		*t = append(*t, $(getName "$choice")";
+						echo "		*t = append(*t, $type$(getName "$choice")";
 					else
 						echo "		*t = $type$(getName "$choice")";
 					fi;
@@ -182,7 +182,6 @@ source "names.sh";
 					echo "$indent	*t = ${vName}.Data";
 				fi;
 			fi;
-			
 			if $multiple; then
 				echo "	}";
 			fi;
@@ -194,6 +193,50 @@ source "names.sh";
 
 			echo "func (t *$type) encode(w writer) {";
 			echo "	w.WriteString(\"${keyword}=\")";
+			vName="*t";
+			if $multiple; then
+				echo "	for n, v := range *t {";
+				echo "		if n > 0 {";
+				echo "			w.WriteString(\",\")";
+				echo "		}";
+				vName="v";
+			fi;
+			if [ ! -z "$vType" ]; then
+				echo "$indent	q := $vType($vName)";
+				echo "$indent	q.encode(w)";
+			elif [ ${#choices[@]} -eq 1 ]; then
+				echo "$indent	w.WriteString(\"${choices[0]}\")";
+			elif [ ${#choices[@]} -gt 1 ]; then
+				echo "$indent	switch $vName {";
+				for choice in ${choices[@]}; do
+					echo "$indent	case $type$(getName "$choice"):";
+					echo "$indent		w.WriteString(\"$choice\")";
+				done;
+				if $freeChoice; then
+					echo "$indent	default:";
+					echo "$indent		w.WriteString(\"UNKNOWN\")";
+				fi;
+				echo "$indent	}";
+			else
+				if $doubleQuote; then
+					echo "$indent	w.WriteString(\"\\\"\")";
+					echo "$indent	q := Text($vName)";
+					echo "$indent	q.encode(w)";
+					echo "$indent	w.WriteString(\"\\\"\")";
+				else
+					echo "$indent	if strings.ContainsAny(string($vName), \"\\\";:,\") {";
+					echo "$indent		w.WriteString(\"\\\"\")";
+					echo "$indent		q := Text($vName)";
+					echo "$indent		q.encode(w)";
+					echo "$indent		w.WriteString(\"\\\"\")";
+					echo "$indent	} else {";
+					echo "$indent		w.WriteString(string($vName))";
+					echo "$indent	}";
+				fi;
+			fi;
+			if $multiple; then
+				echo "	}";
+			fi;
 			echo "}";
 			echo;
 
