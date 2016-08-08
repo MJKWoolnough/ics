@@ -187,7 +187,7 @@ source "names.sh";
 			#encoder
 
 			echo "func (t *$type) encode(w writer) {";
-			echo "	w.WriteString(\"${keyword}=\")";
+			echo "	w.WriteString(\";${keyword}=\")";
 			vName="*t";
 			if $multiple; then
 				echo "	for n, v := range *t {";
