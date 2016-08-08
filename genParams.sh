@@ -127,11 +127,6 @@ source "names.sh";
 				echo "$indent	if ${vName}.Type != tokenParamQuotedValue {";
 				echo "$indent		return ErrInvalidParam";
 				echo "$indent	}";
-				echo "$indent	var p Text";
-				echo "$indent	if err := p.encode(nil, ${vName}.Data); err != nil {";
-				echo "$indent		return err";
-				echo "$indent	}";
-				echo "$indent	${vName}.Data = string(p)";
 			fi;
 			if [ ! -z "$vType" ]; then
 				echo "$indent	var q $vType";
@@ -220,14 +215,12 @@ source "names.sh";
 			else
 				if $doubleQuote; then
 					echo "$indent	w.WriteString(\"\\\"\")";
-					echo "$indent	q := Text($vName)";
-					echo "$indent	q.encode(w)";
+					echo "$indent	w.WriteString($vName)";
 					echo "$indent	w.WriteString(\"\\\"\")";
 				else
 					echo "$indent	if strings.ContainsAny(string($vName), \"\\\";:,\") {";
 					echo "$indent		w.WriteString(\"\\\"\")";
-					echo "$indent		q := Text($vName)";
-					echo "$indent		q.encode(w)";
+					echo "$indent		w.WriteString($vName)";
 					echo "$indent		w.WriteString(\"\\\"\")";
 					echo "$indent	} else {";
 					echo "$indent		w.WriteString(string($vName))";
