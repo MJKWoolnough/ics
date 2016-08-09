@@ -36,7 +36,7 @@ func (t *AlternativeRepresentation) encode(w writer) {
 	q.encode(w)
 }
 
-func (t *AlternativeRepresentation) validate() bool {
+func (t *AlternativeRepresentation) valid() bool {
 	q := URI(*t)
 	return q.validate()
 }
@@ -65,7 +65,7 @@ func (t *CommonName) encode(w writer) {
 	}
 }
 
-func (t *CommonName) validate() bool {
+func (t *CommonName) valid() bool {
 	if strings.ContainsAny(*t, nonsafeChars[:33]) {
 		return false
 	}
@@ -117,7 +117,7 @@ func (t *CalendarUserType) encode(w writer) {
 	}
 }
 
-func (t *CalendarUserType) validate() bool {
+func (t *CalendarUserType) valid() bool {
 	return true
 }
 
@@ -151,7 +151,7 @@ func (t *Delegator) encode(w writer) {
 	}
 }
 
-func (t *Delegator) validate() bool {
+func (t *Delegator) valid() bool {
 	for _, v := range *t {
 		return !v.validate()
 	}
@@ -187,7 +187,7 @@ func (t *Delagatee) encode(w writer) {
 	}
 }
 
-func (t *Delagatee) validate() bool {
+func (t *Delagatee) valid() bool {
 	for _, v := range *t {
 		return !v.validate()
 	}
@@ -216,7 +216,7 @@ func (t *DirectoryEntry) encode(w writer) {
 	w.WriteString("\"")
 }
 
-func (t *DirectoryEntry) validate() bool {
+func (t *DirectoryEntry) valid() bool {
 	if strings.ContainsAny(*t, nonsafeChars[:33]) {
 		return false
 	}
@@ -255,7 +255,7 @@ func (t *Encoding) encode(w writer) {
 	}
 }
 
-func (t *Encoding) validate() bool {
+func (t *Encoding) valid() bool {
 	switch *t {
 	case Encoding8bit, EncodingBase64:
 	default:
@@ -293,7 +293,7 @@ func (t *FormatType) encode(w writer) {
 	}
 }
 
-func (t *FormatType) validate() bool {
+func (t *FormatType) valid() bool {
 	if !regexFormatType.Match(*t) {
 		return false
 	}
@@ -345,7 +345,7 @@ func (t *FreeBusyType) encode(w writer) {
 	}
 }
 
-func (t *FreeBusyType) validate() bool {
+func (t *FreeBusyType) valid() bool {
 	return true
 }
 
@@ -373,7 +373,7 @@ func (t *Langauge) encode(w writer) {
 	}
 }
 
-func (t *Langauge) validate() bool {
+func (t *Langauge) valid() bool {
 	if strings.ContainsAny(*t, nonsafeChars[:33]) {
 		return false
 	}
@@ -407,7 +407,7 @@ func (t *Member) encode(w writer) {
 	}
 }
 
-func (t *Member) validate() bool {
+func (t *Member) valid() bool {
 	for _, v := range *t {
 		if strings.ContainsAny(v, nonsafeChars[:33]) {
 			return false
@@ -476,7 +476,7 @@ func (t *ParticipationStatus) encode(w writer) {
 	}
 }
 
-func (t *ParticipationStatus) validate() bool {
+func (t *ParticipationStatus) valid() bool {
 	return true
 }
 
@@ -497,7 +497,7 @@ func (t *Range) encode(w writer) {
 	w.WriteString("THISANDFUTURE")
 }
 
-func (t *Range) validate() bool {
+func (t *Range) valid() bool {
 	return true
 }
 
@@ -533,7 +533,7 @@ func (t *Related) encode(w writer) {
 	}
 }
 
-func (t *Related) validate() bool {
+func (t *Related) valid() bool {
 	switch *t {
 	case RelatedStart, RelatedEnd:
 	default:
@@ -582,7 +582,7 @@ func (t *RelationshipType) encode(w writer) {
 	}
 }
 
-func (t *RelationshipType) validate() bool {
+func (t *RelationshipType) valid() bool {
 	return true
 }
 
@@ -631,7 +631,7 @@ func (t *ParticipationRole) encode(w writer) {
 	}
 }
 
-func (t *ParticipationRole) validate() bool {
+func (t *ParticipationRole) valid() bool {
 	return true
 }
 
@@ -658,7 +658,7 @@ func (t *RSVP) encode(w writer) {
 	q.encode(w)
 }
 
-func (t *RSVP) validate() bool {
+func (t *RSVP) valid() bool {
 	return true
 }
 
@@ -685,7 +685,7 @@ func (t *SentBy) encode(w writer) {
 	w.WriteString("\"")
 }
 
-func (t *SentBy) validate() bool {
+func (t *SentBy) valid() bool {
 	if strings.ContainsAny(*t, nonsafeChars[:33]) {
 		return false
 	}
@@ -716,7 +716,7 @@ func (t *TimezoneID) encode(w writer) {
 	}
 }
 
-func (t *TimezoneID) validate() bool {
+func (t *TimezoneID) valid() bool {
 	if strings.ContainsAny(*t, nonsafeChars[:33]) {
 		return false
 	}
@@ -818,7 +818,7 @@ func (t *Value) encode(w writer) {
 	}
 }
 
-func (t *Value) validate() bool {
+func (t *Value) valid() bool {
 	return true
 }
 

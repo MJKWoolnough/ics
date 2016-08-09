@@ -239,7 +239,7 @@ source "names.sh";
 
 			#validator
 
-			echo "func (t *$type) validate() bool {";
+			echo "func (t *$type) valid() bool {";
 			if [ "$vType" = "Boolean" ]; then
 				echo "	return true";
 			elif [ ${#choices[@]} -eq 0 ] || ! $freeChoice; then
