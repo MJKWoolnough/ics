@@ -5,7 +5,7 @@ import "io"
 type section interface {
 	decode(tokeniser) error
 	encode(w writer)
-	valid() bool
+	valid() error
 }
 
 func Decode(r io.Reader) (*Calendar, error) {

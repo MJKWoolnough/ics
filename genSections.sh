@@ -301,7 +301,7 @@ function printSection {
 
 	# validator
 
-	echo "func (s *$sName) valid() bool {";
+	echo "func (s *$sName) valid() error {";
 	for tline in "${currSection[@]}"; do
 		aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
 		name="${aline[0]}";
@@ -310,25 +310,29 @@ function printSection {
 		if $multiple; then
 			if $required; then
 				echo "	if len(s.$name) == 0 {";
-				echo "		return false";
+				echo "		return ErrMissingRequired";
 				echo "	}";
 			fi;
 			echo "	for n := range s.$name {";
-			echo "		if !s.$name[n].valid() {";
-			echo "			return false";
+			echo "		if err := s.$name[n].valid(); err != nil {";
+			echo "			return err";
 			echo "		}";
 			echo "	}";
 		else
 			if $required; then
-				echo "	if !s.${name}.valid() {";
+				echo "	if err := s.${name}.valid(); err != nil {";
+				echo "		return err";
+				echo "	}";
 			else
-				echo "	if s.$name != nil && !s.${name}.valid() {";
+				echo "	if s.$name != nil {";
+				echo "		if err := s.${name}.valid(); err != nil {";
+				echo "			return err";
+				echo "		}";
+				echo "	}";
 			fi;
-			echo "		return false";
-			echo "	}";
 		fi;
 	done;
-	echo "	return true";
+	echo "	return nil";
 	echo "}";
 	echo;
 	currSection=();
