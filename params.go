@@ -216,7 +216,7 @@ func (t DirectoryEntry) encode(w writer) {
 	}
 	w.WriteString(";DIR=")
 	w.WriteString("\"")
-	w.WriteString(*t)
+	w.WriteString(encode6868(string(*t)))
 	w.WriteString("\"")
 }
 
@@ -406,7 +406,7 @@ func (t Member) encode(w writer) {
 			w.WriteString(",")
 		}
 		w.WriteString("\"")
-		w.WriteString(v)
+		w.WriteString(encode6868(string(v)))
 		w.WriteString("\"")
 	}
 }
@@ -685,7 +685,7 @@ func (t SentBy) encode(w writer) {
 	}
 	w.WriteString(";SENT-BY=")
 	w.WriteString("\"")
-	w.WriteString(*t)
+	w.WriteString(encode6868(string(*t)))
 	w.WriteString("\"")
 }
 

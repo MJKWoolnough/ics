@@ -219,7 +219,7 @@ source "names.sh";
 			else
 				if $doubleQuote; then
 					echo "$indent	w.WriteString(\"\\\"\")";
-					echo "$indent	w.WriteString($vName)";
+					echo "$indent	w.WriteString(encode6868(string($vName)))";
 					echo "$indent	w.WriteString(\"\\\"\")";
 				else
 					echo "$indent	if strings.ContainsAny(string($vName), nonsafeChars[32:]) {";
