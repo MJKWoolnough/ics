@@ -27,7 +27,7 @@ func (t *AlternativeRepresentation) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *AlternativeRepresentation) encode(w writer) {
+func (t AlternativeRepresentation) encode(w writer) {
 	if len(t.String()) == 0 {
 		return
 	}
@@ -36,7 +36,7 @@ func (t *AlternativeRepresentation) encode(w writer) {
 	q.encode(w)
 }
 
-func (t *AlternativeRepresentation) valid() bool {
+func (t AlternativeRepresentation) valid() bool {
 	q := URI(*t)
 	return q.validate()
 }
@@ -51,7 +51,7 @@ func (t *CommonName) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *CommonName) encode(w writer) {
+func (t CommonName) encode(w writer) {
 	if len(*t) == 0 {
 		return
 	}
@@ -65,7 +65,7 @@ func (t *CommonName) encode(w writer) {
 	}
 }
 
-func (t *CommonName) valid() bool {
+func (t CommonName) valid() bool {
 	if strings.ContainsAny(*t, nonsafeChars[:33]) {
 		return false
 	}
@@ -101,7 +101,7 @@ func (t *CalendarUserType) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *CalendarUserType) encode(w writer) {
+func (t CalendarUserType) encode(w writer) {
 	w.WriteString(";CUTYPE=")
 	switch *t {
 	case CalendarUserTypeIndividual:
@@ -117,7 +117,7 @@ func (t *CalendarUserType) encode(w writer) {
 	}
 }
 
-func (t *CalendarUserType) valid() bool {
+func (t CalendarUserType) valid() bool {
 	return true
 }
 
@@ -137,7 +137,7 @@ func (t *Delegator) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *Delegator) encode(w writer) {
+func (t Delegator) encode(w writer) {
 	if len(*t) == 0 {
 		return
 	}
@@ -151,7 +151,7 @@ func (t *Delegator) encode(w writer) {
 	}
 }
 
-func (t *Delegator) valid() bool {
+func (t Delegator) valid() bool {
 	for _, v := range *t {
 		return !v.validate()
 	}
@@ -173,7 +173,7 @@ func (t *Delagatee) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *Delagatee) encode(w writer) {
+func (t Delagatee) encode(w writer) {
 	if len(*t) == 0 {
 		return
 	}
@@ -187,7 +187,7 @@ func (t *Delagatee) encode(w writer) {
 	}
 }
 
-func (t *Delagatee) valid() bool {
+func (t Delagatee) valid() bool {
 	for _, v := range *t {
 		return !v.validate()
 	}
@@ -206,7 +206,7 @@ func (t *DirectoryEntry) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *DirectoryEntry) encode(w writer) {
+func (t DirectoryEntry) encode(w writer) {
 	if len(*t) == 0 {
 		return
 	}
@@ -216,7 +216,7 @@ func (t *DirectoryEntry) encode(w writer) {
 	w.WriteString("\"")
 }
 
-func (t *DirectoryEntry) valid() bool {
+func (t DirectoryEntry) valid() bool {
 	if strings.ContainsAny(*t, nonsafeChars[:33]) {
 		return false
 	}
@@ -245,7 +245,7 @@ func (t *Encoding) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *Encoding) encode(w writer) {
+func (t Encoding) encode(w writer) {
 	w.WriteString(";ENCODING=")
 	switch *t {
 	case Encoding8bit:
@@ -255,7 +255,7 @@ func (t *Encoding) encode(w writer) {
 	}
 }
 
-func (t *Encoding) valid() bool {
+func (t Encoding) valid() bool {
 	switch *t {
 	case Encoding8bit, EncodingBase64:
 	default:
@@ -279,7 +279,7 @@ func (t *FormatType) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *FormatType) encode(w writer) {
+func (t FormatType) encode(w writer) {
 	if len(*t) == 0 {
 		return
 	}
@@ -293,7 +293,7 @@ func (t *FormatType) encode(w writer) {
 	}
 }
 
-func (t *FormatType) valid() bool {
+func (t FormatType) valid() bool {
 	if !regexFormatType.Match(*t) {
 		return false
 	}
@@ -329,7 +329,7 @@ func (t *FreeBusyType) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *FreeBusyType) encode(w writer) {
+func (t FreeBusyType) encode(w writer) {
 	w.WriteString(";FBTYPE=")
 	switch *t {
 	case FreeBusyTypeFree:
@@ -345,7 +345,7 @@ func (t *FreeBusyType) encode(w writer) {
 	}
 }
 
-func (t *FreeBusyType) valid() bool {
+func (t FreeBusyType) valid() bool {
 	return true
 }
 
@@ -359,7 +359,7 @@ func (t *Langauge) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *Langauge) encode(w writer) {
+func (t Langauge) encode(w writer) {
 	if len(*t) == 0 {
 		return
 	}
@@ -373,7 +373,7 @@ func (t *Langauge) encode(w writer) {
 	}
 }
 
-func (t *Langauge) valid() bool {
+func (t Langauge) valid() bool {
 	if strings.ContainsAny(*t, nonsafeChars[:33]) {
 		return false
 	}
@@ -392,7 +392,7 @@ func (t *Member) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *Member) encode(w writer) {
+func (t Member) encode(w writer) {
 	if len(*t) == 0 {
 		return
 	}
@@ -407,7 +407,7 @@ func (t *Member) encode(w writer) {
 	}
 }
 
-func (t *Member) valid() bool {
+func (t Member) valid() bool {
 	for _, v := range *t {
 		if strings.ContainsAny(v, nonsafeChars[:33]) {
 			return false
@@ -454,7 +454,7 @@ func (t *ParticipationStatus) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *ParticipationStatus) encode(w writer) {
+func (t ParticipationStatus) encode(w writer) {
 	w.WriteString(";PARTSTAT=")
 	switch *t {
 	case ParticipationStatusNeedsAction:
@@ -476,7 +476,7 @@ func (t *ParticipationStatus) encode(w writer) {
 	}
 }
 
-func (t *ParticipationStatus) valid() bool {
+func (t ParticipationStatus) valid() bool {
 	return true
 }
 
@@ -492,12 +492,12 @@ func (t *Range) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *Range) encode(w writer) {
+func (t Range) encode(w writer) {
 	w.WriteString(";RANGE=")
 	w.WriteString("THISANDFUTURE")
 }
 
-func (t *Range) valid() bool {
+func (t Range) valid() bool {
 	return true
 }
 
@@ -523,7 +523,7 @@ func (t *Related) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *Related) encode(w writer) {
+func (t Related) encode(w writer) {
 	w.WriteString(";RELATED=")
 	switch *t {
 	case RelatedStart:
@@ -533,7 +533,7 @@ func (t *Related) encode(w writer) {
 	}
 }
 
-func (t *Related) valid() bool {
+func (t Related) valid() bool {
 	switch *t {
 	case RelatedStart, RelatedEnd:
 	default:
@@ -568,7 +568,7 @@ func (t *RelationshipType) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *RelationshipType) encode(w writer) {
+func (t RelationshipType) encode(w writer) {
 	w.WriteString(";RELTYPE=")
 	switch *t {
 	case RelationshipTypeParent:
@@ -582,7 +582,7 @@ func (t *RelationshipType) encode(w writer) {
 	}
 }
 
-func (t *RelationshipType) valid() bool {
+func (t RelationshipType) valid() bool {
 	return true
 }
 
@@ -615,7 +615,7 @@ func (t *ParticipationRole) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *ParticipationRole) encode(w writer) {
+func (t ParticipationRole) encode(w writer) {
 	w.WriteString(";ROLE=")
 	switch *t {
 	case ParticipationRoleRequiredParticipant:
@@ -631,7 +631,7 @@ func (t *ParticipationRole) encode(w writer) {
 	}
 }
 
-func (t *ParticipationRole) valid() bool {
+func (t ParticipationRole) valid() bool {
 	return true
 }
 
@@ -649,7 +649,7 @@ func (t *RSVP) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *RSVP) encode(w writer) {
+func (t RSVP) encode(w writer) {
 	if !*t {
 		return
 	}
@@ -658,7 +658,7 @@ func (t *RSVP) encode(w writer) {
 	q.encode(w)
 }
 
-func (t *RSVP) valid() bool {
+func (t RSVP) valid() bool {
 	return true
 }
 
@@ -675,7 +675,7 @@ func (t *SentBy) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *SentBy) encode(w writer) {
+func (t SentBy) encode(w writer) {
 	if len(*t) == 0 {
 		return
 	}
@@ -685,7 +685,7 @@ func (t *SentBy) encode(w writer) {
 	w.WriteString("\"")
 }
 
-func (t *SentBy) valid() bool {
+func (t SentBy) valid() bool {
 	if strings.ContainsAny(*t, nonsafeChars[:33]) {
 		return false
 	}
@@ -702,7 +702,7 @@ func (t *TimezoneID) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *TimezoneID) encode(w writer) {
+func (t TimezoneID) encode(w writer) {
 	if len(*t) == 0 {
 		return
 	}
@@ -716,7 +716,7 @@ func (t *TimezoneID) encode(w writer) {
 	}
 }
 
-func (t *TimezoneID) valid() bool {
+func (t TimezoneID) valid() bool {
 	if strings.ContainsAny(*t, nonsafeChars[:33]) {
 		return false
 	}
@@ -782,7 +782,7 @@ func (t *Value) decode(vs []parser.Token) error {
 	return nil
 }
 
-func (t *Value) encode(w writer) {
+func (t Value) encode(w writer) {
 	w.WriteString(";VALUE=")
 	switch *t {
 	case ValueBinary:
@@ -818,7 +818,7 @@ func (t *Value) encode(w writer) {
 	}
 }
 
-func (t *Value) valid() bool {
+func (t Value) valid() bool {
 	return true
 }
 

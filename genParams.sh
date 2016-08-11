@@ -174,7 +174,7 @@ source "names.sh";
 
 			#encoder
 
-			echo "func (t *$type) encode(w writer) {";
+			echo "func (t $type) encode(w writer) {";
 			if [ ${#choices} -eq 0 ] || $multiple; then
 				if [ "$vType" = "CALADDRESS" -o "$vType" = "URI" ]; then
 					echo "	if len(t.String()) == 0 {";
@@ -239,7 +239,7 @@ source "names.sh";
 
 			#validator
 
-			echo "func (t *$type) valid() bool {";
+			echo "func (t $type) valid() bool {";
 			if [ "$vType" = "Boolean" ]; then
 				echo "	return true";
 			elif [ ${#choices[@]} -eq 0 ] || ! $freeChoice; then
