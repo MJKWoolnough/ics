@@ -977,18 +977,24 @@ type Text string
 
 func (t *Text) decode(_ map[string]string, data string) error {
 	st := parser.NewStringTokeniser(data)
+	*t = Text(decodeText(st))
+	if st.Peek() != -1 {
+		return ErrInvalidText
+	}
+	return nil
+}
+
+func decodeText(t parser.Tokeniser) string {
 	d := make([]byte, 0, len(data))
-	ru := make([]byte, 4)
+	var ru [4]byte
 Loop:
 	for {
-		c := st.ExceptRun("\";:\\,^")
-		d = append(d, st.Get()...)
+		c := t.ExceptRun("\\,")
+		d = append(d, t.Get()...)
 		switch c {
-		case -1:
-			break Loop
 		case '\\':
 			st.Accept("\\")
-			switch st.Peek() {
+			switch c := t.Peek(); c {
 			case '\\':
 				d = append(d, '\\')
 			case ';':
@@ -998,31 +1004,17 @@ Loop:
 			case 'N', 'n':
 				d = append(d, '\n')
 			default:
-				return ErrInvalidText
-			}
-			st.Except("")
-		case '^':
-			st.Accept("^")
-			switch c := st.Peek(); c {
-			case 'n':
-				d = append(d, '\n')
-			case -1, '^':
-				d = append(d, '^')
-			case '\'':
-				d = append(d, '"')
-			default:
-				d = append(d, '^')
-				l := utf8.EncodeRune(ru, c)
+				d = append(d, '\\')
+				l := utf8.EncodeRune(ru[:], c)
 				d = append(d, ru[:l]...)
 			}
 			st.Except("")
+			st.Get()
 		default:
-			return ErrInvalidText
+			break Loop
 		}
-		st.Get()
 	}
-	*t = Text(d)
-	return nil
+	return string(d)
 }
 
 func (t *Text) aencode(w writer) {
@@ -1032,7 +1024,7 @@ func (t *Text) aencode(w writer) {
 
 func (t *Text) encode(w writer) {
 	d := make([]byte, 0, len(*t)+256)
-	ru := make([]byte, 4)
+	var ru [4]byte
 	for _, c := range *t {
 		switch c {
 		case '\\':
@@ -1043,12 +1035,8 @@ func (t *Text) encode(w writer) {
 			d = append(d, '\\', ';')
 		case ',':
 			d = append(d, '\\', ',')
-		case '^':
-			d = append(d, '^', '^')
-		case '"':
-			d = append(d, '^', '\'')
 		default:
-			l := utf8.EncodeRune(ru, c)
+			l := utf8.EncodeRune(ru[:], c)
 			d = append(d, ru[:l]...)
 		}
 	}
@@ -1056,6 +1044,37 @@ func (t *Text) encode(w writer) {
 }
 
 func (t *Text) valid() error {
+	return nil
+}
+
+type MText []Text
+
+func (t *MText) decode(_ map[string]string, data string) error {
+	st := parser.NewStringTokeniser(data)
+	for {
+		*t = append(*t, Text(decodeText(st)))
+		if st.Peek() == -1 {
+			break
+		}
+	}
+	return nil
+}
+
+func (t *MText) aencode(w writer) {
+	w.WriteString(":")
+	t.encode(w)
+}
+
+func (t *MText) encode(w writer) {
+	for n, tx := range *t {
+		if n > 0 {
+			w.WriteString(",")
+			tx.encode(w)
+		}
+	}
+}
+
+func (t *MText) valid() error {
 	return nil
 }
 
