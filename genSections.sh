@@ -77,9 +77,11 @@ function printSection {
 	echo "		if err != nil {";
 	echo "			return err";
 	echo "		}";
+	echo "		params := p.Data[1 : len(p.Data)-1]";
+	echo "		value := p.Data[len(p.Data)-1]";
 	echo "		switch strings.ToUpper(p.Data[0].Data) {";
 	echo "		case \"BEGIN\":";
-	echo "			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {";
+	echo "			switch n := strings.ToUpper(value.Data); n {";
 
 	# BEGIN keywords
 
@@ -142,12 +144,12 @@ function printSection {
 			echo "				return ErrMultipleSingle";
 			echo "			}";
 			echo "			required$name = true";
-			echo "			if err := s.${name}.decode(p.Data[1:]); err != nil {";
+			echo "			if err := s.${name}.decode(params, value); err != nil {";
 			echo "				return err";
 			echo "			}";
 		elif $multiple; then
 			echo "			var e $name";
-			echo "			if err := e.${name}.decode(p.Data[1:]); err != nil {";
+			echo "			if err := e.${name}.decode(params, value); err != nil {";
 			echo "				return err";
 			echo "			}";
 			echo "			s.$name = append(s.$name, e)";
@@ -156,16 +158,16 @@ function printSection {
 			echo "				return ErrMultipleSingle";
 			echo "			}";
 			echo "			s.$name = new($name)";
-			echo "			if err := s.${name}.decode(p.Data[1:]); err != nil {";
+			echo "			if err := s.${name}.decode(params, value); err != nil {";
 			echo "				return err";
 			echo "			}";
 		fi;
 	done;
 	echo "		case \"END\":"
 	if [ "${sectionName:0:6}" = "VALARM" ]; then
-		echo "			if p.Data[len(p.Data)-1].Data != \"VALARM\" {";
+		echo "			if value.Data != \"VALARM\" {";
 	else
-		echo "			if p.Data[len(p.Data)-1].Data != \"$sectionName\" {";
+		echo "			if value.Data != \"$sectionName\" {";
 	fi;
 	echo "				return ErrInvalidEnd"
 	echo "			}";

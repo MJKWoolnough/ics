@@ -21,9 +21,11 @@ func (s *Calendar) decode(t tokeniser) error {
 		if err != nil {
 			return err
 		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1]
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {
+			switch n := strings.ToUpper(value.Data); n {
 			case "VEVENT":
 				var e Event
 				if err := e.Event.decode(t); err != nil {
@@ -64,7 +66,7 @@ func (s *Calendar) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredVersion = true
-			if err := s.Version.decode(p.Data[1:]); err != nil {
+			if err := s.Version.decode(params, value); err != nil {
 				return err
 			}
 		case "PRODID":
@@ -72,11 +74,11 @@ func (s *Calendar) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredProdID = true
-			if err := s.ProdID.decode(p.Data[1:]); err != nil {
+			if err := s.ProdID.decode(params, value); err != nil {
 				return err
 			}
 		case "END":
-			if p.Data[len(p.Data)-1].Data != "VCALENDAR" {
+			if value.Data != "VCALENDAR" {
 				return ErrInvalidEnd
 			}
 			break
@@ -161,7 +163,7 @@ type Event struct {
 	Status              *Status
 	Summary             *Summary
 	TimeTransparency    *TimeTransparency
-	Url                 *Url
+	URL                 *URL
 	RecurID             *RecurID
 	RecurrenceRule      *RecurrenceRule
 	DateTimeEnd         *DateTimeEnd
@@ -186,9 +188,11 @@ func (s *Event) decode(t tokeniser) error {
 		if err != nil {
 			return err
 		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1]
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {
+			switch n := strings.ToUpper(value.Data); n {
 			case "VALARM":
 				var e Alarm
 				if err := e.Alarm.decode(t); err != nil {
@@ -205,7 +209,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredDateTimeStamp = true
-			if err := s.DateTimeStamp.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeStamp.decode(params, value); err != nil {
 				return err
 			}
 		case "UID":
@@ -213,7 +217,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredUID = true
-			if err := s.UID.decode(p.Data[1:]); err != nil {
+			if err := s.UID.decode(params, value); err != nil {
 				return err
 			}
 		case "DTSTART":
@@ -221,7 +225,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.DateTimeStart = new(DateTimeStart)
-			if err := s.DateTimeStart.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return err
 			}
 		case "CLASS":
@@ -229,7 +233,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Class = new(Class)
-			if err := s.Class.decode(p.Data[1:]); err != nil {
+			if err := s.Class.decode(params, value); err != nil {
 				return err
 			}
 		case "CREATED":
@@ -237,7 +241,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Created = new(Created)
-			if err := s.Created.decode(p.Data[1:]); err != nil {
+			if err := s.Created.decode(params, value); err != nil {
 				return err
 			}
 		case "DESCRIPTION":
@@ -245,7 +249,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Description = new(Description)
-			if err := s.Description.decode(p.Data[1:]); err != nil {
+			if err := s.Description.decode(params, value); err != nil {
 				return err
 			}
 		case "GEO":
@@ -253,7 +257,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Geo = new(Geo)
-			if err := s.Geo.decode(p.Data[1:]); err != nil {
+			if err := s.Geo.decode(params, value); err != nil {
 				return err
 			}
 		case "LAST-MOD":
@@ -261,7 +265,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.LastModified = new(LastModified)
-			if err := s.LastModified.decode(p.Data[1:]); err != nil {
+			if err := s.LastModified.decode(params, value); err != nil {
 				return err
 			}
 		case "LOCATION":
@@ -269,7 +273,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Location = new(Location)
-			if err := s.Location.decode(p.Data[1:]); err != nil {
+			if err := s.Location.decode(params, value); err != nil {
 				return err
 			}
 		case "ORGANIZER":
@@ -277,7 +281,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Organizer = new(Organizer)
-			if err := s.Organizer.decode(p.Data[1:]); err != nil {
+			if err := s.Organizer.decode(params, value); err != nil {
 				return err
 			}
 		case "PRIORITY":
@@ -285,7 +289,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Priority = new(Priority)
-			if err := s.Priority.decode(p.Data[1:]); err != nil {
+			if err := s.Priority.decode(params, value); err != nil {
 				return err
 			}
 		case "SEQ":
@@ -293,7 +297,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Seq = new(Seq)
-			if err := s.Seq.decode(p.Data[1:]); err != nil {
+			if err := s.Seq.decode(params, value); err != nil {
 				return err
 			}
 		case "STATUS":
@@ -301,7 +305,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Status = new(Status)
-			if err := s.Status.decode(p.Data[1:]); err != nil {
+			if err := s.Status.decode(params, value); err != nil {
 				return err
 			}
 		case "SUMMARY":
@@ -309,7 +313,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Summary = new(Summary)
-			if err := s.Summary.decode(p.Data[1:]); err != nil {
+			if err := s.Summary.decode(params, value); err != nil {
 				return err
 			}
 		case "TRANSP":
@@ -317,15 +321,15 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.TimeTransparency = new(TimeTransparency)
-			if err := s.TimeTransparency.decode(p.Data[1:]); err != nil {
+			if err := s.TimeTransparency.decode(params, value); err != nil {
 				return err
 			}
 		case "URL":
-			if s.Url != nil {
+			if s.URL != nil {
 				return ErrMultipleSingle
 			}
-			s.Url = new(Url)
-			if err := s.Url.decode(p.Data[1:]); err != nil {
+			s.URL = new(URL)
+			if err := s.URL.decode(params, value); err != nil {
 				return err
 			}
 		case "RECURID":
@@ -333,7 +337,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.RecurID = new(RecurID)
-			if err := s.RecurID.decode(p.Data[1:]); err != nil {
+			if err := s.RecurID.decode(params, value); err != nil {
 				return err
 			}
 		case "RRULE":
@@ -341,7 +345,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.RecurrenceRule = new(RecurrenceRule)
-			if err := s.RecurrenceRule.decode(p.Data[1:]); err != nil {
+			if err := s.RecurrenceRule.decode(params, value); err != nil {
 				return err
 			}
 		case "DTEND":
@@ -349,7 +353,7 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.DateTimeEnd = new(DateTimeEnd)
-			if err := s.DateTimeEnd.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeEnd.decode(params, value); err != nil {
 				return err
 			}
 		case "DURATION":
@@ -357,71 +361,71 @@ func (s *Event) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Duration = new(Duration)
-			if err := s.Duration.decode(p.Data[1:]); err != nil {
+			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
 		case "ATTACH":
 			var e Attachment
-			if err := e.Attachment.decode(p.Data[1:]); err != nil {
+			if err := e.Attachment.decode(params, value); err != nil {
 				return err
 			}
 			s.Attachment = append(s.Attachment, e)
 		case "ATTENDEE":
 			var e Attendee
-			if err := e.Attendee.decode(p.Data[1:]); err != nil {
+			if err := e.Attendee.decode(params, value); err != nil {
 				return err
 			}
 			s.Attendee = append(s.Attendee, e)
 		case "CATEGORIES":
 			var e Categories
-			if err := e.Categories.decode(p.Data[1:]); err != nil {
+			if err := e.Categories.decode(params, value); err != nil {
 				return err
 			}
 			s.Categories = append(s.Categories, e)
 		case "COMMENT":
 			var e Comment
-			if err := e.Comment.decode(p.Data[1:]); err != nil {
+			if err := e.Comment.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "CONTACT":
 			var e Contact
-			if err := e.Contact.decode(p.Data[1:]); err != nil {
+			if err := e.Contact.decode(params, value); err != nil {
 				return err
 			}
 			s.Contact = append(s.Contact, e)
 		case "EXDATE":
 			var e ExceptionDateTime
-			if err := e.ExceptionDateTime.decode(p.Data[1:]); err != nil {
+			if err := e.ExceptionDateTime.decode(params, value); err != nil {
 				return err
 			}
 			s.ExceptionDateTime = append(s.ExceptionDateTime, e)
 		case "REQUEST-STATUS":
 			var e RequestStatus
-			if err := e.RequestStatus.decode(p.Data[1:]); err != nil {
+			if err := e.RequestStatus.decode(params, value); err != nil {
 				return err
 			}
 			s.RequestStatus = append(s.RequestStatus, e)
 		case "RELATED":
 			var e Related
-			if err := e.Related.decode(p.Data[1:]); err != nil {
+			if err := e.Related.decode(params, value); err != nil {
 				return err
 			}
 			s.Related = append(s.Related, e)
 		case "RESOURCES":
 			var e Resources
-			if err := e.Resources.decode(p.Data[1:]); err != nil {
+			if err := e.Resources.decode(params, value); err != nil {
 				return err
 			}
 			s.Resources = append(s.Resources, e)
 		case "RDATE":
 			var e RecurrenceDateTimes
-			if err := e.RecurrenceDateTimes.decode(p.Data[1:]); err != nil {
+			if err := e.RecurrenceDateTimes.decode(params, value); err != nil {
 				return err
 			}
 			s.RecurrenceDateTimes = append(s.RecurrenceDateTimes, e)
 		case "END":
-			if p.Data[len(p.Data)-1].Data != "VEVENT" {
+			if value.Data != "VEVENT" {
 				return ErrInvalidEnd
 			}
 			break
@@ -479,8 +483,8 @@ func (s *Event) encode(w writer) {
 	if s.TimeTransparency != nil {
 		s.TimeTransparency.encode(w)
 	}
-	if s.Url != nil {
-		s.Url.encode(w)
+	if s.URL != nil {
+		s.URL.encode(w)
 	}
 	if s.RecurID != nil {
 		s.RecurID.encode(w)
@@ -602,8 +606,8 @@ func (s *Event) valid() error {
 			return err
 		}
 	}
-	if s.Url != nil {
-		if err := s.Url.valid(); err != nil {
+	if s.URL != nil {
+		if err := s.URL.valid(); err != nil {
 			return err
 		}
 	}
@@ -704,7 +708,7 @@ type Todo struct {
 	Seq                 *Seq
 	Status              *Status
 	Summary             *Summary
-	Url                 *Url
+	URL                 *URL
 	Due                 *Due
 	Duration            *Duration
 	Attachment          []Attachment
@@ -726,9 +730,11 @@ func (s *Todo) decode(t tokeniser) error {
 		if err != nil {
 			return err
 		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1]
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {
+			switch n := strings.ToUpper(value.Data); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -739,7 +745,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredDateTimeStamp = true
-			if err := s.DateTimeStamp.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeStamp.decode(params, value); err != nil {
 				return err
 			}
 		case "UID":
@@ -747,7 +753,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredUID = true
-			if err := s.UID.decode(p.Data[1:]); err != nil {
+			if err := s.UID.decode(params, value); err != nil {
 				return err
 			}
 		case "CLASS":
@@ -755,7 +761,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Class = new(Class)
-			if err := s.Class.decode(p.Data[1:]); err != nil {
+			if err := s.Class.decode(params, value); err != nil {
 				return err
 			}
 		case "COMPLETED":
@@ -763,7 +769,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Completed = new(Completed)
-			if err := s.Completed.decode(p.Data[1:]); err != nil {
+			if err := s.Completed.decode(params, value); err != nil {
 				return err
 			}
 		case "CREATED":
@@ -771,7 +777,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Created = new(Created)
-			if err := s.Created.decode(p.Data[1:]); err != nil {
+			if err := s.Created.decode(params, value); err != nil {
 				return err
 			}
 		case "DESCRIPTION":
@@ -779,7 +785,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Description = new(Description)
-			if err := s.Description.decode(p.Data[1:]); err != nil {
+			if err := s.Description.decode(params, value); err != nil {
 				return err
 			}
 		case "DTSTART":
@@ -787,7 +793,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.DateTimeStart = new(DateTimeStart)
-			if err := s.DateTimeStart.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return err
 			}
 		case "DURATION":
@@ -795,7 +801,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Duration = new(Duration)
-			if err := s.Duration.decode(p.Data[1:]); err != nil {
+			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
 		case "GEO":
@@ -803,7 +809,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Geo = new(Geo)
-			if err := s.Geo.decode(p.Data[1:]); err != nil {
+			if err := s.Geo.decode(params, value); err != nil {
 				return err
 			}
 		case "LAST-MOD":
@@ -811,7 +817,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.LastModified = new(LastModified)
-			if err := s.LastModified.decode(p.Data[1:]); err != nil {
+			if err := s.LastModified.decode(params, value); err != nil {
 				return err
 			}
 		case "LOCATION":
@@ -819,7 +825,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Location = new(Location)
-			if err := s.Location.decode(p.Data[1:]); err != nil {
+			if err := s.Location.decode(params, value); err != nil {
 				return err
 			}
 		case "ORGANIZER":
@@ -827,7 +833,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Organizer = new(Organizer)
-			if err := s.Organizer.decode(p.Data[1:]); err != nil {
+			if err := s.Organizer.decode(params, value); err != nil {
 				return err
 			}
 		case "PERCENT":
@@ -835,7 +841,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Percent = new(Percent)
-			if err := s.Percent.decode(p.Data[1:]); err != nil {
+			if err := s.Percent.decode(params, value); err != nil {
 				return err
 			}
 		case "PRIORITY":
@@ -843,7 +849,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Priority = new(Priority)
-			if err := s.Priority.decode(p.Data[1:]); err != nil {
+			if err := s.Priority.decode(params, value); err != nil {
 				return err
 			}
 		case "RECURID":
@@ -851,7 +857,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.RecurID = new(RecurID)
-			if err := s.RecurID.decode(p.Data[1:]); err != nil {
+			if err := s.RecurID.decode(params, value); err != nil {
 				return err
 			}
 		case "SEQ":
@@ -859,7 +865,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Seq = new(Seq)
-			if err := s.Seq.decode(p.Data[1:]); err != nil {
+			if err := s.Seq.decode(params, value); err != nil {
 				return err
 			}
 		case "STATUS":
@@ -867,7 +873,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Status = new(Status)
-			if err := s.Status.decode(p.Data[1:]); err != nil {
+			if err := s.Status.decode(params, value); err != nil {
 				return err
 			}
 		case "SUMMARY":
@@ -875,15 +881,15 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Summary = new(Summary)
-			if err := s.Summary.decode(p.Data[1:]); err != nil {
+			if err := s.Summary.decode(params, value); err != nil {
 				return err
 			}
 		case "URL":
-			if s.Url != nil {
+			if s.URL != nil {
 				return ErrMultipleSingle
 			}
-			s.Url = new(Url)
-			if err := s.Url.decode(p.Data[1:]); err != nil {
+			s.URL = new(URL)
+			if err := s.URL.decode(params, value); err != nil {
 				return err
 			}
 		case "DUE":
@@ -891,7 +897,7 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Due = new(Due)
-			if err := s.Due.decode(p.Data[1:]); err != nil {
+			if err := s.Due.decode(params, value); err != nil {
 				return err
 			}
 		case "DURATION":
@@ -899,71 +905,71 @@ func (s *Todo) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Duration = new(Duration)
-			if err := s.Duration.decode(p.Data[1:]); err != nil {
+			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
 		case "ATTACH":
 			var e Attachment
-			if err := e.Attachment.decode(p.Data[1:]); err != nil {
+			if err := e.Attachment.decode(params, value); err != nil {
 				return err
 			}
 			s.Attachment = append(s.Attachment, e)
 		case "ATTENDEE":
 			var e Attendee
-			if err := e.Attendee.decode(p.Data[1:]); err != nil {
+			if err := e.Attendee.decode(params, value); err != nil {
 				return err
 			}
 			s.Attendee = append(s.Attendee, e)
 		case "CATEGORIES":
 			var e Categories
-			if err := e.Categories.decode(p.Data[1:]); err != nil {
+			if err := e.Categories.decode(params, value); err != nil {
 				return err
 			}
 			s.Categories = append(s.Categories, e)
 		case "COMMENT":
 			var e Comment
-			if err := e.Comment.decode(p.Data[1:]); err != nil {
+			if err := e.Comment.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "CONTACT":
 			var e Contact
-			if err := e.Contact.decode(p.Data[1:]); err != nil {
+			if err := e.Contact.decode(params, value); err != nil {
 				return err
 			}
 			s.Contact = append(s.Contact, e)
 		case "EXDATE":
 			var e ExceptionDateTime
-			if err := e.ExceptionDateTime.decode(p.Data[1:]); err != nil {
+			if err := e.ExceptionDateTime.decode(params, value); err != nil {
 				return err
 			}
 			s.ExceptionDateTime = append(s.ExceptionDateTime, e)
 		case "REQUEST-STATUS":
 			var e RequestStatus
-			if err := e.RequestStatus.decode(p.Data[1:]); err != nil {
+			if err := e.RequestStatus.decode(params, value); err != nil {
 				return err
 			}
 			s.RequestStatus = append(s.RequestStatus, e)
 		case "RELATED":
 			var e Related
-			if err := e.Related.decode(p.Data[1:]); err != nil {
+			if err := e.Related.decode(params, value); err != nil {
 				return err
 			}
 			s.Related = append(s.Related, e)
 		case "RESOURCES":
 			var e Resources
-			if err := e.Resources.decode(p.Data[1:]); err != nil {
+			if err := e.Resources.decode(params, value); err != nil {
 				return err
 			}
 			s.Resources = append(s.Resources, e)
 		case "RDATE":
 			var e RecurrenceDateTimes
-			if err := e.RecurrenceDateTimes.decode(p.Data[1:]); err != nil {
+			if err := e.RecurrenceDateTimes.decode(params, value); err != nil {
 				return err
 			}
 			s.RecurrenceDateTimes = append(s.RecurrenceDateTimes, e)
 		case "END":
-			if p.Data[len(p.Data)-1].Data != "VTODO" {
+			if value.Data != "VTODO" {
 				return ErrInvalidEnd
 			}
 			break
@@ -1033,8 +1039,8 @@ func (s *Todo) encode(w writer) {
 	if s.Summary != nil {
 		s.Summary.encode(w)
 	}
-	if s.Url != nil {
-		s.Url.encode(w)
+	if s.URL != nil {
+		s.URL.encode(w)
 	}
 	if s.Due != nil {
 		s.Due.encode(w)
@@ -1162,8 +1168,8 @@ func (s *Todo) valid() error {
 			return err
 		}
 	}
-	if s.Url != nil {
-		if err := s.Url.valid(); err != nil {
+	if s.URL != nil {
+		if err := s.URL.valid(); err != nil {
 			return err
 		}
 	}
@@ -1242,7 +1248,7 @@ type Journal struct {
 	Seq                 *Seq
 	Status              *Status
 	Summary             *Summary
-	Url                 *Url
+	URL                 *URL
 	RecurrenceRule      *RecurrenceRule
 	Attachment          []Attachment
 	Attendee            []Attendee
@@ -1263,9 +1269,11 @@ func (s *Journal) decode(t tokeniser) error {
 		if err != nil {
 			return err
 		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1]
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {
+			switch n := strings.ToUpper(value.Data); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -1276,7 +1284,7 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredDateTimeStamp = true
-			if err := s.DateTimeStamp.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeStamp.decode(params, value); err != nil {
 				return err
 			}
 		case "UID":
@@ -1284,7 +1292,7 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredUID = true
-			if err := s.UID.decode(p.Data[1:]); err != nil {
+			if err := s.UID.decode(params, value); err != nil {
 				return err
 			}
 		case "CLASS":
@@ -1292,7 +1300,7 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Class = new(Class)
-			if err := s.Class.decode(p.Data[1:]); err != nil {
+			if err := s.Class.decode(params, value); err != nil {
 				return err
 			}
 		case "CREATED":
@@ -1300,7 +1308,7 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Created = new(Created)
-			if err := s.Created.decode(p.Data[1:]); err != nil {
+			if err := s.Created.decode(params, value); err != nil {
 				return err
 			}
 		case "DTSTART":
@@ -1308,7 +1316,7 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.DateTimeStart = new(DateTimeStart)
-			if err := s.DateTimeStart.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return err
 			}
 		case "LAST-MOD":
@@ -1316,7 +1324,7 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.LastModified = new(LastModified)
-			if err := s.LastModified.decode(p.Data[1:]); err != nil {
+			if err := s.LastModified.decode(params, value); err != nil {
 				return err
 			}
 		case "ORGANIZER":
@@ -1324,7 +1332,7 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Organizer = new(Organizer)
-			if err := s.Organizer.decode(p.Data[1:]); err != nil {
+			if err := s.Organizer.decode(params, value); err != nil {
 				return err
 			}
 		case "RECURID":
@@ -1332,7 +1340,7 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.RecurID = new(RecurID)
-			if err := s.RecurID.decode(p.Data[1:]); err != nil {
+			if err := s.RecurID.decode(params, value); err != nil {
 				return err
 			}
 		case "SEQ":
@@ -1340,7 +1348,7 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Seq = new(Seq)
-			if err := s.Seq.decode(p.Data[1:]); err != nil {
+			if err := s.Seq.decode(params, value); err != nil {
 				return err
 			}
 		case "STATUS":
@@ -1348,7 +1356,7 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Status = new(Status)
-			if err := s.Status.decode(p.Data[1:]); err != nil {
+			if err := s.Status.decode(params, value); err != nil {
 				return err
 			}
 		case "SUMMARY":
@@ -1356,15 +1364,15 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Summary = new(Summary)
-			if err := s.Summary.decode(p.Data[1:]); err != nil {
+			if err := s.Summary.decode(params, value); err != nil {
 				return err
 			}
 		case "URL":
-			if s.Url != nil {
+			if s.URL != nil {
 				return ErrMultipleSingle
 			}
-			s.Url = new(Url)
-			if err := s.Url.decode(p.Data[1:]); err != nil {
+			s.URL = new(URL)
+			if err := s.URL.decode(params, value); err != nil {
 				return err
 			}
 		case "RRULE":
@@ -1372,71 +1380,71 @@ func (s *Journal) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.RecurrenceRule = new(RecurrenceRule)
-			if err := s.RecurrenceRule.decode(p.Data[1:]); err != nil {
+			if err := s.RecurrenceRule.decode(params, value); err != nil {
 				return err
 			}
 		case "ATTACH":
 			var e Attachment
-			if err := e.Attachment.decode(p.Data[1:]); err != nil {
+			if err := e.Attachment.decode(params, value); err != nil {
 				return err
 			}
 			s.Attachment = append(s.Attachment, e)
 		case "ATTENDEE":
 			var e Attendee
-			if err := e.Attendee.decode(p.Data[1:]); err != nil {
+			if err := e.Attendee.decode(params, value); err != nil {
 				return err
 			}
 			s.Attendee = append(s.Attendee, e)
 		case "CATEGORIES":
 			var e Categories
-			if err := e.Categories.decode(p.Data[1:]); err != nil {
+			if err := e.Categories.decode(params, value); err != nil {
 				return err
 			}
 			s.Categories = append(s.Categories, e)
 		case "COMMENT":
 			var e Comment
-			if err := e.Comment.decode(p.Data[1:]); err != nil {
+			if err := e.Comment.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "CONTACT":
 			var e Contact
-			if err := e.Contact.decode(p.Data[1:]); err != nil {
+			if err := e.Contact.decode(params, value); err != nil {
 				return err
 			}
 			s.Contact = append(s.Contact, e)
 		case "EXDATE":
 			var e ExceptionDateTime
-			if err := e.ExceptionDateTime.decode(p.Data[1:]); err != nil {
+			if err := e.ExceptionDateTime.decode(params, value); err != nil {
 				return err
 			}
 			s.ExceptionDateTime = append(s.ExceptionDateTime, e)
 		case "REQUEST-STATUS":
 			var e RequestStatus
-			if err := e.RequestStatus.decode(p.Data[1:]); err != nil {
+			if err := e.RequestStatus.decode(params, value); err != nil {
 				return err
 			}
 			s.RequestStatus = append(s.RequestStatus, e)
 		case "RELATED":
 			var e Related
-			if err := e.Related.decode(p.Data[1:]); err != nil {
+			if err := e.Related.decode(params, value); err != nil {
 				return err
 			}
 			s.Related = append(s.Related, e)
 		case "RESOURCES":
 			var e Resources
-			if err := e.Resources.decode(p.Data[1:]); err != nil {
+			if err := e.Resources.decode(params, value); err != nil {
 				return err
 			}
 			s.Resources = append(s.Resources, e)
 		case "RDATE":
 			var e RecurrenceDateTimes
-			if err := e.RecurrenceDateTimes.decode(p.Data[1:]); err != nil {
+			if err := e.RecurrenceDateTimes.decode(params, value); err != nil {
 				return err
 			}
 			s.RecurrenceDateTimes = append(s.RecurrenceDateTimes, e)
 		case "END":
-			if p.Data[len(p.Data)-1].Data != "VJOURNAL" {
+			if value.Data != "VJOURNAL" {
 				return ErrInvalidEnd
 			}
 			break
@@ -1479,8 +1487,8 @@ func (s *Journal) encode(w writer) {
 	if s.Summary != nil {
 		s.Summary.encode(w)
 	}
-	if s.Url != nil {
-		s.Url.encode(w)
+	if s.URL != nil {
+		s.URL.encode(w)
 	}
 	if s.RecurrenceRule != nil {
 		s.RecurrenceRule.encode(w)
@@ -1570,8 +1578,8 @@ func (s *Journal) valid() error {
 			return err
 		}
 	}
-	if s.Url != nil {
-		if err := s.Url.valid(); err != nil {
+	if s.URL != nil {
+		if err := s.URL.valid(); err != nil {
 			return err
 		}
 	}
@@ -1640,7 +1648,7 @@ type FreeBusy struct {
 	DateTimeStart *DateTimeStart
 	DateTimeEnd   *DateTimeEnd
 	Organizer     *Organizer
-	Url           *Url
+	URL           *URL
 	Attendee      []Attendee
 	Comment       []Comment
 	FreeBusy      []FreeBusy
@@ -1654,9 +1662,11 @@ func (s *FreeBusy) decode(t tokeniser) error {
 		if err != nil {
 			return err
 		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1]
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {
+			switch n := strings.ToUpper(value.Data); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -1667,7 +1677,7 @@ func (s *FreeBusy) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredDateTimeStamp = true
-			if err := s.DateTimeStamp.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeStamp.decode(params, value); err != nil {
 				return err
 			}
 		case "UID":
@@ -1675,7 +1685,7 @@ func (s *FreeBusy) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredUID = true
-			if err := s.UID.decode(p.Data[1:]); err != nil {
+			if err := s.UID.decode(params, value); err != nil {
 				return err
 			}
 		case "CONTACT":
@@ -1683,7 +1693,7 @@ func (s *FreeBusy) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Contact = new(Contact)
-			if err := s.Contact.decode(p.Data[1:]); err != nil {
+			if err := s.Contact.decode(params, value); err != nil {
 				return err
 			}
 		case "DTSTART":
@@ -1691,7 +1701,7 @@ func (s *FreeBusy) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.DateTimeStart = new(DateTimeStart)
-			if err := s.DateTimeStart.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return err
 			}
 		case "DTEND":
@@ -1699,7 +1709,7 @@ func (s *FreeBusy) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.DateTimeEnd = new(DateTimeEnd)
-			if err := s.DateTimeEnd.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeEnd.decode(params, value); err != nil {
 				return err
 			}
 		case "ORGANIZER":
@@ -1707,43 +1717,43 @@ func (s *FreeBusy) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Organizer = new(Organizer)
-			if err := s.Organizer.decode(p.Data[1:]); err != nil {
+			if err := s.Organizer.decode(params, value); err != nil {
 				return err
 			}
 		case "URL":
-			if s.Url != nil {
+			if s.URL != nil {
 				return ErrMultipleSingle
 			}
-			s.Url = new(Url)
-			if err := s.Url.decode(p.Data[1:]); err != nil {
+			s.URL = new(URL)
+			if err := s.URL.decode(params, value); err != nil {
 				return err
 			}
 		case "ATTENDEE":
 			var e Attendee
-			if err := e.Attendee.decode(p.Data[1:]); err != nil {
+			if err := e.Attendee.decode(params, value); err != nil {
 				return err
 			}
 			s.Attendee = append(s.Attendee, e)
 		case "COMMENT":
 			var e Comment
-			if err := e.Comment.decode(p.Data[1:]); err != nil {
+			if err := e.Comment.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "FREEBUSY":
 			var e FreeBusy
-			if err := e.FreeBusy.decode(p.Data[1:]); err != nil {
+			if err := e.FreeBusy.decode(params, value); err != nil {
 				return err
 			}
 			s.FreeBusy = append(s.FreeBusy, e)
 		case "REQUEST-STATUS":
 			var e RequestStatus
-			if err := e.RequestStatus.decode(p.Data[1:]); err != nil {
+			if err := e.RequestStatus.decode(params, value); err != nil {
 				return err
 			}
 			s.RequestStatus = append(s.RequestStatus, e)
 		case "END":
-			if p.Data[len(p.Data)-1].Data != "VFREEBUSY" {
+			if value.Data != "VFREEBUSY" {
 				return ErrInvalidEnd
 			}
 			break
@@ -1771,8 +1781,8 @@ func (s *FreeBusy) encode(w writer) {
 	if s.Organizer != nil {
 		s.Organizer.encode(w)
 	}
-	if s.Url != nil {
-		s.Url.encode(w)
+	if s.URL != nil {
+		s.URL.encode(w)
 	}
 	for n := range s.Attendee {
 		s.Attendee[n].encode(w)
@@ -1816,8 +1826,8 @@ func (s *FreeBusy) valid() error {
 			return err
 		}
 	}
-	if s.Url != nil {
-		if err := s.Url.valid(); err != nil {
+	if s.URL != nil {
+		if err := s.URL.valid(); err != nil {
 			return err
 		}
 	}
@@ -1859,9 +1869,11 @@ func (s *Timezone) decode(t tokeniser) error {
 		if err != nil {
 			return err
 		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1]
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {
+			switch n := strings.ToUpper(value.Data); n {
 			case "STANDARD":
 				var e Standard
 				if err := e.Standard.decode(t); err != nil {
@@ -1884,7 +1896,7 @@ func (s *Timezone) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredTimezoneID = true
-			if err := s.TimezoneID.decode(p.Data[1:]); err != nil {
+			if err := s.TimezoneID.decode(params, value); err != nil {
 				return err
 			}
 		case "LAST-MOD":
@@ -1892,7 +1904,7 @@ func (s *Timezone) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.LastModified = new(LastModified)
-			if err := s.LastModified.decode(p.Data[1:]); err != nil {
+			if err := s.LastModified.decode(params, value); err != nil {
 				return err
 			}
 		case "TZURL":
@@ -1900,11 +1912,11 @@ func (s *Timezone) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.TimezoneURL = new(TimezoneURL)
-			if err := s.TimezoneURL.decode(p.Data[1:]); err != nil {
+			if err := s.TimezoneURL.decode(params, value); err != nil {
 				return err
 			}
 		case "END":
-			if p.Data[len(p.Data)-1].Data != "VTIMEZONE" {
+			if value.Data != "VTIMEZONE" {
 				return ErrInvalidEnd
 			}
 			break
@@ -1981,9 +1993,11 @@ func (s *Standard) decode(t tokeniser) error {
 		if err != nil {
 			return err
 		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1]
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {
+			switch n := strings.ToUpper(value.Data); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -1994,7 +2008,7 @@ func (s *Standard) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredDateTimeStart = true
-			if err := s.DateTimeStart.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return err
 			}
 		case "TZOFFSET":
@@ -2002,7 +2016,7 @@ func (s *Standard) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredTimezoneOffset = true
-			if err := s.TimezoneOffset.decode(p.Data[1:]); err != nil {
+			if err := s.TimezoneOffset.decode(params, value); err != nil {
 				return err
 			}
 		case "TZOFFSETFROM":
@@ -2010,7 +2024,7 @@ func (s *Standard) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredTimezoneOffsetFrom = true
-			if err := s.TimezoneOffsetFrom.decode(p.Data[1:]); err != nil {
+			if err := s.TimezoneOffsetFrom.decode(params, value); err != nil {
 				return err
 			}
 		case "RRULE":
@@ -2018,29 +2032,29 @@ func (s *Standard) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.RecurrenceRule = new(RecurrenceRule)
-			if err := s.RecurrenceRule.decode(p.Data[1:]); err != nil {
+			if err := s.RecurrenceRule.decode(params, value); err != nil {
 				return err
 			}
 		case "COMMENT":
 			var e Comment
-			if err := e.Comment.decode(p.Data[1:]); err != nil {
+			if err := e.Comment.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "RDATE":
 			var e RecurrenceDateTimes
-			if err := e.RecurrenceDateTimes.decode(p.Data[1:]); err != nil {
+			if err := e.RecurrenceDateTimes.decode(params, value); err != nil {
 				return err
 			}
 			s.RecurrenceDateTimes = append(s.RecurrenceDateTimes, e)
 		case "TZNAME":
 			var e TimezoneName
-			if err := e.TimezoneName.decode(p.Data[1:]); err != nil {
+			if err := e.TimezoneName.decode(params, value); err != nil {
 				return err
 			}
 			s.TimezoneName = append(s.TimezoneName, e)
 		case "END":
-			if p.Data[len(p.Data)-1].Data != "STANDARD" {
+			if value.Data != "STANDARD" {
 				return ErrInvalidEnd
 			}
 			break
@@ -2122,9 +2136,11 @@ func (s *Daylight) decode(t tokeniser) error {
 		if err != nil {
 			return err
 		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1]
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {
+			switch n := strings.ToUpper(value.Data); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -2135,7 +2151,7 @@ func (s *Daylight) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredDateTimeStart = true
-			if err := s.DateTimeStart.decode(p.Data[1:]); err != nil {
+			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return err
 			}
 		case "TZOFFSET":
@@ -2143,7 +2159,7 @@ func (s *Daylight) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredTimezoneOffset = true
-			if err := s.TimezoneOffset.decode(p.Data[1:]); err != nil {
+			if err := s.TimezoneOffset.decode(params, value); err != nil {
 				return err
 			}
 		case "TZOFFSETFROM":
@@ -2151,7 +2167,7 @@ func (s *Daylight) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredTimezoneOffsetFrom = true
-			if err := s.TimezoneOffsetFrom.decode(p.Data[1:]); err != nil {
+			if err := s.TimezoneOffsetFrom.decode(params, value); err != nil {
 				return err
 			}
 		case "RRULE":
@@ -2159,29 +2175,29 @@ func (s *Daylight) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.RecurrenceRule = new(RecurrenceRule)
-			if err := s.RecurrenceRule.decode(p.Data[1:]); err != nil {
+			if err := s.RecurrenceRule.decode(params, value); err != nil {
 				return err
 			}
 		case "COMMENT":
 			var e Comment
-			if err := e.Comment.decode(p.Data[1:]); err != nil {
+			if err := e.Comment.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "RDATE":
 			var e RecurrenceDateTimes
-			if err := e.RecurrenceDateTimes.decode(p.Data[1:]); err != nil {
+			if err := e.RecurrenceDateTimes.decode(params, value); err != nil {
 				return err
 			}
 			s.RecurrenceDateTimes = append(s.RecurrenceDateTimes, e)
 		case "TZNAME":
 			var e TimezoneName
-			if err := e.TimezoneName.decode(p.Data[1:]); err != nil {
+			if err := e.TimezoneName.decode(params, value); err != nil {
 				return err
 			}
 			s.TimezoneName = append(s.TimezoneName, e)
 		case "END":
-			if p.Data[len(p.Data)-1].Data != "DAYLIGHT" {
+			if value.Data != "DAYLIGHT" {
 				return ErrInvalidEnd
 			}
 			break
@@ -2260,9 +2276,11 @@ func (s *AlarmAudio) decode(t tokeniser) error {
 		if err != nil {
 			return err
 		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1]
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {
+			switch n := strings.ToUpper(value.Data); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -2273,7 +2291,7 @@ func (s *AlarmAudio) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredTrigger = true
-			if err := s.Trigger.decode(p.Data[1:]); err != nil {
+			if err := s.Trigger.decode(params, value); err != nil {
 				return err
 			}
 		case "DURATION":
@@ -2281,7 +2299,7 @@ func (s *AlarmAudio) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Duration = new(Duration)
-			if err := s.Duration.decode(p.Data[1:]); err != nil {
+			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
 		case "REPEAT":
@@ -2289,17 +2307,17 @@ func (s *AlarmAudio) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Repeat = new(Repeat)
-			if err := s.Repeat.decode(p.Data[1:]); err != nil {
+			if err := s.Repeat.decode(params, value); err != nil {
 				return err
 			}
 		case "ATTACH":
 			var e Attachment
-			if err := e.Attachment.decode(p.Data[1:]); err != nil {
+			if err := e.Attachment.decode(params, value); err != nil {
 				return err
 			}
 			s.Attachment = append(s.Attachment, e)
 		case "END":
-			if p.Data[len(p.Data)-1].Data != "VALARM" {
+			if value.Data != "VALARM" {
 				return ErrInvalidEnd
 			}
 			break
@@ -2360,9 +2378,11 @@ func (s *AlarmDisplay) decode(t tokeniser) error {
 		if err != nil {
 			return err
 		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1]
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {
+			switch n := strings.ToUpper(value.Data); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -2373,7 +2393,7 @@ func (s *AlarmDisplay) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredDescription = true
-			if err := s.Description.decode(p.Data[1:]); err != nil {
+			if err := s.Description.decode(params, value); err != nil {
 				return err
 			}
 		case "TRIGGER":
@@ -2381,7 +2401,7 @@ func (s *AlarmDisplay) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredTrigger = true
-			if err := s.Trigger.decode(p.Data[1:]); err != nil {
+			if err := s.Trigger.decode(params, value); err != nil {
 				return err
 			}
 		case "DURATION":
@@ -2389,7 +2409,7 @@ func (s *AlarmDisplay) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Duration = new(Duration)
-			if err := s.Duration.decode(p.Data[1:]); err != nil {
+			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
 		case "REPEAT":
@@ -2397,11 +2417,11 @@ func (s *AlarmDisplay) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Repeat = new(Repeat)
-			if err := s.Repeat.decode(p.Data[1:]); err != nil {
+			if err := s.Repeat.decode(params, value); err != nil {
 				return err
 			}
 		case "END":
-			if p.Data[len(p.Data)-1].Data != "VALARM" {
+			if value.Data != "VALARM" {
 				return ErrInvalidEnd
 			}
 			break
@@ -2460,9 +2480,11 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 		if err != nil {
 			return err
 		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1]
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(p.Data[len(p.Data)-1].Data); n {
+			switch n := strings.ToUpper(value.Data); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -2473,7 +2495,7 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredDescription = true
-			if err := s.Description.decode(p.Data[1:]); err != nil {
+			if err := s.Description.decode(params, value); err != nil {
 				return err
 			}
 		case "TRIGGER":
@@ -2481,7 +2503,7 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredTrigger = true
-			if err := s.Trigger.decode(p.Data[1:]); err != nil {
+			if err := s.Trigger.decode(params, value); err != nil {
 				return err
 			}
 		case "SUMMARY":
@@ -2489,7 +2511,7 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			requiredSummary = true
-			if err := s.Summary.decode(p.Data[1:]); err != nil {
+			if err := s.Summary.decode(params, value); err != nil {
 				return err
 			}
 		case "ATTENDEE":
@@ -2497,7 +2519,7 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Attendee = new(Attendee)
-			if err := s.Attendee.decode(p.Data[1:]); err != nil {
+			if err := s.Attendee.decode(params, value); err != nil {
 				return err
 			}
 		case "DURATION":
@@ -2505,7 +2527,7 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Duration = new(Duration)
-			if err := s.Duration.decode(p.Data[1:]); err != nil {
+			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
 		case "REPEAT":
@@ -2513,11 +2535,11 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 				return ErrMultipleSingle
 			}
 			s.Repeat = new(Repeat)
-			if err := s.Repeat.decode(p.Data[1:]); err != nil {
+			if err := s.Repeat.decode(params, value); err != nil {
 				return err
 			}
 		case "END":
-			if p.Data[len(p.Data)-1].Data != "VALARM" {
+			if value.Data != "VALARM" {
 				return ErrInvalidEnd
 			}
 			break
