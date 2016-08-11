@@ -46,3 +46,4 @@ TZOFFSET=TimezoneOffset
 CAL-ADDRESS=CalendarAddress
 UTC-OFFSET=UTCOffset
 REQ-PARTICIPANT=RequiredParticipant
+URL=URL
