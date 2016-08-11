@@ -7,14 +7,17 @@ while read line; do
 done < "names.gen";
 
 function getName {
-	name="${names[$1]}";
-	if [ -z "$name" ]; then
-		name="$1"
-		parts=( $(echo "$name" | tr "-" " ") );
-		for name in ${parts[@]}; do
-			echo -n "${name:0:1}$(echo "${name:1}" | tr A-Z a-z)";
-		done;
-		return;
-	fi;
-	echo -n "$name";
+	(
+		IFS=" ";
+		name="${names[$1]}";
+		if [ -z "$name" ]; then
+			name="$1"
+			parts=( $(echo "$name" | tr "-" " ") );
+			for name in ${parts[@]}; do
+				echo -n "${name:0:1}$(echo "${name:1}" | tr A-Z a-z)";
+			done;
+		else
+			echo -n "$name";
+		fi;
+	)
 }
