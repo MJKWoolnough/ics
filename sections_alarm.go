@@ -63,11 +63,27 @@ Loop:
 	}
 	return a.AlarmType.decode(&pt)
 }
-func (a *Alarm) valid() bool {
-	if a.AlarmType == nil {
-		return false
+
+func (a *Alarm) encode(w writer) {
+	w.WriteString("BEGIN:VALARM\r\n")
+	switch t := a.AlarmType.(type) {
+	case *AlarmAudio:
+		w.WriteString("ACTION:AUDIO\r\n")
+	case *AlarmDisplay:
+		w.WriteString("ACTION:DISPLAY\r\n")
+	case *AlarmEmail:
+		w.WriteString("ACTION:EMAIL\r\n")
 	}
-	return a.AlarmType.valid()
+	a.encode(w)
+	w.WriteString("END:VALARM\r\n")
+}
+
+func (a *Alarm) valid() error {
+	switch t := a.AlarmType.(type) {
+	case *AlarmAudio, *AlarmDisplay, *AlarmEmail:
+		return a.AlarmType.valid()
+	}
+	return ErrInvalidAlarm
 }
 
 func (AlarmAudio) Type() string {
