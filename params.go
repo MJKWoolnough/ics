@@ -36,9 +36,9 @@ func (t AlternativeRepresentation) encode(w writer) {
 	q.encode(w)
 }
 
-func (t AlternativeRepresentation) valid() bool {
+func (t AlternativeRepresentation) valid() error {
 	q := URI(*t)
-	return q.validate()
+	return q.valid()
 }
 
 type CommonName string
@@ -65,11 +65,11 @@ func (t CommonName) encode(w writer) {
 	}
 }
 
-func (t CommonName) valid() bool {
+func (t CommonName) valid() error {
 	if strings.ContainsAny(*t, nonsafeChars[:32]) {
-		return false
+		return ErrInvalidText
 	}
-	return true
+	return nil
 }
 
 type CalendarUserType uint8
@@ -117,8 +117,8 @@ func (t CalendarUserType) encode(w writer) {
 	}
 }
 
-func (t CalendarUserType) valid() bool {
-	return true
+func (t CalendarUserType) valid() error {
+	return nil
 }
 
 type Delegator []CalendarAddress
@@ -151,9 +151,11 @@ func (t Delegator) encode(w writer) {
 	}
 }
 
-func (t Delegator) valid() bool {
+func (t Delegator) valid() error {
 	for _, v := range *t {
-		return !v.validate()
+		if err := v.valid(); err != nil {
+			return err
+		}
 	}
 }
 
@@ -187,9 +189,11 @@ func (t Delagatee) encode(w writer) {
 	}
 }
 
-func (t Delagatee) valid() bool {
+func (t Delagatee) valid() error {
 	for _, v := range *t {
-		return !v.validate()
+		if err := v.valid(); err != nil {
+			return err
+		}
 	}
 }
 
@@ -216,11 +220,11 @@ func (t DirectoryEntry) encode(w writer) {
 	w.WriteString("\"")
 }
 
-func (t DirectoryEntry) valid() bool {
+func (t DirectoryEntry) valid() error {
 	if strings.ContainsAny(*t, nonsafeChars[:32]) {
-		return false
+		return ErrInvalidText
 	}
-	return true
+	return nil
 }
 
 type Encoding uint8
@@ -255,13 +259,13 @@ func (t Encoding) encode(w writer) {
 	}
 }
 
-func (t Encoding) valid() bool {
+func (t Encoding) valid() error {
 	switch *t {
 	case Encoding8bit, EncodingBase64:
 	default:
-		return false
+		return ErrInvalidValue
 	}
-	return true
+	return nil
 }
 
 type FormatType string
@@ -293,11 +297,11 @@ func (t FormatType) encode(w writer) {
 	}
 }
 
-func (t FormatType) valid() bool {
+func (t FormatType) valid() error {
 	if !regexFormatType.Match(*t) {
-		return false
+		return ErrInvalidValue
 	}
-	return true
+	return nil
 }
 
 type FreeBusyType uint8
@@ -345,8 +349,8 @@ func (t FreeBusyType) encode(w writer) {
 	}
 }
 
-func (t FreeBusyType) valid() bool {
-	return true
+func (t FreeBusyType) valid() error {
+	return nil
 }
 
 type Langauge string
@@ -373,11 +377,11 @@ func (t Langauge) encode(w writer) {
 	}
 }
 
-func (t Langauge) valid() bool {
+func (t Langauge) valid() error {
 	if strings.ContainsAny(*t, nonsafeChars[:32]) {
-		return false
+		return ErrInvalidText
 	}
-	return true
+	return nil
 }
 
 type Member []string
@@ -407,13 +411,13 @@ func (t Member) encode(w writer) {
 	}
 }
 
-func (t Member) valid() bool {
+func (t Member) valid() error {
 	for _, v := range *t {
 		if strings.ContainsAny(v, nonsafeChars[:32]) {
-			return false
+			return ErrInvalidText
 		}
 	}
-	return true
+	return nil
 }
 
 type ParticipationStatus uint8
@@ -476,8 +480,8 @@ func (t ParticipationStatus) encode(w writer) {
 	}
 }
 
-func (t ParticipationStatus) valid() bool {
-	return true
+func (t ParticipationStatus) valid() error {
+	return nil
 }
 
 type Range struct{}
@@ -497,8 +501,8 @@ func (t Range) encode(w writer) {
 	w.WriteString("THISANDFUTURE")
 }
 
-func (t Range) valid() bool {
-	return true
+func (t Range) valid() error {
+	return nil
 }
 
 type Related uint8
@@ -533,13 +537,13 @@ func (t Related) encode(w writer) {
 	}
 }
 
-func (t Related) valid() bool {
+func (t Related) valid() error {
 	switch *t {
 	case RelatedStart, RelatedEnd:
 	default:
-		return false
+		return ErrInvalidValue
 	}
-	return true
+	return nil
 }
 
 type RelationshipType uint8
@@ -582,8 +586,8 @@ func (t RelationshipType) encode(w writer) {
 	}
 }
 
-func (t RelationshipType) valid() bool {
-	return true
+func (t RelationshipType) valid() error {
+	return nil
 }
 
 type ParticipationRole uint8
@@ -631,8 +635,8 @@ func (t ParticipationRole) encode(w writer) {
 	}
 }
 
-func (t ParticipationRole) valid() bool {
-	return true
+func (t ParticipationRole) valid() error {
+	return nil
 }
 
 type RSVP Boolean
@@ -658,8 +662,8 @@ func (t RSVP) encode(w writer) {
 	q.encode(w)
 }
 
-func (t RSVP) valid() bool {
-	return true
+func (t RSVP) valid() error {
+	return nil
 }
 
 type SentBy string
@@ -685,11 +689,11 @@ func (t SentBy) encode(w writer) {
 	w.WriteString("\"")
 }
 
-func (t SentBy) valid() bool {
+func (t SentBy) valid() error {
 	if strings.ContainsAny(*t, nonsafeChars[:32]) {
-		return false
+		return ErrInvalidText
 	}
-	return true
+	return nil
 }
 
 type TimezoneID string
@@ -716,11 +720,11 @@ func (t TimezoneID) encode(w writer) {
 	}
 }
 
-func (t TimezoneID) valid() bool {
+func (t TimezoneID) valid() error {
 	if strings.ContainsAny(*t, nonsafeChars[:32]) {
-		return false
+		return ErrInvalidText
 	}
-	return true
+	return nil
 }
 
 type Value uint8
@@ -818,8 +822,8 @@ func (t Value) encode(w writer) {
 	}
 }
 
-func (t Value) valid() bool {
-	return true
+func (t Value) valid() error {
+	return nil
 }
 
 func decode6868(s string) string {
@@ -884,4 +888,6 @@ func init() {
 // Errors
 var (
 	ErrInvalidParam = errors.New("invalid param value")
+	ErrInvalidValue = errors.New("invalid value")
+	ErrInvalidText  = errors.New("invalid text")
 )

@@ -239,19 +239,21 @@ source "names.sh";
 
 			#validator
 
-			echo "func (t $type) valid() bool {";
+			echo "func (t $type) valid() error {";
 			if [ "$vType" = "Boolean" ]; then
-				echo "	return true";
+				echo "	return nil";
 			elif [ ${#choices[@]} -eq 0 ] || ! $freeChoice; then
 				if $multiple; then
 					echo "	for _, v := range *t {";
 				fi;
 				if [ ! -z "$vType" ]; then
 					if $multiple; then
-					echo "		return !v.validate()";
+						echo "		if err := v.valid(); err != nil {"
+						echo "			return err";
+						echo "		}";
 					else
-					echo "	q := $vType(*t)";
-					echo "	return q.validate()";
+						echo "	q := $vType(*t)";
+						echo "	return q.valid()";
 					fi;
 				elif [ ${#choices[@]} -gt 0 ]; then
 					echo "$indent	switch $vName {";
@@ -266,15 +268,15 @@ source "names.sh";
 					done;
 					echo ":";
 					echo "$indent	default:";
-					echo "$indent		return false";
+					echo "$indent		return ErrInvalidValue";
 					echo "$indent	}";
 				elif [ ! -z "$regex" ]; then
 					echo "$indent	if !regex${type}.Match($vName) {";
-					echo "$indent		return false";
+					echo "$indent		return ErrInvalidValue";
 					echo "$indent	}";
 				else
 					echo "$indent	if strings.ContainsAny($vName, nonsafeChars[:32]) {";
-					echo "$indent		return false";
+					echo "$indent		return ErrInvalidText";
 					echo "$indent	}";
 				fi;
 				if $multiple; then
@@ -282,7 +284,7 @@ source "names.sh";
 				fi;
 			fi;
 			if [ -z "$vType" ] ; then
-				echo "	return true";
+				echo "	return nil";
 			fi;
 			echo "}";
 			echo;
@@ -356,5 +358,7 @@ HEREDOC
 	echo "// Errors";
 	echo "var (";
 	echo "	ErrInvalidParam = errors.New(\"invalid param value\")";
+	echo "	ErrInvalidValue = errors.New(\"invalid value\")";
+	echo "	ErrInvalidText  = errors.New(\"invalid text\")";
 	echo ")";
 ) > params.go
