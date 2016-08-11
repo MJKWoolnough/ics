@@ -47,7 +47,7 @@ func (t *CommonName) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
 	}
-	*t = CommonName(vs[0].Data)
+	*t = CommonName(decode6868(vs[0].Data))
 	return nil
 }
 
@@ -56,17 +56,17 @@ func (t CommonName) encode(w writer) {
 		return
 	}
 	w.WriteString(";CN=")
-	if strings.ContainsAny(string(*t), nonsafeChars[33:]) {
+	if strings.ContainsAny(string(*t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(*t)
+		w.WriteString(encode6868(string(*t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(string(*t))
+		w.WriteString(encode6868(string(*t)))
 	}
 }
 
 func (t CommonName) valid() bool {
-	if strings.ContainsAny(*t, nonsafeChars[:33]) {
+	if strings.ContainsAny(*t, nonsafeChars[:32]) {
 		return false
 	}
 	return true
@@ -202,7 +202,7 @@ func (t *DirectoryEntry) decode(vs []parser.Token) error {
 	if vs[0].Type != tokenParamQuotedValue {
 		return ErrInvalidParam
 	}
-	*t = DirectoryEntry(vs[0].Data)
+	*t = DirectoryEntry(decode6868(vs[0].Data))
 	return nil
 }
 
@@ -217,7 +217,7 @@ func (t DirectoryEntry) encode(w writer) {
 }
 
 func (t DirectoryEntry) valid() bool {
-	if strings.ContainsAny(*t, nonsafeChars[:33]) {
+	if strings.ContainsAny(*t, nonsafeChars[:32]) {
 		return false
 	}
 	return true
@@ -284,12 +284,12 @@ func (t FormatType) encode(w writer) {
 		return
 	}
 	w.WriteString(";FMTTYPE=")
-	if strings.ContainsAny(string(*t), nonsafeChars[33:]) {
+	if strings.ContainsAny(string(*t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(*t)
+		w.WriteString(encode6868(string(*t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(string(*t))
+		w.WriteString(encode6868(string(*t)))
 	}
 }
 
@@ -355,7 +355,7 @@ func (t *Langauge) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
 	}
-	*t = Langauge(vs[0].Data)
+	*t = Langauge(decode6868(vs[0].Data))
 	return nil
 }
 
@@ -364,17 +364,17 @@ func (t Langauge) encode(w writer) {
 		return
 	}
 	w.WriteString(";LANGAUGE=")
-	if strings.ContainsAny(string(*t), nonsafeChars[33:]) {
+	if strings.ContainsAny(string(*t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(*t)
+		w.WriteString(encode6868(string(*t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(string(*t))
+		w.WriteString(encode6868(string(*t)))
 	}
 }
 
 func (t Langauge) valid() bool {
-	if strings.ContainsAny(*t, nonsafeChars[:33]) {
+	if strings.ContainsAny(*t, nonsafeChars[:32]) {
 		return false
 	}
 	return true
@@ -387,7 +387,7 @@ func (t *Member) decode(vs []parser.Token) error {
 		if v.Type != tokenParamQuotedValue {
 			return ErrInvalidParam
 		}
-		*t = append(*t, v.Data)
+		*t = append(*t, decode6868(v.Data))
 	}
 	return nil
 }
@@ -409,7 +409,7 @@ func (t Member) encode(w writer) {
 
 func (t Member) valid() bool {
 	for _, v := range *t {
-		if strings.ContainsAny(v, nonsafeChars[:33]) {
+		if strings.ContainsAny(v, nonsafeChars[:32]) {
 			return false
 		}
 	}
@@ -671,7 +671,7 @@ func (t *SentBy) decode(vs []parser.Token) error {
 	if vs[0].Type != tokenParamQuotedValue {
 		return ErrInvalidParam
 	}
-	*t = SentBy(vs[0].Data)
+	*t = SentBy(decode6868(vs[0].Data))
 	return nil
 }
 
@@ -686,7 +686,7 @@ func (t SentBy) encode(w writer) {
 }
 
 func (t SentBy) valid() bool {
-	if strings.ContainsAny(*t, nonsafeChars[:33]) {
+	if strings.ContainsAny(*t, nonsafeChars[:32]) {
 		return false
 	}
 	return true
@@ -698,7 +698,7 @@ func (t *TimezoneID) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
 	}
-	*t = TimezoneID(vs[0].Data)
+	*t = TimezoneID(decode6868(vs[0].Data))
 	return nil
 }
 
@@ -707,17 +707,17 @@ func (t TimezoneID) encode(w writer) {
 		return
 	}
 	w.WriteString(";TZID=")
-	if strings.ContainsAny(string(*t), nonsafeChars[33:]) {
+	if strings.ContainsAny(string(*t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(*t)
+		w.WriteString(encode6868(string(*t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(string(*t))
+		w.WriteString(encode6868(string(*t)))
 	}
 }
 
 func (t TimezoneID) valid() bool {
-	if strings.ContainsAny(*t, nonsafeChars[:33]) {
+	if strings.ContainsAny(*t, nonsafeChars[:32]) {
 		return false
 	}
 	return true
@@ -820,6 +820,61 @@ func (t Value) encode(w writer) {
 
 func (t Value) valid() bool {
 	return true
+}
+
+func decode6868(s string) string {
+	t := parser.NewStringTokeniser(s)
+	d := make([]byte, 0, len(s))
+	var ru [4]byte
+Loop:
+	for {
+		c := t.ExceptRun("^")
+		d = append(d, t.Get()...)
+		switch c {
+		case -1:
+			break Loop
+		case '^':
+			t.Accept("^")
+			switch t.Peek() {
+			case -1:
+				d = append(d, '^')
+				break Loop
+			case 'n':
+				d = append(d, '\n')
+			case '\'':
+				d = append(d, '"')
+			case '^':
+				d = append(d, '^')
+			default:
+				d = append(d, '^')
+				l := utf8.EncodeRune(ru[:], c)
+				d = append(d, ru[:l]...)
+			}
+			t.Except("")
+		}
+	}
+	return string(d)
+}
+
+func encode6868(s string) string {
+	t := parser.NewStringTokeniser(s)
+	d := make([]bytr, 0, len(s))
+Loop:
+	for {
+		c := t.ExceptRun("\n^\"")
+		d = append(d, t.Get()...)
+		switch c {
+		case -1:
+			break Loop
+		case '\n':
+			d = append(d, '^', 'n')
+		case '^':
+			d = append(d, '^', '^')
+		case '"':
+			d = append(d, '^', '\'')
+		}
+	}
+	return string(d)
 }
 
 func init() {

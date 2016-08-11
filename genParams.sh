@@ -154,9 +154,9 @@ source "names.sh";
 			else
 				if [ -z "$regex" ]; then
 					if $multiple; then
-						echo "		*t = append(*t, ${vName}.Data)";
+						echo "		*t = append(*t, decode6868(${vName}.Data))";
 					else
-						echo "	*t = $type(${vName}.Data)";
+						echo "	*t = $type(decode6868(${vName}.Data))";
 					fi;
 				else
 					echo "$indent	if !regex$type.MatchString(${vName}.Data) {";
@@ -222,12 +222,12 @@ source "names.sh";
 					echo "$indent	w.WriteString($vName)";
 					echo "$indent	w.WriteString(\"\\\"\")";
 				else
-					echo "$indent	if strings.ContainsAny(string($vName), nonsafeChars[33:]) {";
+					echo "$indent	if strings.ContainsAny(string($vName), nonsafeChars[32:]) {";
 					echo "$indent		w.WriteString(\"\\\"\")";
-					echo "$indent		w.WriteString($vName)";
+					echo "$indent		w.WriteString(encode6868(string($vName)))";
 					echo "$indent		w.WriteString(\"\\\"\")";
 					echo "$indent	} else {";
-					echo "$indent		w.WriteString(string($vName))";
+					echo "$indent		w.WriteString(encode6868(string($vName)))";
 					echo "$indent	}";
 				fi;
 			fi;
@@ -273,7 +273,7 @@ source "names.sh";
 					echo "$indent		return false";
 					echo "$indent	}";
 				else
-					echo "$indent	if strings.ContainsAny($vName, nonsafeChars[:33]) {";
+					echo "$indent	if strings.ContainsAny($vName, nonsafeChars[:32]) {";
 					echo "$indent		return false";
 					echo "$indent	}";
 				fi;
@@ -288,6 +288,65 @@ source "names.sh";
 			echo;
 		done;
 	} < params.gen
+
+	cat <<HEREDOC
+func decode6868(s string) string {
+	t := parser.NewStringTokeniser(s)
+	d := make([]byte, 0, len(s))
+	var ru [4]byte
+Loop:
+	for {
+		c := t.ExceptRun("^")
+		d = append(d, t.Get()...)
+		switch c {
+		case -1:
+			break Loop
+		case '^':
+			t.Accept("^")
+			switch t.Peek() {
+			case -1:
+				d = append(d, '^')
+				break Loop
+			case 'n':
+				d = append(d, '\n')
+			case '\'':
+				d = append(d, '"')
+			case '^':
+				d = append(d, '^')
+			default:
+				d = append(d, '^')
+				l := utf8.EncodeRune(ru[:], c)
+				d = append(d, ru[:l]...)
+			}
+			t.Except("")
+		}
+	}
+	return string(d)
+}
+
+func encode6868(s string) string {
+	t := parser.NewStringTokeniser(s)
+	d := make([]bytr, 0, len(s))
+Loop:
+	for {
+		c := t.ExceptRun("\n^\"")
+		d = append(d, t.Get()...)
+		switch c {
+		case -1:
+			break Loop
+		case '\n':
+			d = append(d, '^', 'n')
+		case '^':
+			d = append(d, '^', '^')
+		case '"':
+			d = append(d, '^', '\'')
+		}
+	}
+	return string(d)
+}
+
+HEREDOC
+
 	echo "func init() {";
 	for key in ${!regexes[@]}; do
 		echo "	regex$key = regexp.MustCompile(\"${regexes[$key]}\")";
