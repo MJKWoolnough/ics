@@ -78,10 +78,10 @@ function printSection {
 	echo "			return err";
 	echo "		}";
 	echo "		params := p.Data[1 : len(p.Data)-1]";
-	echo "		value := p.Data[len(p.Data)-1]";
+	echo "		value := p.Data[len(p.Data)-1].Data";
 	echo "		switch strings.ToUpper(p.Data[0].Data) {";
 	echo "		case \"BEGIN\":";
-	echo "			switch n := strings.ToUpper(value.Data); n {";
+	echo "			switch n := strings.ToUpper(value); n {";
 
 	# BEGIN keywords
 

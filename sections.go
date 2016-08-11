@@ -22,10 +22,10 @@ func (s *Calendar) decode(t tokeniser) error {
 			return err
 		}
 		params := p.Data[1 : len(p.Data)-1]
-		value := p.Data[len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value.Data); n {
+			switch n := strings.ToUpper(value); n {
 			case "VEVENT":
 				var e Event
 				if err := e.Event.decode(t); err != nil {
@@ -189,10 +189,10 @@ func (s *Event) decode(t tokeniser) error {
 			return err
 		}
 		params := p.Data[1 : len(p.Data)-1]
-		value := p.Data[len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value.Data); n {
+			switch n := strings.ToUpper(value); n {
 			case "VALARM":
 				var e Alarm
 				if err := e.Alarm.decode(t); err != nil {
@@ -731,10 +731,10 @@ func (s *Todo) decode(t tokeniser) error {
 			return err
 		}
 		params := p.Data[1 : len(p.Data)-1]
-		value := p.Data[len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value.Data); n {
+			switch n := strings.ToUpper(value); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -1270,10 +1270,10 @@ func (s *Journal) decode(t tokeniser) error {
 			return err
 		}
 		params := p.Data[1 : len(p.Data)-1]
-		value := p.Data[len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value.Data); n {
+			switch n := strings.ToUpper(value); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -1663,10 +1663,10 @@ func (s *FreeBusy) decode(t tokeniser) error {
 			return err
 		}
 		params := p.Data[1 : len(p.Data)-1]
-		value := p.Data[len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value.Data); n {
+			switch n := strings.ToUpper(value); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -1870,10 +1870,10 @@ func (s *Timezone) decode(t tokeniser) error {
 			return err
 		}
 		params := p.Data[1 : len(p.Data)-1]
-		value := p.Data[len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value.Data); n {
+			switch n := strings.ToUpper(value); n {
 			case "STANDARD":
 				var e Standard
 				if err := e.Standard.decode(t); err != nil {
@@ -1994,10 +1994,10 @@ func (s *Standard) decode(t tokeniser) error {
 			return err
 		}
 		params := p.Data[1 : len(p.Data)-1]
-		value := p.Data[len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value.Data); n {
+			switch n := strings.ToUpper(value); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -2137,10 +2137,10 @@ func (s *Daylight) decode(t tokeniser) error {
 			return err
 		}
 		params := p.Data[1 : len(p.Data)-1]
-		value := p.Data[len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value.Data); n {
+			switch n := strings.ToUpper(value); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -2277,10 +2277,10 @@ func (s *AlarmAudio) decode(t tokeniser) error {
 			return err
 		}
 		params := p.Data[1 : len(p.Data)-1]
-		value := p.Data[len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value.Data); n {
+			switch n := strings.ToUpper(value); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -2379,10 +2379,10 @@ func (s *AlarmDisplay) decode(t tokeniser) error {
 			return err
 		}
 		params := p.Data[1 : len(p.Data)-1]
-		value := p.Data[len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value.Data); n {
+			switch n := strings.ToUpper(value); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -2481,10 +2481,10 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 			return err
 		}
 		params := p.Data[1 : len(p.Data)-1]
-		value := p.Data[len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value.Data); n {
+			switch n := strings.ToUpper(value); n {
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
