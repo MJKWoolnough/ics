@@ -336,6 +336,48 @@ func (f *Float) valid() error {
 	return nil
 }
 
+type TFloat [2]float32
+
+func (t *TFloat) decode(_ map[string]string, data string) error {
+	fs := strings.SplitN(data, ";", 2)
+	if len(fs) != 2 {
+		return ErrInvalidTFloat
+	}
+	var err error
+	(*t)[0], err = strconv.ParseFloat(fs[0], 64)
+	if err != nil {
+		return err
+	}
+	(*t)[1], err = strconv.ParseFloat(fs[1], 64)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *TFloat) aencode(w writer) {
+	w.WriteString(":")
+	t.encode(w)
+}
+
+func (t *TFloat) encode(w writer) {
+	w.WriteString(strconv.FormatFloat((*t)[0], 'f', -1, 64))
+	w.WriteString(";")
+	w.WriteString(strconv.FormatFloat((*t)[1], 'f', -1, 64))
+}
+
+func (t *TFloat) valid() error {
+	d := float64((*f)[0])
+	if !math.IsNaN(d) && !math.IsInf(d, 0) {
+		return ErrInvalidFloat
+	}
+	d = float64((*f)[1])
+	if !math.IsNaN(d) && !math.IsInf(d, 0) {
+		return ErrInvalidFloat
+	}
+	return nil
+}
+
 type Integer int32
 
 func (i *Integer) decode(_ map[string]string, data string) error {
@@ -1258,6 +1300,7 @@ var (
 	ErrInvalidRecur           = errors.New("invalid Recur")
 	ErrInvalidTime            = errors.New("invalid time")
 	ErrInvalidFloat           = errors.New("invalid float")
+	ErrInvalidTFloat          = errors.New("invalid number of floats")
 	ErrInvalidPeriodStart     = errors.New("invalid start of Period")
 	ErrInvalidPeriodDuration  = errors.New("invalid Period duration")
 	ErrInvalidPeriodEnd       = errors.New("invalid end of Period")
