@@ -12,6 +12,7 @@ source "names.sh";
 	echo "	\"errors\"";
 	echo "	\"regexp\"";
 	echo "	\"strings\"";
+	echo "	\"unicode/utf8\"";
 	echo;
 	echo "	\"github.com/MJKWoolnough/parser\"";
 	echo ")";
@@ -159,10 +160,10 @@ source "names.sh";
 						echo "	*t = $type(decode6868(${vName}.Data))";
 					fi;
 				else
-					echo "$indent	if !regex$type.MatchString(${vName}.Data) {";
+					echo "$indent	if !regex${type}.MatchString(${vName}.Data) {";
 					echo "$indent		return ErrInvalidParam";
 					echo "$indent	}";
-					echo "$indent	*t = ${vName}.Data";
+					echo "$indent	*t = $type(${vName}.Data)";
 				fi;
 			fi;
 			if $multiple; then
@@ -181,23 +182,23 @@ source "names.sh";
 					echo "		return";
 					echo "	}";
 				elif [ "$vType" = "Boolean" ]; then
-					echo "	if !*t {";
+					echo "	if !t {";
 					echo "		return";
 					echo "	}";
 				else
-					echo "	if len(*t) == 0 {";
+					echo "	if len(t) == 0 {";
 					echo "		return";
 					echo "	}";
 				fi;
 			fi;
 			echo "	w.WriteString(\";${keyword}=\")";
 			if $multiple; then
-				echo "	for n, v := range *t {";
+				echo "	for n, v := range t {";
 				echo "		if n > 0 {";
 				echo "			w.WriteString(\",\")";
 				echo "		}";
 			else
-				vName="*t";
+				vName="t";
 			fi;
 			if [ ! -z "$vType" ]; then
 				echo "$indent	q := $vType($vName)";
@@ -244,7 +245,7 @@ source "names.sh";
 				echo "	return nil";
 			elif [ ${#choices[@]} -eq 0 ] || ! $freeChoice; then
 				if $multiple; then
-					echo "	for _, v := range *t {";
+					echo "	for _, v := range t {";
 				fi;
 				if [ ! -z "$vType" ]; then
 					if $multiple; then
@@ -252,7 +253,7 @@ source "names.sh";
 						echo "			return err";
 						echo "		}";
 					else
-						echo "	q := $vType(*t)";
+						echo "	q := $vType(t)";
 						echo "	return q.valid()";
 					fi;
 				elif [ ${#choices[@]} -gt 0 ]; then
@@ -271,17 +272,18 @@ source "names.sh";
 					echo "$indent		return ErrInvalidValue";
 					echo "$indent	}";
 				elif [ ! -z "$regex" ]; then
-					echo "$indent	if !regex${type}.Match($vName) {";
+					echo "$indent	if !regex${type}.Match([]byte($vName)) {";
 					echo "$indent		return ErrInvalidValue";
 					echo "$indent	}";
 				else
-					echo "$indent	if strings.ContainsAny($vName, nonsafeChars[:32]) {";
+					echo "$indent	if strings.ContainsAny(string($vName), nonsafeChars[:32]) {";
 					echo "$indent		return ErrInvalidText";
 					echo "$indent	}";
 				fi;
 				if $multiple; then
 					echo "	}";
 				fi;
+				echo "	return nil";
 			fi;
 			if [ -z "$vType" ] ; then
 				echo "	return nil";
@@ -328,7 +330,7 @@ Loop:
 
 func encode6868(s string) string {
 	t := parser.NewStringTokeniser(s)
-	d := make([]bytr, 0, len(s))
+	d := make([]byte, 0, len(s))
 Loop:
 	for {
 		c := t.ExceptRun("\n^\"")
@@ -359,6 +361,5 @@ HEREDOC
 	echo "var (";
 	echo "	ErrInvalidParam = errors.New(\"invalid param value\")";
 	echo "	ErrInvalidValue = errors.New(\"invalid value\")";
-	echo "	ErrInvalidText  = errors.New(\"invalid text\")";
 	echo ")";
 ) > params.go

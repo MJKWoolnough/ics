@@ -47,3 +47,6 @@ CAL-ADDRESS=CalendarAddress
 UTC-OFFSET=UTCOffset
 REQ-PARTICIPANT=RequiredParticipant
 URL=URL
+URI=URI
+CalendarAddress=CalendarAddress
+MText=MText

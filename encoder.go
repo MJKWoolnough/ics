@@ -25,9 +25,9 @@ func (w *writeError) Write(p []byte) (int, error) {
 	return n, w.err
 }
 
-func Encode(w io.Writer, cal *Calender) error {
-	if !cal.valid() {
-		return ErrInvalidCalendar
+func Encode(w io.Writer, cal *SectionCalendar) error {
+	if err := cal.valid(); err != nil {
+		return err
 	}
 	we := writeError{
 		w: &folder{w: w},

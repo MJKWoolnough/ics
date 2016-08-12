@@ -3,18 +3,21 @@ package ics
 // File automatically generated with ./genParams.sh
 
 import (
+	"errors"
 	"strings"
+
+	"github.com/MJKWoolnough/parser"
 )
 
-type Action uint8
+type PropAction uint8
 
 const (
-	ActionAudio Action = iota
+	ActionAudio PropAction = iota
 	ActionDisplay
 	ActionEmail
 )
 
-func (p *Action) decode(params []parser.Token, value string) error {
+func (p *PropAction) decode(params []parser.Token, value string) error {
 	switch strings.ToUpper(value) {
 	case "AUDIO":
 		*p = ActionAudio
@@ -28,35 +31,35 @@ func (p *Action) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *Action) encode(w writer) {
+func (p *PropAction) encode(w writer) {
 	w.WriteString("ACTION:")
 	switch *p {
-	case Audio:
+	case ActionAudio:
 		w.WriteString("AUDIO")
-	case Display:
+	case ActionDisplay:
 		w.WriteString("DISPLAY")
-	case Email:
+	case ActionEmail:
 		w.WriteString("EMAIL")
 	}
 	w.WriteString("\r\n")
 }
 
-func (p *Action) valid() error {
+func (p *PropAction) valid() error {
 	switch *p {
-	case Audio, Display, Email:
+	case ActionAudio, ActionDisplay, ActionEmail:
 	default:
 		return ErrInvalidValue
 	}
 	return nil
 }
 
-type Attachment struct {
+type PropAttachment struct {
 	FormatType *FormatType
-	Uri        *Uri
+	URI        *URI
 	Binary     Binary
 }
 
-func (p *Attachment) decode(params []parser.Token, value string) error {
+func (p *PropAttachment) decode(params []parser.Token, value string) error {
 	vType := -1
 	oParams := make(map[string]string)
 	var ts []string
@@ -105,8 +108,8 @@ func (p *Attachment) decode(params []parser.Token, value string) error {
 	}
 	switch vType {
 	case 0:
-		p.Uri = new(Uri)
-		if err := p.Uri.decode(oParams, value); err != nil {
+		p.URI = new(URI)
+		if err := p.URI.decode(oParams, value); err != nil {
 			return err
 		}
 	case 1:
@@ -117,13 +120,13 @@ func (p *Attachment) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *Attachment) encode(w writer) {
+func (p *PropAttachment) encode(w writer) {
 	w.WriteString("ATTACH")
 	if p.FormatType != nil {
 		p.FormatType.encode(w)
 	}
-	if p.Uri != nil {
-		p.Uri.aencode(w)
+	if p.URI != nil {
+		p.URI.aencode(w)
 	}
 	if p.Binary != nil {
 		p.Binary.aencode(w)
@@ -131,15 +134,15 @@ func (p *Attachment) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *Attachment) valid() error {
+func (p *PropAttachment) valid() error {
 	if p.FormatType != nil {
 		if err := p.FormatType.valid(); err != nil {
 			return err
 		}
 	}
 	c := 0
-	if p.Uri != nil {
-		if err := p.Uri.valid(); err != nil {
+	if p.URI != nil {
+		if err := p.URI.valid(); err != nil {
 			return err
 		}
 		c++
@@ -156,7 +159,7 @@ func (p *Attachment) valid() error {
 	return nil
 }
 
-type Attendee struct {
+type PropAttendee struct {
 	CalendarUserType    *CalendarUserType
 	Member              Member
 	ParticipationRole   *ParticipationRole
@@ -168,10 +171,10 @@ type Attendee struct {
 	CommonName          *CommonName
 	DirectoryEntry      *DirectoryEntry
 	Language            *Language
-	CalAddress
+	CalendarAddress
 }
 
-func (p *Attendee) decode(params []parser.Token, value string) error {
+func (p *PropAttendee) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -276,13 +279,13 @@ func (p *Attendee) decode(params []parser.Token, value string) error {
 			ts = ts[:0]
 		}
 	}
-	if err := p.Caladdress.decode(oParams, value); err != nil {
+	if err := p.CalendarAddress.decode(oParams, value); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *Attendee) encode(w writer) {
+func (p *PropAttendee) encode(w writer) {
 	w.WriteString("ATTENDEE")
 	if p.CalendarUserType != nil {
 		p.CalendarUserType.encode(w)
@@ -317,11 +320,11 @@ func (p *Attendee) encode(w writer) {
 	if p.Language != nil {
 		p.Language.encode(w)
 	}
-	p.Caladdress.aencode(w)
+	p.CalendarAddress.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Attendee) valid() error {
+func (p *PropAttendee) valid() error {
 	if p.CalendarUserType != nil {
 		if err := p.CalendarUserType.valid(); err != nil {
 			return err
@@ -377,19 +380,19 @@ func (p *Attendee) valid() error {
 			return err
 		}
 	}
-	if err := p.Caladdress.valid(); err != nil {
+	if err := p.CalendarAddress.valid(); err != nil {
 		return err
 	}
 	return nil
 }
 
-type CalendarScale uint8
+type PropCalendarScale uint8
 
 const (
-	CalendarScaleGregorian CalendarScale = iota
+	CalendarScaleGregorian PropCalendarScale = iota
 )
 
-func (p *CalendarScale) decode(params []parser.Token, value string) error {
+func (p *PropCalendarScale) decode(params []parser.Token, value string) error {
 	switch strings.ToUpper(value) {
 	case "GREGORIAN":
 		*p = CalendarScaleGregorian
@@ -399,30 +402,30 @@ func (p *CalendarScale) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *CalendarScale) encode(w writer) {
+func (p *PropCalendarScale) encode(w writer) {
 	w.WriteString("CALSCALE:")
 	switch *p {
-	case Gregorian:
+	case CalendarScaleGregorian:
 		w.WriteString("GREGORIAN")
 	}
 	w.WriteString("\r\n")
 }
 
-func (p *CalendarScale) valid() error {
+func (p *PropCalendarScale) valid() error {
 	switch *p {
-	case Gregorian:
+	case CalendarScaleGregorian:
 	default:
 		return ErrInvalidValue
 	}
 	return nil
 }
 
-type Catergories struct {
+type PropCategories struct {
 	Language *Language
 	MText
 }
 
-func (p *Catergories) decode(params []parser.Token, value string) error {
+func (p *PropCategories) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -450,42 +453,42 @@ func (p *Catergories) decode(params []parser.Token, value string) error {
 			ts = ts[:0]
 		}
 	}
-	if err := p.Mtext.decode(oParams, value); err != nil {
+	if err := p.MText.decode(oParams, value); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *Catergories) encode(w writer) {
-	w.WriteString("CATERGORIES")
+func (p *PropCategories) encode(w writer) {
+	w.WriteString("CATEGORIES")
 	if p.Language != nil {
 		p.Language.encode(w)
 	}
-	p.Mtext.aencode(w)
+	p.MText.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Catergories) valid() error {
+func (p *PropCategories) valid() error {
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
 			return err
 		}
 	}
-	if err := p.Mtext.valid(); err != nil {
+	if err := p.MText.valid(); err != nil {
 		return err
 	}
 	return nil
 }
 
-type Class uint8
+type PropClass uint8
 
 const (
-	ClassPublic Class = iota
+	ClassPublic PropClass = iota
 	ClassPrivate
 	ClassConfidential
 )
 
-func (p *Class) decode(params []parser.Token, value string) error {
+func (p *PropClass) decode(params []parser.Token, value string) error {
 	switch strings.ToUpper(value) {
 	case "PUBLIC":
 		*p = ClassPublic
@@ -499,35 +502,35 @@ func (p *Class) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *Class) encode(w writer) {
+func (p *PropClass) encode(w writer) {
 	w.WriteString("CLASS:")
 	switch *p {
-	case Public:
+	case ClassPublic:
 		w.WriteString("PUBLIC")
-	case Private:
+	case ClassPrivate:
 		w.WriteString("PRIVATE")
-	case Confidential:
+	case ClassConfidential:
 		w.WriteString("CONFIDENTIAL")
 	}
 	w.WriteString("\r\n")
 }
 
-func (p *Class) valid() error {
+func (p *PropClass) valid() error {
 	switch *p {
-	case Public, Private, Confidential:
+	case ClassPublic, ClassPrivate, ClassConfidential:
 	default:
 		return ErrInvalidValue
 	}
 	return nil
 }
 
-type Comment struct {
+type PropComment struct {
 	AlternativeRepresentation *AlternativeRepresentation
 	Language                  *Language
 	Text
 }
 
-func (p *Comment) decode(params []parser.Token, value string) error {
+func (p *PropComment) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -569,7 +572,7 @@ func (p *Comment) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *Comment) encode(w writer) {
+func (p *PropComment) encode(w writer) {
 	w.WriteString("COMMENT")
 	if p.AlternativeRepresentation != nil {
 		p.AlternativeRepresentation.encode(w)
@@ -581,7 +584,7 @@ func (p *Comment) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *Comment) valid() error {
+func (p *PropComment) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
 			return err
@@ -598,36 +601,51 @@ func (p *Comment) valid() error {
 	return nil
 }
 
-type Completed DateTime
+type PropCompleted DateTime
 
-func (p *Completed) decode(params []parser.Token, value string) error {
+func (p *PropCompleted) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t DateTime
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = Completed(t)
+	*p = PropCompleted(t)
 	return nil
 }
 
-func (p *Completed) encode(w writer) {
+func (p *PropCompleted) encode(w writer) {
 	w.WriteString("COMPLETED")
 	t := DateTime(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Completed) valid() error {
+func (p *PropCompleted) valid() error {
 	t := DateTime(*p)
 	return t.valid()
 }
 
-type Contact struct {
+type PropContact struct {
 	AlternativeRepresentation *AlternativeRepresentation
 	Language                  *Language
 	Text
 }
 
-func (p *Contact) decode(params []parser.Token, value string) error {
+func (p *PropContact) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -669,7 +687,7 @@ func (p *Contact) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *Contact) encode(w writer) {
+func (p *PropContact) encode(w writer) {
 	w.WriteString("CONTACT")
 	if p.AlternativeRepresentation != nil {
 		p.AlternativeRepresentation.encode(w)
@@ -681,7 +699,7 @@ func (p *Contact) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *Contact) valid() error {
+func (p *PropContact) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
 			return err
@@ -698,36 +716,51 @@ func (p *Contact) valid() error {
 	return nil
 }
 
-type Created DateTime
+type PropCreated DateTime
 
-func (p *Created) decode(params []parser.Token, value string) error {
+func (p *PropCreated) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t DateTime
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = Created(t)
+	*p = PropCreated(t)
 	return nil
 }
 
-func (p *Created) encode(w writer) {
+func (p *PropCreated) encode(w writer) {
 	w.WriteString("CREATED")
 	t := DateTime(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Created) valid() error {
+func (p *PropCreated) valid() error {
 	t := DateTime(*p)
 	return t.valid()
 }
 
-type Description struct {
+type PropDescription struct {
 	AlternativeRepresentation *AlternativeRepresentation
 	Language                  *Language
 	Text
 }
 
-func (p *Description) decode(params []parser.Token, value string) error {
+func (p *PropDescription) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -769,7 +802,7 @@ func (p *Description) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *Description) encode(w writer) {
+func (p *PropDescription) encode(w writer) {
 	w.WriteString("DESCRIPTION")
 	if p.AlternativeRepresentation != nil {
 		p.AlternativeRepresentation.encode(w)
@@ -781,7 +814,7 @@ func (p *Description) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *Description) valid() error {
+func (p *PropDescription) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
 			return err
@@ -798,12 +831,12 @@ func (p *Description) valid() error {
 	return nil
 }
 
-type DateTimeEnd struct {
+type PropDateTimeEnd struct {
 	DateTime *DateTime
 	Date     *Date
 }
 
-func (p *DateTimeEnd) decode(params []parser.Token, value string) error {
+func (p *PropDateTimeEnd) decode(params []parser.Token, value string) error {
 	vType := -1
 	oParams := make(map[string]string)
 	var ts []string
@@ -857,7 +890,7 @@ func (p *DateTimeEnd) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *DateTimeEnd) encode(w writer) {
+func (p *PropDateTimeEnd) encode(w writer) {
 	w.WriteString("DTEND")
 	if p.DateTime != nil {
 		p.DateTime.aencode(w)
@@ -868,7 +901,7 @@ func (p *DateTimeEnd) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *DateTimeEnd) valid() error {
+func (p *PropDateTimeEnd) valid() error {
 	c := 0
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
@@ -888,35 +921,50 @@ func (p *DateTimeEnd) valid() error {
 	return nil
 }
 
-type DateTimeStamp DateTime
+type PropDateTimeStamp DateTime
 
-func (p *DateTimeStamp) decode(params []parser.Token, value string) error {
+func (p *PropDateTimeStamp) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t DateTime
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = DateTimeStamp(t)
+	*p = PropDateTimeStamp(t)
 	return nil
 }
 
-func (p *DateTimeStamp) encode(w writer) {
+func (p *PropDateTimeStamp) encode(w writer) {
 	w.WriteString("DTSTAMP")
 	t := DateTime(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *DateTimeStamp) valid() error {
+func (p *PropDateTimeStamp) valid() error {
 	t := DateTime(*p)
 	return t.valid()
 }
 
-type DateTimeStart struct {
+type PropDateTimeStart struct {
 	DateTime *DateTime
 	Date     *Date
 }
 
-func (p *DateTimeStart) decode(params []parser.Token, value string) error {
+func (p *PropDateTimeStart) decode(params []parser.Token, value string) error {
 	vType := -1
 	oParams := make(map[string]string)
 	var ts []string
@@ -970,7 +1018,7 @@ func (p *DateTimeStart) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *DateTimeStart) encode(w writer) {
+func (p *PropDateTimeStart) encode(w writer) {
 	w.WriteString("DTSTART")
 	if p.DateTime != nil {
 		p.DateTime.aencode(w)
@@ -981,7 +1029,7 @@ func (p *DateTimeStart) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *DateTimeStart) valid() error {
+func (p *PropDateTimeStart) valid() error {
 	c := 0
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
@@ -1001,12 +1049,12 @@ func (p *DateTimeStart) valid() error {
 	return nil
 }
 
-type Due struct {
+type PropDue struct {
 	DateTime *DateTime
 	Date     *Date
 }
 
-func (p *Due) decode(params []parser.Token, value string) error {
+func (p *PropDue) decode(params []parser.Token, value string) error {
 	vType := -1
 	oParams := make(map[string]string)
 	var ts []string
@@ -1060,7 +1108,7 @@ func (p *Due) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *Due) encode(w writer) {
+func (p *PropDue) encode(w writer) {
 	w.WriteString("DUE")
 	if p.DateTime != nil {
 		p.DateTime.aencode(w)
@@ -1071,7 +1119,7 @@ func (p *Due) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *Due) valid() error {
+func (p *PropDue) valid() error {
 	c := 0
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
@@ -1091,35 +1139,50 @@ func (p *Due) valid() error {
 	return nil
 }
 
-type Duration Duration
+type PropDuration Duration
 
-func (p *Duration) decode(params []parser.Token, value string) error {
+func (p *PropDuration) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Duration
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = Duration(t)
+	*p = PropDuration(t)
 	return nil
 }
 
-func (p *Duration) encode(w writer) {
+func (p *PropDuration) encode(w writer) {
 	w.WriteString("DURATION")
 	t := Duration(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Duration) valid() error {
+func (p *PropDuration) valid() error {
 	t := Duration(*p)
 	return t.valid()
 }
 
-type ExceptionDateTime struct {
+type PropExceptionDateTime struct {
 	DateTime *DateTime
 	Date     *Date
 }
 
-func (p *ExceptionDateTime) decode(params []parser.Token, value string) error {
+func (p *PropExceptionDateTime) decode(params []parser.Token, value string) error {
 	vType := -1
 	oParams := make(map[string]string)
 	var ts []string
@@ -1173,7 +1236,7 @@ func (p *ExceptionDateTime) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *ExceptionDateTime) encode(w writer) {
+func (p *PropExceptionDateTime) encode(w writer) {
 	w.WriteString("EXDATE")
 	if p.DateTime != nil {
 		p.DateTime.aencode(w)
@@ -1184,7 +1247,7 @@ func (p *ExceptionDateTime) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *ExceptionDateTime) valid() error {
+func (p *PropExceptionDateTime) valid() error {
 	c := 0
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
@@ -1204,12 +1267,12 @@ func (p *ExceptionDateTime) valid() error {
 	return nil
 }
 
-type FreeBusy struct {
+type PropFreeBusy struct {
 	FreeBusyType *FreeBusyType
 	Period
 }
 
-func (p *FreeBusy) decode(params []parser.Token, value string) error {
+func (p *PropFreeBusy) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -1243,7 +1306,7 @@ func (p *FreeBusy) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *FreeBusy) encode(w writer) {
+func (p *PropFreeBusy) encode(w writer) {
 	w.WriteString("FREEBUSY")
 	if p.FreeBusyType != nil {
 		p.FreeBusyType.encode(w)
@@ -1252,7 +1315,7 @@ func (p *FreeBusy) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *FreeBusy) valid() error {
+func (p *PropFreeBusy) valid() error {
 	if p.FreeBusyType != nil {
 		if err := p.FreeBusyType.valid(); err != nil {
 			return err
@@ -1264,59 +1327,89 @@ func (p *FreeBusy) valid() error {
 	return nil
 }
 
-type Geo TFloat
+type PropGeo TFloat
 
-func (p *Geo) decode(params []parser.Token, value string) error {
+func (p *PropGeo) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t TFloat
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = Geo(t)
+	*p = PropGeo(t)
 	return nil
 }
 
-func (p *Geo) encode(w writer) {
+func (p *PropGeo) encode(w writer) {
 	w.WriteString("GEO")
 	t := TFloat(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Geo) valid() error {
+func (p *PropGeo) valid() error {
 	t := TFloat(*p)
 	return t.valid()
 }
 
-type LastModified DateTime
+type PropLastModified DateTime
 
-func (p *LastModified) decode(params []parser.Token, value string) error {
+func (p *PropLastModified) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t DateTime
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = LastModified(t)
+	*p = PropLastModified(t)
 	return nil
 }
 
-func (p *LastModified) encode(w writer) {
+func (p *PropLastModified) encode(w writer) {
 	w.WriteString("LAST-MODIFIED")
 	t := DateTime(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *LastModified) valid() error {
+func (p *PropLastModified) valid() error {
 	t := DateTime(*p)
 	return t.valid()
 }
 
-type Location struct {
+type PropLocation struct {
 	AlternativeRepresentation *AlternativeRepresentation
 	Language                  *Language
 	Text
 }
 
-func (p *Location) decode(params []parser.Token, value string) error {
+func (p *PropLocation) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -1358,7 +1451,7 @@ func (p *Location) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *Location) encode(w writer) {
+func (p *PropLocation) encode(w writer) {
 	w.WriteString("LOCATION")
 	if p.AlternativeRepresentation != nil {
 		p.AlternativeRepresentation.encode(w)
@@ -1370,7 +1463,7 @@ func (p *Location) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *Location) valid() error {
+func (p *PropLocation) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
 			return err
@@ -1387,38 +1480,53 @@ func (p *Location) valid() error {
 	return nil
 }
 
-type Method Text
+type PropMethod Text
 
-func (p *Method) decode(params []parser.Token, value string) error {
+func (p *PropMethod) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Text
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = Method(t)
+	*p = PropMethod(t)
 	return nil
 }
 
-func (p *Method) encode(w writer) {
+func (p *PropMethod) encode(w writer) {
 	w.WriteString("METHOD")
 	t := Text(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Method) valid() error {
+func (p *PropMethod) valid() error {
 	t := Text(*p)
 	return t.valid()
 }
 
-type Organizer struct {
+type PropOrganizer struct {
 	CommonName     *CommonName
 	DirectoryEntry *DirectoryEntry
 	SentBy         *SentBy
 	Language       *Language
-	CalAddress
+	CalendarAddress
 }
 
-func (p *Organizer) decode(params []parser.Token, value string) error {
+func (p *PropOrganizer) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -1470,13 +1578,13 @@ func (p *Organizer) decode(params []parser.Token, value string) error {
 			ts = ts[:0]
 		}
 	}
-	if err := p.Caladdress.decode(oParams, value); err != nil {
+	if err := p.CalendarAddress.decode(oParams, value); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *Organizer) encode(w writer) {
+func (p *PropOrganizer) encode(w writer) {
 	w.WriteString("ORGANIZER")
 	if p.CommonName != nil {
 		p.CommonName.encode(w)
@@ -1490,11 +1598,11 @@ func (p *Organizer) encode(w writer) {
 	if p.Language != nil {
 		p.Language.encode(w)
 	}
-	p.Caladdress.aencode(w)
+	p.CalendarAddress.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Organizer) valid() error {
+func (p *PropOrganizer) valid() error {
 	if p.CommonName != nil {
 		if err := p.CommonName.valid(); err != nil {
 			return err
@@ -1515,88 +1623,133 @@ func (p *Organizer) valid() error {
 			return err
 		}
 	}
-	if err := p.Caladdress.valid(); err != nil {
+	if err := p.CalendarAddress.valid(); err != nil {
 		return err
 	}
 	return nil
 }
 
-type PercentComplete Integer
+type PropPercentComplete Integer
 
-func (p *PercentComplete) decode(params []parser.Token, value string) error {
+func (p *PropPercentComplete) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Integer
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = PercentComplete(t)
+	*p = PropPercentComplete(t)
 	return nil
 }
 
-func (p *PercentComplete) encode(w writer) {
+func (p *PropPercentComplete) encode(w writer) {
 	w.WriteString("PERCENT-COMPLETE")
 	t := Integer(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *PercentComplete) valid() error {
+func (p *PropPercentComplete) valid() error {
 	t := Integer(*p)
 	return t.valid()
 }
 
-type Priority Integer
+type PropPriority Integer
 
-func (p *Priority) decode(params []parser.Token, value string) error {
+func (p *PropPriority) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Integer
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = Priority(t)
+	*p = PropPriority(t)
 	return nil
 }
 
-func (p *Priority) encode(w writer) {
+func (p *PropPriority) encode(w writer) {
 	w.WriteString("PRIORITY")
 	t := Integer(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Priority) valid() error {
+func (p *PropPriority) valid() error {
 	t := Integer(*p)
 	return t.valid()
 }
 
-type ProdID Text
+type PropProdID Text
 
-func (p *ProdID) decode(params []parser.Token, value string) error {
+func (p *PropProdID) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Text
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = ProdID(t)
+	*p = PropProdID(t)
 	return nil
 }
 
-func (p *ProdID) encode(w writer) {
+func (p *PropProdID) encode(w writer) {
 	w.WriteString("PRODID")
 	t := Text(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *ProdID) valid() error {
+func (p *PropProdID) valid() error {
 	t := Text(*p)
 	return t.valid()
 }
 
-type RecurrenceDateTimes struct {
+type PropRecurrenceDateTimes struct {
 	DateTime *DateTime
 	Date     *Date
 	Period   *Period
 }
 
-func (p *RecurrenceDateTimes) decode(params []parser.Token, value string) error {
+func (p *PropRecurrenceDateTimes) decode(params []parser.Token, value string) error {
 	vType := -1
 	oParams := make(map[string]string)
 	var ts []string
@@ -1657,7 +1810,7 @@ func (p *RecurrenceDateTimes) decode(params []parser.Token, value string) error 
 	return nil
 }
 
-func (p *RecurrenceDateTimes) encode(w writer) {
+func (p *PropRecurrenceDateTimes) encode(w writer) {
 	w.WriteString("RDATE")
 	if p.DateTime != nil {
 		p.DateTime.aencode(w)
@@ -1671,7 +1824,7 @@ func (p *RecurrenceDateTimes) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *RecurrenceDateTimes) valid() error {
+func (p *PropRecurrenceDateTimes) valid() error {
 	c := 0
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
@@ -1697,13 +1850,13 @@ func (p *RecurrenceDateTimes) valid() error {
 	return nil
 }
 
-type RecurrenceId struct {
+type PropRecurrenceId struct {
 	Range    *Range
 	DateTime *DateTime
 	Date     *Date
 }
 
-func (p *RecurrenceId) decode(params []parser.Token, value string) error {
+func (p *PropRecurrenceId) decode(params []parser.Token, value string) error {
 	vType := -1
 	oParams := make(map[string]string)
 	var ts []string
@@ -1765,7 +1918,7 @@ func (p *RecurrenceId) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *RecurrenceId) encode(w writer) {
+func (p *PropRecurrenceId) encode(w writer) {
 	w.WriteString("RECURRENCE-ID")
 	if p.Range != nil {
 		p.Range.encode(w)
@@ -1779,7 +1932,7 @@ func (p *RecurrenceId) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *RecurrenceId) valid() error {
+func (p *PropRecurrenceId) valid() error {
 	if p.Range != nil {
 		if err := p.Range.valid(); err != nil {
 			return err
@@ -1804,12 +1957,12 @@ func (p *RecurrenceId) valid() error {
 	return nil
 }
 
-type RelatedTo struct {
+type PropRelatedTo struct {
 	RelationshipType *RelationshipType
 	Text
 }
 
-func (p *RelatedTo) decode(params []parser.Token, value string) error {
+func (p *PropRelatedTo) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -1843,7 +1996,7 @@ func (p *RelatedTo) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *RelatedTo) encode(w writer) {
+func (p *PropRelatedTo) encode(w writer) {
 	w.WriteString("RELATED-TO")
 	if p.RelationshipType != nil {
 		p.RelationshipType.encode(w)
@@ -1852,7 +2005,7 @@ func (p *RelatedTo) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *RelatedTo) valid() error {
+func (p *PropRelatedTo) valid() error {
 	if p.RelationshipType != nil {
 		if err := p.RelationshipType.valid(); err != nil {
 			return err
@@ -1864,59 +2017,89 @@ func (p *RelatedTo) valid() error {
 	return nil
 }
 
-type Repeat Integer
+type PropRepeat Integer
 
-func (p *Repeat) decode(params []parser.Token, value string) error {
+func (p *PropRepeat) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Integer
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = Repeat(t)
+	*p = PropRepeat(t)
 	return nil
 }
 
-func (p *Repeat) encode(w writer) {
+func (p *PropRepeat) encode(w writer) {
 	w.WriteString("REPEAT")
 	t := Integer(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Repeat) valid() error {
+func (p *PropRepeat) valid() error {
 	t := Integer(*p)
 	return t.valid()
 }
 
-type RequestStatus Text
+type PropRequestStatus Text
 
-func (p *RequestStatus) decode(params []parser.Token, value string) error {
+func (p *PropRequestStatus) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Text
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = RequestStatus(t)
+	*p = PropRequestStatus(t)
 	return nil
 }
 
-func (p *RequestStatus) encode(w writer) {
+func (p *PropRequestStatus) encode(w writer) {
 	w.WriteString("REQUEST-STATUS")
 	t := Text(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *RequestStatus) valid() error {
+func (p *PropRequestStatus) valid() error {
 	t := Text(*p)
 	return t.valid()
 }
 
-type Resources struct {
+type PropResources struct {
 	AlternativeRepresentation *AlternativeRepresentation
 	Language                  *Language
 	MText
 }
 
-func (p *Resources) decode(params []parser.Token, value string) error {
+func (p *PropResources) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -1952,13 +2135,13 @@ func (p *Resources) decode(params []parser.Token, value string) error {
 			ts = ts[:0]
 		}
 	}
-	if err := p.Mtext.decode(oParams, value); err != nil {
+	if err := p.MText.decode(oParams, value); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *Resources) encode(w writer) {
+func (p *PropResources) encode(w writer) {
 	w.WriteString("RESOURCES")
 	if p.AlternativeRepresentation != nil {
 		p.AlternativeRepresentation.encode(w)
@@ -1966,11 +2149,11 @@ func (p *Resources) encode(w writer) {
 	if p.Language != nil {
 		p.Language.encode(w)
 	}
-	p.Mtext.aencode(w)
+	p.MText.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Resources) valid() error {
+func (p *PropResources) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
 			return err
@@ -1981,62 +2164,92 @@ func (p *Resources) valid() error {
 			return err
 		}
 	}
-	if err := p.Mtext.valid(); err != nil {
+	if err := p.MText.valid(); err != nil {
 		return err
 	}
 	return nil
 }
 
-type RecurrenceRule Recur
+type PropRecurrenceRule Recur
 
-func (p *RecurrenceRule) decode(params []parser.Token, value string) error {
+func (p *PropRecurrenceRule) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Recur
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = RecurrenceRule(t)
+	*p = PropRecurrenceRule(t)
 	return nil
 }
 
-func (p *RecurrenceRule) encode(w writer) {
+func (p *PropRecurrenceRule) encode(w writer) {
 	w.WriteString("RRULE")
 	t := Recur(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *RecurrenceRule) valid() error {
+func (p *PropRecurrenceRule) valid() error {
 	t := Recur(*p)
 	return t.valid()
 }
 
-type Sequence Integer
+type PropSequence Integer
 
-func (p *Sequence) decode(params []parser.Token, value string) error {
+func (p *PropSequence) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Integer
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = Sequence(t)
+	*p = PropSequence(t)
 	return nil
 }
 
-func (p *Sequence) encode(w writer) {
+func (p *PropSequence) encode(w writer) {
 	w.WriteString("SEQUENCE")
 	t := Integer(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Sequence) valid() error {
+func (p *PropSequence) valid() error {
 	t := Integer(*p)
 	return t.valid()
 }
 
-type Status uint8
+type PropStatus uint8
 
 const (
-	StatusTentative Status = iota
+	StatusTentative PropStatus = iota
 	StatusConfirmed
 	StatusCancelled
 	StatusNeedsAction
@@ -2046,7 +2259,7 @@ const (
 	StatusFinal
 )
 
-func (p *Status) decode(params []parser.Token, value string) error {
+func (p *PropStatus) decode(params []parser.Token, value string) error {
 	switch strings.ToUpper(value) {
 	case "TENTATIVE":
 		*p = StatusTentative
@@ -2070,45 +2283,45 @@ func (p *Status) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *Status) encode(w writer) {
+func (p *PropStatus) encode(w writer) {
 	w.WriteString("STATUS:")
 	switch *p {
-	case Tentative:
+	case StatusTentative:
 		w.WriteString("TENTATIVE")
-	case Confirmed:
+	case StatusConfirmed:
 		w.WriteString("CONFIRMED")
-	case Cancelled:
+	case StatusCancelled:
 		w.WriteString("CANCELLED")
-	case NeedsAction:
+	case StatusNeedsAction:
 		w.WriteString("NEEDS-ACTION")
-	case Completed:
+	case StatusCompleted:
 		w.WriteString("COMPLETED")
-	case InProcess:
+	case StatusInProcess:
 		w.WriteString("IN-PROCESS")
-	case Draft:
+	case StatusDraft:
 		w.WriteString("DRAFT")
-	case Final:
+	case StatusFinal:
 		w.WriteString("FINAL")
 	}
 	w.WriteString("\r\n")
 }
 
-func (p *Status) valid() error {
+func (p *PropStatus) valid() error {
 	switch *p {
-	case Tentative, Confirmed, Cancelled, NeedsAction, Completed, InProcess, Draft, Final:
+	case StatusTentative, StatusConfirmed, StatusCancelled, StatusNeedsAction, StatusCompleted, StatusInProcess, StatusDraft, StatusFinal:
 	default:
 		return ErrInvalidValue
 	}
 	return nil
 }
 
-type Summary struct {
+type PropSummary struct {
 	AlternativeRepresentation *AlternativeRepresentation
-	Langauge                  *Langauge
+	Language                  *Language
 	Text
 }
 
-func (p *Summary) decode(params []parser.Token, value string) error {
+func (p *PropSummary) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -2128,12 +2341,12 @@ func (p *Summary) decode(params []parser.Token, value string) error {
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
 				return err
 			}
-		case "LANGAUGE":
-			if p.Langauge != nil {
+		case "LANGUAGE":
+			if p.Language != nil {
 				return ErrDuplicateParam
 			}
-			p.Langauge = new(Langauge)
-			if err := p.Langauge.decode(pValues); err != nil {
+			p.Language = new(Language)
+			if err := p.Language.decode(pValues); err != nil {
 				return err
 			}
 		default:
@@ -2150,26 +2363,26 @@ func (p *Summary) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *Summary) encode(w writer) {
+func (p *PropSummary) encode(w writer) {
 	w.WriteString("SUMMARY")
 	if p.AlternativeRepresentation != nil {
 		p.AlternativeRepresentation.encode(w)
 	}
-	if p.Langauge != nil {
-		p.Langauge.encode(w)
+	if p.Language != nil {
+		p.Language.encode(w)
 	}
 	p.Text.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Summary) valid() error {
+func (p *PropSummary) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
 			return err
 		}
 	}
-	if p.Langauge != nil {
-		if err := p.Langauge.valid(); err != nil {
+	if p.Language != nil {
+		if err := p.Language.valid(); err != nil {
 			return err
 		}
 	}
@@ -2179,14 +2392,14 @@ func (p *Summary) valid() error {
 	return nil
 }
 
-type TimeTransparency uint8
+type PropTimeTransparency uint8
 
 const (
-	TimeTransparencyOpaque TimeTransparency = iota
+	TimeTransparencyOpaque PropTimeTransparency = iota
 	TimeTransparencyTransparent
 )
 
-func (p *TimeTransparency) decode(params []parser.Token, value string) error {
+func (p *PropTimeTransparency) decode(params []parser.Token, value string) error {
 	switch strings.ToUpper(value) {
 	case "OPAQUE":
 		*p = TimeTransparencyOpaque
@@ -2198,32 +2411,32 @@ func (p *TimeTransparency) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *TimeTransparency) encode(w writer) {
+func (p *PropTimeTransparency) encode(w writer) {
 	w.WriteString("TRANSP:")
 	switch *p {
-	case Opaque:
+	case TimeTransparencyOpaque:
 		w.WriteString("OPAQUE")
-	case Transparent:
+	case TimeTransparencyTransparent:
 		w.WriteString("TRANSPARENT")
 	}
 	w.WriteString("\r\n")
 }
 
-func (p *TimeTransparency) valid() error {
+func (p *PropTimeTransparency) valid() error {
 	switch *p {
-	case Opaque, Transparent:
+	case TimeTransparencyOpaque, TimeTransparencyTransparent:
 	default:
 		return ErrInvalidValue
 	}
 	return nil
 }
 
-type Trigger struct {
+type PropTrigger struct {
 	Duration *Duration
 	DateTime *DateTime
 }
 
-func (p *Trigger) decode(params []parser.Token, value string) error {
+func (p *PropTrigger) decode(params []parser.Token, value string) error {
 	vType := -1
 	oParams := make(map[string]string)
 	var ts []string
@@ -2277,7 +2490,7 @@ func (p *Trigger) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *Trigger) encode(w writer) {
+func (p *PropTrigger) encode(w writer) {
 	w.WriteString("TRIGGER")
 	if p.Duration != nil {
 		p.Duration.aencode(w)
@@ -2288,7 +2501,7 @@ func (p *Trigger) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *Trigger) valid() error {
+func (p *PropTrigger) valid() error {
 	c := 0
 	if p.Duration != nil {
 		if err := p.Duration.valid(); err != nil {
@@ -2308,35 +2521,50 @@ func (p *Trigger) valid() error {
 	return nil
 }
 
-type TimezoneID Text
+type PropTimezoneID Text
 
-func (p *TimezoneID) decode(params []parser.Token, value string) error {
+func (p *PropTimezoneID) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Text
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = TimezoneID(t)
+	*p = PropTimezoneID(t)
 	return nil
 }
 
-func (p *TimezoneID) encode(w writer) {
+func (p *PropTimezoneID) encode(w writer) {
 	w.WriteString("TZID")
 	t := Text(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *TimezoneID) valid() error {
+func (p *PropTimezoneID) valid() error {
 	t := Text(*p)
 	return t.valid()
 }
 
-type TimezoneName struct {
+type PropTimezoneName struct {
 	Language *Language
 	Text
 }
 
-func (p *TimezoneName) decode(params []parser.Token, value string) error {
+func (p *PropTimezoneName) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -2370,7 +2598,7 @@ func (p *TimezoneName) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *TimezoneName) encode(w writer) {
+func (p *PropTimezoneName) encode(w writer) {
 	w.WriteString("TZNAME")
 	if p.Language != nil {
 		p.Language.encode(w)
@@ -2379,7 +2607,7 @@ func (p *TimezoneName) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *TimezoneName) valid() error {
+func (p *PropTimezoneName) valid() error {
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
 			return err
@@ -2391,145 +2619,235 @@ func (p *TimezoneName) valid() error {
 	return nil
 }
 
-type TimezoneOffsetFrom UTCOffset
+type PropTimezoneOffsetFrom UTCOffset
 
-func (p *TimezoneOffsetFrom) decode(params []parser.Token, value string) error {
+func (p *PropTimezoneOffsetFrom) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t UTCOffset
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = TimezoneOffsetFrom(t)
+	*p = PropTimezoneOffsetFrom(t)
 	return nil
 }
 
-func (p *TimezoneOffsetFrom) encode(w writer) {
+func (p *PropTimezoneOffsetFrom) encode(w writer) {
 	w.WriteString("TZOFFSETFROM")
 	t := UTCOffset(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *TimezoneOffsetFrom) valid() error {
+func (p *PropTimezoneOffsetFrom) valid() error {
 	t := UTCOffset(*p)
 	return t.valid()
 }
 
-type TimezoneOffsetTo UTCOffset
+type PropTimezoneOffsetTo UTCOffset
 
-func (p *TimezoneOffsetTo) decode(params []parser.Token, value string) error {
+func (p *PropTimezoneOffsetTo) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t UTCOffset
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = TimezoneOffsetTo(t)
+	*p = PropTimezoneOffsetTo(t)
 	return nil
 }
 
-func (p *TimezoneOffsetTo) encode(w writer) {
+func (p *PropTimezoneOffsetTo) encode(w writer) {
 	w.WriteString("TZOFFSETTO")
 	t := UTCOffset(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *TimezoneOffsetTo) valid() error {
+func (p *PropTimezoneOffsetTo) valid() error {
 	t := UTCOffset(*p)
 	return t.valid()
 }
 
-type TimezoneURL URI
+type PropTimezoneURL URI
 
-func (p *TimezoneURL) decode(params []parser.Token, value string) error {
+func (p *PropTimezoneURL) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t URI
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = TimezoneURL(t)
+	*p = PropTimezoneURL(t)
 	return nil
 }
 
-func (p *TimezoneURL) encode(w writer) {
+func (p *PropTimezoneURL) encode(w writer) {
 	w.WriteString("TZURL")
 	t := URI(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *TimezoneURL) valid() error {
+func (p *PropTimezoneURL) valid() error {
 	t := URI(*p)
 	return t.valid()
 }
 
-type UID Text
+type PropUID Text
 
-func (p *UID) decode(params []parser.Token, value string) error {
+func (p *PropUID) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Text
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = UID(t)
+	*p = PropUID(t)
 	return nil
 }
 
-func (p *UID) encode(w writer) {
+func (p *PropUID) encode(w writer) {
 	w.WriteString("UID")
 	t := Text(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *UID) valid() error {
+func (p *PropUID) valid() error {
 	t := Text(*p)
 	return t.valid()
 }
 
-type URL URI
+type PropURL URI
 
-func (p *URL) decode(params []parser.Token, value string) error {
+func (p *PropURL) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t URI
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = URL(t)
+	*p = PropURL(t)
 	return nil
 }
 
-func (p *URL) encode(w writer) {
+func (p *PropURL) encode(w writer) {
 	w.WriteString("URL")
 	t := URI(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *URL) valid() error {
+func (p *PropURL) valid() error {
 	t := URI(*p)
 	return t.valid()
 }
 
-type Version Text
+type PropVersion Text
 
-func (p *Version) decode(params []parser.Token, value string) error {
+func (p *PropVersion) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
 	var t Text
-	if err := t.decode(value); err != nil {
+	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = Version(t)
+	*p = PropVersion(t)
 	return nil
 }
 
-func (p *Version) encode(w writer) {
+func (p *PropVersion) encode(w writer) {
 	w.WriteString("VERSION")
 	t := Text(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *Version) valid() error {
+func (p *PropVersion) valid() error {
 	t := Text(*p)
 	return t.valid()
 }
 
 // Errors
 var (
-	ErrInvalidValue = errors.New("invalid value")
+	ErrDuplicateParam = errors.New("duplicate param")
 )

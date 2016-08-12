@@ -17,14 +17,14 @@ function printProperty {
 
 	local mode=0;
 	if [ ${#params[@]} -eq 0 ] && ! $valueType; then
-		echo "type $tName uint8";
+		echo "type Prop$tName uint8";
 		echo;
 		echo "const ("
 		local first=true;
 		for value in ${values[@]}; do
 			echo -n "	$tName$(getName "$value")";
 			if $first; then
-				echo -n " $tName = iota";
+				echo -n " Prop$tName = iota";
 				first=false;
 			fi;
 			echo;
@@ -32,10 +32,10 @@ function printProperty {
 		echo ")";
 		mode=1;
 	elif [ ${#params[@]} -eq 0 ] && $valueType && [ ${#values[@]} -eq 1 ]; then
-		echo "type $tName ${values[0]}";
+		echo "type Prop$tName ${values[0]}";
 		mode=2;
 	else
-		echo "type $tName struct {";
+		echo "type Prop$tName struct {";
 		local longest=0;
 		for param in ${params[@]}; do
 			local n="$(getName "$param")";
@@ -43,12 +43,14 @@ function printProperty {
 				longest=${#n};
 			fi;
 		done;
-		for value in ${values[@]}; do
-			local n="$(getName "$value")";
-			if [ ${#n} -gt $longest ]; then
-				longest=${#n};
-			fi;
-		done;
+		if [ ${#values[@]} -gt 1 ]; then
+			for value in ${values[@]}; do
+				local n="$(getName "$value")";
+				if [ ${#n} -gt $longest ]; then
+					longest=${#n};
+				fi;
+			done;
+		fi;
 		for param in ${params[@]}; do
 			local n=$(getName "$param")
 			echo -n "	$n ";
@@ -83,7 +85,7 @@ function printProperty {
 
 	# decoder
 
-	echo "func (p *$tName) decode(params []parser.Token, value string) error {";
+	echo "func (p *Prop$tName) decode(params []parser.Token, value string) error {";
 	case $mode in
 	0)
 		if [ ${#values[@]} -gt 1 ]; then
@@ -173,11 +175,26 @@ function printProperty {
 		echo "		return ErrInvalidValue";
 		echo "	}";;
 	2)
+		echo "	oParams := make(map[string]string)";
+		echo "	var ts []string";
+		echo "	for len(params) > 0 {";
+		echo "		i := 1";
+		echo "		for i < len(params) && params[i].Type != tokenParamName {";
+		echo "			i++";
+		echo "		}";
+		echo "		pValues := params[1:i]";
+		echo "		for _, v := range pValues {";
+		echo "			ts = append(ts, v.Data)";
+		echo "		}";
+		echo "		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, \",\")";
+		echo "		params = params[i:]";
+		echo "		ts = ts[:0]";
+		echo "	}";
 		echo "	var t ${values[0]}";
-		echo "	if err := t.decode(value); err != nil {";
+		echo "	if err := t.decode(oParams, value); err != nil {";
 		echo "		return err";
 		echo "	}";
-		echo "	*p = $tName(t)";
+		echo "	*p = Prop$tName(t)";
 	esac;
 	echo "	return nil";
 	echo "}";
@@ -185,7 +202,7 @@ function printProperty {
 
 	# encoder
 
-	echo "func (p *$tName) encode(w writer) {";
+	echo "func (p *Prop$tName) encode(w writer) {";
 	case $mode in
 	0)
 		echo "	w.WriteString(\"$currProperty\")";
@@ -209,7 +226,7 @@ function printProperty {
 		echo "	w.WriteString(\"$currProperty:\")";
 		echo "	switch *p {";
 		for value in ${values[@]}; do
-			echo "	case $(getName "$value"):";
+			echo "	case $tName$(getName "$value"):";
 			echo "		w.WriteString(\"$value\")";
 		done;
 		echo "	}";;
@@ -225,8 +242,7 @@ function printProperty {
 
 	# validator
 
-
-	echo "func (p *$tName) valid() error {";
+	echo "func (p *Prop$tName) valid() error {";
 	case $mode in
 	0)
 		for param in ${params[@]}; do
@@ -266,7 +282,7 @@ function printProperty {
 				echo -n ", ";
 			fi;
 			first=true;
-			echo -n "$(getName "$value")";
+			echo -n "$tName$(getName "$value")";
 		done;
 		echo ":";
 		echo "	default:";
@@ -294,7 +310,10 @@ function printProperty {
 	echo "// File automatically generated with ./genParams.sh";
 	echo;
 	echo "import (";
+	echo "	\"errors\"";
 	echo "	\"strings\"";
+	echo;
+	echo "	\"github.com/MJKWoolnough/parser\"";
 	echo ")";
 	echo;
 	{
@@ -318,6 +337,6 @@ function printProperty {
 	printProperty;
 	echo "// Errors";
 	echo "var (";
-	echo "	ErrInvalidValue = errors.New(\"invalid value\")";
+	echo "	ErrDuplicateParam = errors.New(\"duplicate param\")";
 	echo ")";
 ) > "properties.go";

@@ -21,7 +21,7 @@ function printSection {
 
 	# type declaration
 
-	echo "type $sName struct {";
+	echo "type Section$sName struct {";
 	IFS="$OFS";
 	declare checkRequired=false;
 	for tline in "${currSection[@]}"; do
@@ -29,7 +29,7 @@ function printSection {
 		name="${aline[0]}";
 		required=${aline[2]};
 		multiple=${aline[3]};
-		section=${aline[5]};
+		section=${aline[4]};
 		if $required; then
 			checkRequired=true;
 		fi;
@@ -42,6 +42,11 @@ function printSection {
 		elif ! $required; then
 			echo -n "*";
 		fi;
+		if $section; then
+			echo -n "Section";
+		else
+			echo -n "Prop";
+		fi;
 		echo "$name";
 	done;
 	echo "}";
@@ -49,7 +54,7 @@ function printSection {
 
 	# decoder
 
-	echo "func (s *$sName) decode(t tokeniser) error {";
+	echo "func (s *Section$sName) decode(t tokeniser) error {";
 
 	# required bools
 
@@ -105,8 +110,8 @@ function printSection {
 			echo "					return err";
 			echo "				}";
 		elif $multiple; then
-			echo "				var e $name";
-			echo "				if err := e.${name}.decode(t); err != nil {";
+			echo "				var e Section$name";
+			echo "				if err := e.decode(t); err != nil {";
 			echo "					return err";
 			echo "				}";
 			echo "				s.$name = append(s.$name, e)";
@@ -114,7 +119,7 @@ function printSection {
 			echo "				if s.$name != nil {";
 			echo "					return ErrMultipleSingle";
 			echo "				}";
-			echo "				s.$name = new($name)";
+			echo "				s.$name = new(Section$name)";
 			echo "				if err := s.${name}.decode(t); err != nil {";
 			echo "					return err";
 			echo "				}";
@@ -148,8 +153,8 @@ function printSection {
 			echo "				return err";
 			echo "			}";
 		elif $multiple; then
-			echo "			var e $name";
-			echo "			if err := e.${name}.decode(params, value); err != nil {";
+			echo "			var e Prop$name";
+			echo "			if err := e.decode(params, value); err != nil {";
 			echo "				return err";
 			echo "			}";
 			echo "			s.$name = append(s.$name, e)";
@@ -157,7 +162,7 @@ function printSection {
 			echo "			if s.$name != nil {";
 			echo "				return ErrMultipleSingle";
 			echo "			}";
-			echo "			s.$name = new($name)";
+			echo "			s.$name = new(Prop$name)";
 			echo "			if err := s.${name}.decode(params, value); err != nil {";
 			echo "				return err";
 			echo "			}";
@@ -165,9 +170,9 @@ function printSection {
 	done;
 	echo "		case \"END\":"
 	if [ "${sectionName:0:6}" = "VALARM" ]; then
-		echo "			if value.Data != \"VALARM\" {";
+		echo "			if value != \"VALARM\" {";
 	else
-		echo "			if value.Data != \"$sectionName\" {";
+		echo "			if value != \"$sectionName\" {";
 	fi;
 	echo "				return ErrInvalidEnd"
 	echo "			}";
@@ -269,7 +274,7 @@ function printSection {
 
 	# encoder
 
-	echo "func (s *$sName) encode(w writer) {"
+	echo "func (s *Section$sName) encode(w writer) {"
 	if [ "${sectionName:0:6}" != "VALARM" ]; then
 		echo "	w.WriteString(\"BEGIN:$sectionName\r\n\")";
 	fi;
@@ -298,7 +303,7 @@ function printSection {
 
 	# validator
 
-	echo "func (s *$sName) valid() error {";
+	echo "func (s *Section$sName) valid() error {";
 	for tline in "${currSection[@]}"; do
 		aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
 		name="${aline[0]}";
@@ -344,7 +349,10 @@ OFS="$IFS";
 	echo;
 	echo "// File automatically generated with ./genSections.sh";
 	echo;
-	echo "import \"strings\"";
+	echo "import (";
+	echo "	\"errors\"";
+	echo "	\"strings\"";
+	echo ")";
 	echo;
 
 	{
@@ -403,13 +411,13 @@ func decodeDummy(t tokeniser, n string) error {
 		if err != nil {
 			return err
 		}
-		switch strings.ToUpper(p[0].Data) {
+		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			if err := decodeDummy(t, p[len(p)-1].Data); err != nil {
+			if err := decodeDummy(t, p.Data[len(p.Data)-1].Data); err != nil {
 				return err
 			}
 		case "END":
-			if strings.ToUpper(p[len(p)-1].Data) == n {
+			if strings.ToUpper(p.Data[len(p.Data)-1].Data) == n {
 				return nil
 			}
 			return ErrInvalidEnd

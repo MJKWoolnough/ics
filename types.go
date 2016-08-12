@@ -336,7 +336,7 @@ func (f *Float) valid() error {
 	return nil
 }
 
-type TFloat [2]float32
+type TFloat [2]float64
 
 func (t *TFloat) decode(_ map[string]string, data string) error {
 	fs := strings.SplitN(data, ";", 2)
@@ -367,11 +367,11 @@ func (t *TFloat) encode(w writer) {
 }
 
 func (t *TFloat) valid() error {
-	d := float64((*f)[0])
+	d := float64((*t)[0])
 	if !math.IsNaN(d) && !math.IsInf(d, 0) {
 		return ErrInvalidFloat
 	}
-	d = float64((*f)[1])
+	d = float64((*t)[1])
 	if !math.IsNaN(d) && !math.IsInf(d, 0) {
 		return ErrInvalidFloat
 	}
@@ -1027,7 +1027,7 @@ func (t *Text) decode(_ map[string]string, data string) error {
 }
 
 func decodeText(t parser.Tokeniser) string {
-	d := make([]byte, 0, len(data))
+	var d []byte
 	var ru [4]byte
 Loop:
 	for {
@@ -1035,7 +1035,7 @@ Loop:
 		d = append(d, t.Get()...)
 		switch c {
 		case '\\':
-			st.Accept("\\")
+			t.Accept("\\")
 			switch c := t.Peek(); c {
 			case '\\':
 				d = append(d, '\\')
@@ -1050,8 +1050,8 @@ Loop:
 				l := utf8.EncodeRune(ru[:], c)
 				d = append(d, ru[:l]...)
 			}
-			st.Except("")
-			st.Get()
+			t.Except("")
+			t.Get()
 		default:
 			break Loop
 		}

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/MJKWoolnough/parser"
 )
@@ -32,13 +33,14 @@ func (t AlternativeRepresentation) encode(w writer) {
 		return
 	}
 	w.WriteString(";ALTREP=")
-	q := URI(*t)
+	q := URI(t)
 	q.encode(w)
 }
 
 func (t AlternativeRepresentation) valid() error {
-	q := URI(*t)
+	q := URI(t)
 	return q.valid()
+	return nil
 }
 
 type CommonName string
@@ -52,23 +54,24 @@ func (t *CommonName) decode(vs []parser.Token) error {
 }
 
 func (t CommonName) encode(w writer) {
-	if len(*t) == 0 {
+	if len(t) == 0 {
 		return
 	}
 	w.WriteString(";CN=")
-	if strings.ContainsAny(string(*t), nonsafeChars[32:]) {
+	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(encode6868(string(*t)))
+		w.WriteString(encode6868(string(t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(encode6868(string(*t)))
+		w.WriteString(encode6868(string(t)))
 	}
 }
 
 func (t CommonName) valid() error {
-	if strings.ContainsAny(*t, nonsafeChars[:32]) {
+	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
 		return ErrInvalidText
 	}
+	return nil
 	return nil
 }
 
@@ -103,7 +106,7 @@ func (t *CalendarUserType) decode(vs []parser.Token) error {
 
 func (t CalendarUserType) encode(w writer) {
 	w.WriteString(";CUTYPE=")
-	switch *t {
+	switch t {
 	case CalendarUserTypeIndividual:
 		w.WriteString("INDIVIDUAL")
 	case CalendarUserTypeGroup:
@@ -138,11 +141,11 @@ func (t *Delegator) decode(vs []parser.Token) error {
 }
 
 func (t Delegator) encode(w writer) {
-	if len(*t) == 0 {
+	if len(t) == 0 {
 		return
 	}
 	w.WriteString(";DELEGATED-FROM=")
-	for n, v := range *t {
+	for n, v := range t {
 		if n > 0 {
 			w.WriteString(",")
 		}
@@ -152,11 +155,12 @@ func (t Delegator) encode(w writer) {
 }
 
 func (t Delegator) valid() error {
-	for _, v := range *t {
+	for _, v := range t {
 		if err := v.valid(); err != nil {
 			return err
 		}
 	}
+	return nil
 }
 
 type Delagatee []CalendarAddress
@@ -176,11 +180,11 @@ func (t *Delagatee) decode(vs []parser.Token) error {
 }
 
 func (t Delagatee) encode(w writer) {
-	if len(*t) == 0 {
+	if len(t) == 0 {
 		return
 	}
 	w.WriteString(";DELEGATED-TO=")
-	for n, v := range *t {
+	for n, v := range t {
 		if n > 0 {
 			w.WriteString(",")
 		}
@@ -190,11 +194,12 @@ func (t Delagatee) encode(w writer) {
 }
 
 func (t Delagatee) valid() error {
-	for _, v := range *t {
+	for _, v := range t {
 		if err := v.valid(); err != nil {
 			return err
 		}
 	}
+	return nil
 }
 
 type DirectoryEntry string
@@ -211,19 +216,20 @@ func (t *DirectoryEntry) decode(vs []parser.Token) error {
 }
 
 func (t DirectoryEntry) encode(w writer) {
-	if len(*t) == 0 {
+	if len(t) == 0 {
 		return
 	}
 	w.WriteString(";DIR=")
 	w.WriteString("\"")
-	w.WriteString(encode6868(string(*t)))
+	w.WriteString(encode6868(string(t)))
 	w.WriteString("\"")
 }
 
 func (t DirectoryEntry) valid() error {
-	if strings.ContainsAny(*t, nonsafeChars[:32]) {
+	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
 		return ErrInvalidText
 	}
+	return nil
 	return nil
 }
 
@@ -251,7 +257,7 @@ func (t *Encoding) decode(vs []parser.Token) error {
 
 func (t Encoding) encode(w writer) {
 	w.WriteString(";ENCODING=")
-	switch *t {
+	switch t {
 	case Encoding8bit:
 		w.WriteString("8BIT")
 	case EncodingBase64:
@@ -260,11 +266,12 @@ func (t Encoding) encode(w writer) {
 }
 
 func (t Encoding) valid() error {
-	switch *t {
+	switch t {
 	case Encoding8bit, EncodingBase64:
 	default:
 		return ErrInvalidValue
 	}
+	return nil
 	return nil
 }
 
@@ -279,28 +286,29 @@ func (t *FormatType) decode(vs []parser.Token) error {
 	if !regexFormatType.MatchString(vs[0].Data) {
 		return ErrInvalidParam
 	}
-	*t = vs[0].Data
+	*t = FormatType(vs[0].Data)
 	return nil
 }
 
 func (t FormatType) encode(w writer) {
-	if len(*t) == 0 {
+	if len(t) == 0 {
 		return
 	}
 	w.WriteString(";FMTTYPE=")
-	if strings.ContainsAny(string(*t), nonsafeChars[32:]) {
+	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(encode6868(string(*t)))
+		w.WriteString(encode6868(string(t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(encode6868(string(*t)))
+		w.WriteString(encode6868(string(t)))
 	}
 }
 
 func (t FormatType) valid() error {
-	if !regexFormatType.Match(*t) {
+	if !regexFormatType.Match([]byte(t)) {
 		return ErrInvalidValue
 	}
+	return nil
 	return nil
 }
 
@@ -335,7 +343,7 @@ func (t *FreeBusyType) decode(vs []parser.Token) error {
 
 func (t FreeBusyType) encode(w writer) {
 	w.WriteString(";FBTYPE=")
-	switch *t {
+	switch t {
 	case FreeBusyTypeFree:
 		w.WriteString("FREE")
 	case FreeBusyTypeBusy:
@@ -353,34 +361,35 @@ func (t FreeBusyType) valid() error {
 	return nil
 }
 
-type Langauge string
+type Language string
 
-func (t *Langauge) decode(vs []parser.Token) error {
+func (t *Language) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
 	}
-	*t = Langauge(decode6868(vs[0].Data))
+	*t = Language(decode6868(vs[0].Data))
 	return nil
 }
 
-func (t Langauge) encode(w writer) {
-	if len(*t) == 0 {
+func (t Language) encode(w writer) {
+	if len(t) == 0 {
 		return
 	}
-	w.WriteString(";LANGAUGE=")
-	if strings.ContainsAny(string(*t), nonsafeChars[32:]) {
+	w.WriteString(";LANGUAGE=")
+	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(encode6868(string(*t)))
+		w.WriteString(encode6868(string(t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(encode6868(string(*t)))
+		w.WriteString(encode6868(string(t)))
 	}
 }
 
-func (t Langauge) valid() error {
-	if strings.ContainsAny(*t, nonsafeChars[:32]) {
+func (t Language) valid() error {
+	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
 		return ErrInvalidText
 	}
+	return nil
 	return nil
 }
 
@@ -397,11 +406,11 @@ func (t *Member) decode(vs []parser.Token) error {
 }
 
 func (t Member) encode(w writer) {
-	if len(*t) == 0 {
+	if len(t) == 0 {
 		return
 	}
 	w.WriteString(";MEMBER=")
-	for n, v := range *t {
+	for n, v := range t {
 		if n > 0 {
 			w.WriteString(",")
 		}
@@ -412,11 +421,12 @@ func (t Member) encode(w writer) {
 }
 
 func (t Member) valid() error {
-	for _, v := range *t {
-		if strings.ContainsAny(v, nonsafeChars[:32]) {
+	for _, v := range t {
+		if strings.ContainsAny(string(v), nonsafeChars[:32]) {
 			return ErrInvalidText
 		}
 	}
+	return nil
 	return nil
 }
 
@@ -460,7 +470,7 @@ func (t *ParticipationStatus) decode(vs []parser.Token) error {
 
 func (t ParticipationStatus) encode(w writer) {
 	w.WriteString(";PARTSTAT=")
-	switch *t {
+	switch t {
 	case ParticipationStatusNeedsAction:
 		w.WriteString("NEEDS-ACTION")
 	case ParticipationStatusAccepted:
@@ -529,7 +539,7 @@ func (t *Related) decode(vs []parser.Token) error {
 
 func (t Related) encode(w writer) {
 	w.WriteString(";RELATED=")
-	switch *t {
+	switch t {
 	case RelatedStart:
 		w.WriteString("START")
 	case RelatedEnd:
@@ -538,11 +548,12 @@ func (t Related) encode(w writer) {
 }
 
 func (t Related) valid() error {
-	switch *t {
+	switch t {
 	case RelatedStart, RelatedEnd:
 	default:
 		return ErrInvalidValue
 	}
+	return nil
 	return nil
 }
 
@@ -574,7 +585,7 @@ func (t *RelationshipType) decode(vs []parser.Token) error {
 
 func (t RelationshipType) encode(w writer) {
 	w.WriteString(";RELTYPE=")
-	switch *t {
+	switch t {
 	case RelationshipTypeParent:
 		w.WriteString("PARENT")
 	case RelationshipTypeChild:
@@ -621,7 +632,7 @@ func (t *ParticipationRole) decode(vs []parser.Token) error {
 
 func (t ParticipationRole) encode(w writer) {
 	w.WriteString(";ROLE=")
-	switch *t {
+	switch t {
 	case ParticipationRoleRequiredParticipant:
 		w.WriteString("REQ-PARTICIPANT")
 	case ParticipationRoleChair:
@@ -654,11 +665,11 @@ func (t *RSVP) decode(vs []parser.Token) error {
 }
 
 func (t RSVP) encode(w writer) {
-	if !*t {
+	if !t {
 		return
 	}
 	w.WriteString(";RSVP=")
-	q := Boolean(*t)
+	q := Boolean(t)
 	q.encode(w)
 }
 
@@ -680,19 +691,20 @@ func (t *SentBy) decode(vs []parser.Token) error {
 }
 
 func (t SentBy) encode(w writer) {
-	if len(*t) == 0 {
+	if len(t) == 0 {
 		return
 	}
 	w.WriteString(";SENT-BY=")
 	w.WriteString("\"")
-	w.WriteString(encode6868(string(*t)))
+	w.WriteString(encode6868(string(t)))
 	w.WriteString("\"")
 }
 
 func (t SentBy) valid() error {
-	if strings.ContainsAny(*t, nonsafeChars[:32]) {
+	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
 		return ErrInvalidText
 	}
+	return nil
 	return nil
 }
 
@@ -707,23 +719,24 @@ func (t *TimezoneID) decode(vs []parser.Token) error {
 }
 
 func (t TimezoneID) encode(w writer) {
-	if len(*t) == 0 {
+	if len(t) == 0 {
 		return
 	}
 	w.WriteString(";TZID=")
-	if strings.ContainsAny(string(*t), nonsafeChars[32:]) {
+	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(encode6868(string(*t)))
+		w.WriteString(encode6868(string(t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(encode6868(string(*t)))
+		w.WriteString(encode6868(string(t)))
 	}
 }
 
 func (t TimezoneID) valid() error {
-	if strings.ContainsAny(*t, nonsafeChars[:32]) {
+	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
 		return ErrInvalidText
 	}
+	return nil
 	return nil
 }
 
@@ -743,7 +756,7 @@ const (
 	ValueRecur
 	ValueText
 	ValueTime
-	ValueUri
+	ValueURI
 	ValueUTCOffset
 )
 
@@ -777,7 +790,7 @@ func (t *Value) decode(vs []parser.Token) error {
 	case "TIME":
 		*t = ValueTime
 	case "URI":
-		*t = ValueUri
+		*t = ValueURI
 	case "UTC-OFFSET":
 		*t = ValueUTCOffset
 	default:
@@ -788,7 +801,7 @@ func (t *Value) decode(vs []parser.Token) error {
 
 func (t Value) encode(w writer) {
 	w.WriteString(";VALUE=")
-	switch *t {
+	switch t {
 	case ValueBinary:
 		w.WriteString("BINARY")
 	case ValueBoolean:
@@ -813,7 +826,7 @@ func (t Value) encode(w writer) {
 		w.WriteString("TEXT")
 	case ValueTime:
 		w.WriteString("TIME")
-	case ValueUri:
+	case ValueURI:
 		w.WriteString("URI")
 	case ValueUTCOffset:
 		w.WriteString("UTC-OFFSET")
@@ -862,7 +875,7 @@ Loop:
 
 func encode6868(s string) string {
 	t := parser.NewStringTokeniser(s)
-	d := make([]bytr, 0, len(s))
+	d := make([]byte, 0, len(s))
 Loop:
 	for {
 		c := t.ExceptRun("\n^\"")
@@ -889,5 +902,4 @@ func init() {
 var (
 	ErrInvalidParam = errors.New("invalid param value")
 	ErrInvalidValue = errors.New("invalid value")
-	ErrInvalidText  = errors.New("invalid text")
 )

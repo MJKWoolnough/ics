@@ -22,7 +22,7 @@ func (f *folder) Write(p []byte) (int, error) {
 	)
 	for pos := 0; pos < len(q); pos += s {
 		r, s = utf8.DecodeRune(q[pos:])
-		f.line += s
+		f.line += uint8(s)
 		if r == '\n' {
 			f.line = 0
 		} else if f.line > maxLineLength {
@@ -40,7 +40,7 @@ func (f *folder) Write(p []byte) (int, error) {
 			}
 
 			pos = 0
-			f.line = s
+			f.line = uint8(s)
 		}
 	}
 	if len(q) > 0 {

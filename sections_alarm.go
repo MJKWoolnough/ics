@@ -26,11 +26,11 @@ type AlarmType interface {
 	Type() string
 }
 
-type Alarm struct {
+type SectionAlarm struct {
 	AlarmType
 }
 
-func (a *Alarm) decode(t tokeniser) error {
+func (a *SectionAlarm) decode(t tokeniser) error {
 	var pt psuedoTokeniser
 Loop:
 	for {
@@ -48,11 +48,11 @@ Loop:
 			}
 			switch ph.Data[len(ph.Data)-1].Data {
 			case "AUDIO":
-				a.AlarmType = new(AlarmAudio)
+				a.AlarmType = new(SectionAlarmAudio)
 			case "DISPLAY":
-				a.AlarmType = new(AlarmDisplay)
+				a.AlarmType = new(SectionAlarmDisplay)
 			case "EMAIL":
-				a.AlarmType = new(AlarmEmail)
+				a.AlarmType = new(SectionAlarmEmail)
 			}
 		case "END":
 			break Loop
@@ -64,37 +64,37 @@ Loop:
 	return a.AlarmType.decode(&pt)
 }
 
-func (a *Alarm) encode(w writer) {
+func (a *SectionAlarm) encode(w writer) {
 	w.WriteString("BEGIN:VALARM\r\n")
-	switch t := a.AlarmType.(type) {
-	case *AlarmAudio:
+	switch a.AlarmType.(type) {
+	case *SectionAlarmAudio:
 		w.WriteString("ACTION:AUDIO\r\n")
-	case *AlarmDisplay:
+	case *SectionAlarmDisplay:
 		w.WriteString("ACTION:DISPLAY\r\n")
-	case *AlarmEmail:
+	case *SectionAlarmEmail:
 		w.WriteString("ACTION:EMAIL\r\n")
 	}
 	a.encode(w)
 	w.WriteString("END:VALARM\r\n")
 }
 
-func (a *Alarm) valid() error {
-	switch t := a.AlarmType.(type) {
-	case *AlarmAudio, *AlarmDisplay, *AlarmEmail:
+func (a *SectionAlarm) valid() error {
+	switch a.AlarmType.(type) {
+	case *SectionAlarmAudio, *SectionAlarmDisplay, *SectionAlarmEmail:
 		return a.AlarmType.valid()
 	}
 	return ErrInvalidAlarm
 }
 
-func (AlarmAudio) Type() string {
+func (SectionAlarmAudio) Type() string {
 	return "AUDIO"
 }
 
-func (AlarmDisplay) Type() string {
+func (SectionAlarmDisplay) Type() string {
 	return "DISPLAY"
 }
 
-func (AlarmEmail) Type() string {
+func (SectionAlarmEmail) Type() string {
 	return "EMAIL"
 }
 
@@ -102,4 +102,5 @@ func (AlarmEmail) Type() string {
 var (
 	ErrInvalidStructure   = errors.New("invalid structure")
 	ErrMissingAlarmAction = errors.New("missing alarm action")
+	ErrInvalidAlarm       = errors.New("invalid alarm type")
 )

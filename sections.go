@@ -2,19 +2,22 @@ package ics
 
 // File automatically generated with ./genSections.sh
 
-import "strings"
+import (
+	"errors"
+	"strings"
+)
 
-type Calendar struct {
-	Version  Version
-	ProdID   ProdID
-	Event    []Event
-	Todo     []Todo
-	Journal  []Journal
-	FreeBusy []FreeBusy
-	Timezone []Timezone
+type SectionCalendar struct {
+	Version  PropVersion
+	ProdID   PropProdID
+	Event    []SectionEvent
+	Todo     []SectionTodo
+	Journal  []SectionJournal
+	FreeBusy []SectionFreeBusy
+	Timezone []SectionTimezone
 }
 
-func (s *Calendar) decode(t tokeniser) error {
+func (s *SectionCalendar) decode(t tokeniser) error {
 	var requiredVersion, requiredProdID bool
 	for {
 		p, err := t.GetPhrase()
@@ -27,32 +30,32 @@ func (s *Calendar) decode(t tokeniser) error {
 		case "BEGIN":
 			switch n := strings.ToUpper(value); n {
 			case "VEVENT":
-				var e Event
-				if err := e.Event.decode(t); err != nil {
+				var e SectionEvent
+				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.Event = append(s.Event, e)
 			case "VTODO":
-				var e Todo
-				if err := e.Todo.decode(t); err != nil {
+				var e SectionTodo
+				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.Todo = append(s.Todo, e)
 			case "VJOURNAL":
-				var e Journal
-				if err := e.Journal.decode(t); err != nil {
+				var e SectionJournal
+				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.Journal = append(s.Journal, e)
 			case "VFREEBUSY":
-				var e FreeBusy
-				if err := e.FreeBusy.decode(t); err != nil {
+				var e SectionFreeBusy
+				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.FreeBusy = append(s.FreeBusy, e)
 			case "VTIMEZONE":
-				var e Timezone
-				if err := e.Timezone.decode(t); err != nil {
+				var e SectionTimezone
+				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.Timezone = append(s.Timezone, e)
@@ -78,7 +81,7 @@ func (s *Calendar) decode(t tokeniser) error {
 				return err
 			}
 		case "END":
-			if value.Data != "VCALENDAR" {
+			if value != "VCALENDAR" {
 				return ErrInvalidEnd
 			}
 			break
@@ -90,7 +93,7 @@ func (s *Calendar) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *Calendar) encode(w writer) {
+func (s *SectionCalendar) encode(w writer) {
 	w.WriteString("BEGIN:VCALENDAR\r\n")
 	s.Version.encode(w)
 	s.ProdID.encode(w)
@@ -112,7 +115,7 @@ func (s *Calendar) encode(w writer) {
 	w.WriteString("END:VCALENDAR\r\n")
 }
 
-func (s *Calendar) valid() error {
+func (s *SectionCalendar) valid() error {
 	if err := s.Version.valid(); err != nil {
 		return err
 	}
@@ -147,41 +150,41 @@ func (s *Calendar) valid() error {
 	return nil
 }
 
-type Event struct {
-	DateTimeStamp       DateTimeStamp
-	UID                 UID
-	DateTimeStart       *DateTimeStart
-	Class               *Class
-	Created             *Created
-	Description         *Description
-	Geo                 *Geo
-	LastModified        *LastModified
-	Location            *Location
-	Organizer           *Organizer
-	Priority            *Priority
-	Seq                 *Seq
-	Status              *Status
-	Summary             *Summary
-	TimeTransparency    *TimeTransparency
-	URL                 *URL
-	RecurID             *RecurID
-	RecurrenceRule      *RecurrenceRule
-	DateTimeEnd         *DateTimeEnd
-	Duration            *Duration
-	Attachment          []Attachment
-	Attendee            []Attendee
-	Categories          []Categories
-	Comment             []Comment
-	Contact             []Contact
-	ExceptionDateTime   []ExceptionDateTime
-	RequestStatus       []RequestStatus
-	Related             []Related
-	Resources           []Resources
-	RecurrenceDateTimes []RecurrenceDateTimes
-	Alarm               []Alarm
+type SectionEvent struct {
+	DateTimeStamp       PropDateTimeStamp
+	UID                 PropUID
+	DateTimeStart       *PropDateTimeStart
+	Class               *PropClass
+	Created             *PropCreated
+	Description         *PropDescription
+	Geo                 *PropGeo
+	LastModified        *PropLastModified
+	Location            *PropLocation
+	Organizer           *PropOrganizer
+	Priority            *PropPriority
+	Sequence            *PropSequence
+	Status              *PropStatus
+	Summary             *PropSummary
+	TimeTransparency    *PropTimeTransparency
+	URL                 *PropURL
+	RecurrenceId        *PropRecurrenceId
+	RecurrenceRule      *PropRecurrenceRule
+	DateTimeEnd         *PropDateTimeEnd
+	Duration            *PropDuration
+	Attachment          []PropAttachment
+	Attendee            []PropAttendee
+	Categories          []PropCategories
+	Comment             []PropComment
+	Contact             []PropContact
+	ExceptionDateTime   []PropExceptionDateTime
+	RequestStatus       []PropRequestStatus
+	RelatedTo           []PropRelatedTo
+	Resources           []PropResources
+	RecurrenceDateTimes []PropRecurrenceDateTimes
+	Alarm               []SectionAlarm
 }
 
-func (s *Event) decode(t tokeniser) error {
+func (s *SectionEvent) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
 	for {
 		p, err := t.GetPhrase()
@@ -194,8 +197,8 @@ func (s *Event) decode(t tokeniser) error {
 		case "BEGIN":
 			switch n := strings.ToUpper(value); n {
 			case "VALARM":
-				var e Alarm
-				if err := e.Alarm.decode(t); err != nil {
+				var e SectionAlarm
+				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.Alarm = append(s.Alarm, e)
@@ -224,7 +227,7 @@ func (s *Event) decode(t tokeniser) error {
 			if s.DateTimeStart != nil {
 				return ErrMultipleSingle
 			}
-			s.DateTimeStart = new(DateTimeStart)
+			s.DateTimeStart = new(PropDateTimeStart)
 			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return err
 			}
@@ -232,7 +235,7 @@ func (s *Event) decode(t tokeniser) error {
 			if s.Class != nil {
 				return ErrMultipleSingle
 			}
-			s.Class = new(Class)
+			s.Class = new(PropClass)
 			if err := s.Class.decode(params, value); err != nil {
 				return err
 			}
@@ -240,7 +243,7 @@ func (s *Event) decode(t tokeniser) error {
 			if s.Created != nil {
 				return ErrMultipleSingle
 			}
-			s.Created = new(Created)
+			s.Created = new(PropCreated)
 			if err := s.Created.decode(params, value); err != nil {
 				return err
 			}
@@ -248,7 +251,7 @@ func (s *Event) decode(t tokeniser) error {
 			if s.Description != nil {
 				return ErrMultipleSingle
 			}
-			s.Description = new(Description)
+			s.Description = new(PropDescription)
 			if err := s.Description.decode(params, value); err != nil {
 				return err
 			}
@@ -256,7 +259,7 @@ func (s *Event) decode(t tokeniser) error {
 			if s.Geo != nil {
 				return ErrMultipleSingle
 			}
-			s.Geo = new(Geo)
+			s.Geo = new(PropGeo)
 			if err := s.Geo.decode(params, value); err != nil {
 				return err
 			}
@@ -264,7 +267,7 @@ func (s *Event) decode(t tokeniser) error {
 			if s.LastModified != nil {
 				return ErrMultipleSingle
 			}
-			s.LastModified = new(LastModified)
+			s.LastModified = new(PropLastModified)
 			if err := s.LastModified.decode(params, value); err != nil {
 				return err
 			}
@@ -272,7 +275,7 @@ func (s *Event) decode(t tokeniser) error {
 			if s.Location != nil {
 				return ErrMultipleSingle
 			}
-			s.Location = new(Location)
+			s.Location = new(PropLocation)
 			if err := s.Location.decode(params, value); err != nil {
 				return err
 			}
@@ -280,7 +283,7 @@ func (s *Event) decode(t tokeniser) error {
 			if s.Organizer != nil {
 				return ErrMultipleSingle
 			}
-			s.Organizer = new(Organizer)
+			s.Organizer = new(PropOrganizer)
 			if err := s.Organizer.decode(params, value); err != nil {
 				return err
 			}
@@ -288,23 +291,23 @@ func (s *Event) decode(t tokeniser) error {
 			if s.Priority != nil {
 				return ErrMultipleSingle
 			}
-			s.Priority = new(Priority)
+			s.Priority = new(PropPriority)
 			if err := s.Priority.decode(params, value); err != nil {
 				return err
 			}
-		case "SEQ":
-			if s.Seq != nil {
+		case "SEQUENCE":
+			if s.Sequence != nil {
 				return ErrMultipleSingle
 			}
-			s.Seq = new(Seq)
-			if err := s.Seq.decode(params, value); err != nil {
+			s.Sequence = new(PropSequence)
+			if err := s.Sequence.decode(params, value); err != nil {
 				return err
 			}
 		case "STATUS":
 			if s.Status != nil {
 				return ErrMultipleSingle
 			}
-			s.Status = new(Status)
+			s.Status = new(PropStatus)
 			if err := s.Status.decode(params, value); err != nil {
 				return err
 			}
@@ -312,7 +315,7 @@ func (s *Event) decode(t tokeniser) error {
 			if s.Summary != nil {
 				return ErrMultipleSingle
 			}
-			s.Summary = new(Summary)
+			s.Summary = new(PropSummary)
 			if err := s.Summary.decode(params, value); err != nil {
 				return err
 			}
@@ -320,7 +323,7 @@ func (s *Event) decode(t tokeniser) error {
 			if s.TimeTransparency != nil {
 				return ErrMultipleSingle
 			}
-			s.TimeTransparency = new(TimeTransparency)
+			s.TimeTransparency = new(PropTimeTransparency)
 			if err := s.TimeTransparency.decode(params, value); err != nil {
 				return err
 			}
@@ -328,23 +331,23 @@ func (s *Event) decode(t tokeniser) error {
 			if s.URL != nil {
 				return ErrMultipleSingle
 			}
-			s.URL = new(URL)
+			s.URL = new(PropURL)
 			if err := s.URL.decode(params, value); err != nil {
 				return err
 			}
-		case "RECURID":
-			if s.RecurID != nil {
+		case "RECURRENCE-ID":
+			if s.RecurrenceId != nil {
 				return ErrMultipleSingle
 			}
-			s.RecurID = new(RecurID)
-			if err := s.RecurID.decode(params, value); err != nil {
+			s.RecurrenceId = new(PropRecurrenceId)
+			if err := s.RecurrenceId.decode(params, value); err != nil {
 				return err
 			}
 		case "RRULE":
 			if s.RecurrenceRule != nil {
 				return ErrMultipleSingle
 			}
-			s.RecurrenceRule = new(RecurrenceRule)
+			s.RecurrenceRule = new(PropRecurrenceRule)
 			if err := s.RecurrenceRule.decode(params, value); err != nil {
 				return err
 			}
@@ -352,7 +355,7 @@ func (s *Event) decode(t tokeniser) error {
 			if s.DateTimeEnd != nil {
 				return ErrMultipleSingle
 			}
-			s.DateTimeEnd = new(DateTimeEnd)
+			s.DateTimeEnd = new(PropDateTimeEnd)
 			if err := s.DateTimeEnd.decode(params, value); err != nil {
 				return err
 			}
@@ -360,72 +363,72 @@ func (s *Event) decode(t tokeniser) error {
 			if s.Duration != nil {
 				return ErrMultipleSingle
 			}
-			s.Duration = new(Duration)
+			s.Duration = new(PropDuration)
 			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
 		case "ATTACH":
-			var e Attachment
-			if err := e.Attachment.decode(params, value); err != nil {
+			var e PropAttachment
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Attachment = append(s.Attachment, e)
 		case "ATTENDEE":
-			var e Attendee
-			if err := e.Attendee.decode(params, value); err != nil {
+			var e PropAttendee
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Attendee = append(s.Attendee, e)
 		case "CATEGORIES":
-			var e Categories
-			if err := e.Categories.decode(params, value); err != nil {
+			var e PropCategories
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Categories = append(s.Categories, e)
 		case "COMMENT":
-			var e Comment
-			if err := e.Comment.decode(params, value); err != nil {
+			var e PropComment
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "CONTACT":
-			var e Contact
-			if err := e.Contact.decode(params, value); err != nil {
+			var e PropContact
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Contact = append(s.Contact, e)
 		case "EXDATE":
-			var e ExceptionDateTime
-			if err := e.ExceptionDateTime.decode(params, value); err != nil {
+			var e PropExceptionDateTime
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.ExceptionDateTime = append(s.ExceptionDateTime, e)
 		case "REQUEST-STATUS":
-			var e RequestStatus
-			if err := e.RequestStatus.decode(params, value); err != nil {
+			var e PropRequestStatus
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.RequestStatus = append(s.RequestStatus, e)
-		case "RELATED":
-			var e Related
-			if err := e.Related.decode(params, value); err != nil {
+		case "RELATED-TO":
+			var e PropRelatedTo
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
-			s.Related = append(s.Related, e)
+			s.RelatedTo = append(s.RelatedTo, e)
 		case "RESOURCES":
-			var e Resources
-			if err := e.Resources.decode(params, value); err != nil {
+			var e PropResources
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Resources = append(s.Resources, e)
 		case "RDATE":
-			var e RecurrenceDateTimes
-			if err := e.RecurrenceDateTimes.decode(params, value); err != nil {
+			var e PropRecurrenceDateTimes
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.RecurrenceDateTimes = append(s.RecurrenceDateTimes, e)
 		case "END":
-			if value.Data != "VEVENT" {
+			if value != "VEVENT" {
 				return ErrInvalidEnd
 			}
 			break
@@ -440,7 +443,7 @@ func (s *Event) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *Event) encode(w writer) {
+func (s *SectionEvent) encode(w writer) {
 	w.WriteString("BEGIN:VEVENT\r\n")
 	s.DateTimeStamp.encode(w)
 	s.UID.encode(w)
@@ -471,8 +474,8 @@ func (s *Event) encode(w writer) {
 	if s.Priority != nil {
 		s.Priority.encode(w)
 	}
-	if s.Seq != nil {
-		s.Seq.encode(w)
+	if s.Sequence != nil {
+		s.Sequence.encode(w)
 	}
 	if s.Status != nil {
 		s.Status.encode(w)
@@ -486,8 +489,8 @@ func (s *Event) encode(w writer) {
 	if s.URL != nil {
 		s.URL.encode(w)
 	}
-	if s.RecurID != nil {
-		s.RecurID.encode(w)
+	if s.RecurrenceId != nil {
+		s.RecurrenceId.encode(w)
 	}
 	if s.RecurrenceRule != nil {
 		s.RecurrenceRule.encode(w)
@@ -519,8 +522,8 @@ func (s *Event) encode(w writer) {
 	for n := range s.RequestStatus {
 		s.RequestStatus[n].encode(w)
 	}
-	for n := range s.Related {
-		s.Related[n].encode(w)
+	for n := range s.RelatedTo {
+		s.RelatedTo[n].encode(w)
 	}
 	for n := range s.Resources {
 		s.Resources[n].encode(w)
@@ -534,7 +537,7 @@ func (s *Event) encode(w writer) {
 	w.WriteString("END:VEVENT\r\n")
 }
 
-func (s *Event) valid() error {
+func (s *SectionEvent) valid() error {
 	if err := s.DateTimeStamp.valid(); err != nil {
 		return err
 	}
@@ -586,8 +589,8 @@ func (s *Event) valid() error {
 			return err
 		}
 	}
-	if s.Seq != nil {
-		if err := s.Seq.valid(); err != nil {
+	if s.Sequence != nil {
+		if err := s.Sequence.valid(); err != nil {
 			return err
 		}
 	}
@@ -611,8 +614,8 @@ func (s *Event) valid() error {
 			return err
 		}
 	}
-	if s.RecurID != nil {
-		if err := s.RecurID.valid(); err != nil {
+	if s.RecurrenceId != nil {
+		if err := s.RecurrenceId.valid(); err != nil {
 			return err
 		}
 	}
@@ -666,8 +669,8 @@ func (s *Event) valid() error {
 			return err
 		}
 	}
-	for n := range s.Related {
-		if err := s.Related[n].valid(); err != nil {
+	for n := range s.RelatedTo {
+		if err := s.RelatedTo[n].valid(); err != nil {
 			return err
 		}
 	}
@@ -689,41 +692,40 @@ func (s *Event) valid() error {
 	return nil
 }
 
-type Todo struct {
-	DateTimeStamp       DateTimeStamp
-	UID                 UID
-	Class               *Class
-	Completed           *Completed
-	Created             *Created
-	Description         *Description
-	DateTimeStart       *DateTimeStart
-	Duration            *Duration
-	Geo                 *Geo
-	LastModified        *LastModified
-	Location            *Location
-	Organizer           *Organizer
-	Percent             *Percent
-	Priority            *Priority
-	RecurID             *RecurID
-	Seq                 *Seq
-	Status              *Status
-	Summary             *Summary
-	URL                 *URL
-	Due                 *Due
-	Duration            *Duration
-	Attachment          []Attachment
-	Attendee            []Attendee
-	Categories          []Categories
-	Comment             []Comment
-	Contact             []Contact
-	ExceptionDateTime   []ExceptionDateTime
-	RequestStatus       []RequestStatus
-	Related             []Related
-	Resources           []Resources
-	RecurrenceDateTimes []RecurrenceDateTimes
+type SectionTodo struct {
+	DateTimeStamp       PropDateTimeStamp
+	UID                 PropUID
+	Class               *PropClass
+	Completed           *PropCompleted
+	Created             *PropCreated
+	Description         *PropDescription
+	DateTimeStart       *PropDateTimeStart
+	Geo                 *PropGeo
+	LastModified        *PropLastModified
+	Location            *PropLocation
+	Organizer           *PropOrganizer
+	PercentComplete     *PropPercentComplete
+	Priority            *PropPriority
+	RecurrenceId        *PropRecurrenceId
+	Sequence            *PropSequence
+	Status              *PropStatus
+	Summary             *PropSummary
+	URL                 *PropURL
+	Due                 *PropDue
+	Duration            *PropDuration
+	Attachment          []PropAttachment
+	Attendee            []PropAttendee
+	Categories          []PropCategories
+	Comment             []PropComment
+	Contact             []PropContact
+	ExceptionDateTime   []PropExceptionDateTime
+	RequestStatus       []PropRequestStatus
+	RelatedTo           []PropRelatedTo
+	Resources           []PropResources
+	RecurrenceDateTimes []PropRecurrenceDateTimes
 }
 
-func (s *Todo) decode(t tokeniser) error {
+func (s *SectionTodo) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
 	for {
 		p, err := t.GetPhrase()
@@ -760,7 +762,7 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.Class != nil {
 				return ErrMultipleSingle
 			}
-			s.Class = new(Class)
+			s.Class = new(PropClass)
 			if err := s.Class.decode(params, value); err != nil {
 				return err
 			}
@@ -768,7 +770,7 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.Completed != nil {
 				return ErrMultipleSingle
 			}
-			s.Completed = new(Completed)
+			s.Completed = new(PropCompleted)
 			if err := s.Completed.decode(params, value); err != nil {
 				return err
 			}
@@ -776,7 +778,7 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.Created != nil {
 				return ErrMultipleSingle
 			}
-			s.Created = new(Created)
+			s.Created = new(PropCreated)
 			if err := s.Created.decode(params, value); err != nil {
 				return err
 			}
@@ -784,7 +786,7 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.Description != nil {
 				return ErrMultipleSingle
 			}
-			s.Description = new(Description)
+			s.Description = new(PropDescription)
 			if err := s.Description.decode(params, value); err != nil {
 				return err
 			}
@@ -792,23 +794,15 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.DateTimeStart != nil {
 				return ErrMultipleSingle
 			}
-			s.DateTimeStart = new(DateTimeStart)
+			s.DateTimeStart = new(PropDateTimeStart)
 			if err := s.DateTimeStart.decode(params, value); err != nil {
-				return err
-			}
-		case "DURATION":
-			if s.Duration != nil {
-				return ErrMultipleSingle
-			}
-			s.Duration = new(Duration)
-			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
 		case "GEO":
 			if s.Geo != nil {
 				return ErrMultipleSingle
 			}
-			s.Geo = new(Geo)
+			s.Geo = new(PropGeo)
 			if err := s.Geo.decode(params, value); err != nil {
 				return err
 			}
@@ -816,7 +810,7 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.LastModified != nil {
 				return ErrMultipleSingle
 			}
-			s.LastModified = new(LastModified)
+			s.LastModified = new(PropLastModified)
 			if err := s.LastModified.decode(params, value); err != nil {
 				return err
 			}
@@ -824,7 +818,7 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.Location != nil {
 				return ErrMultipleSingle
 			}
-			s.Location = new(Location)
+			s.Location = new(PropLocation)
 			if err := s.Location.decode(params, value); err != nil {
 				return err
 			}
@@ -832,47 +826,47 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.Organizer != nil {
 				return ErrMultipleSingle
 			}
-			s.Organizer = new(Organizer)
+			s.Organizer = new(PropOrganizer)
 			if err := s.Organizer.decode(params, value); err != nil {
 				return err
 			}
-		case "PERCENT":
-			if s.Percent != nil {
+		case "PERCENT-COMPLETE":
+			if s.PercentComplete != nil {
 				return ErrMultipleSingle
 			}
-			s.Percent = new(Percent)
-			if err := s.Percent.decode(params, value); err != nil {
+			s.PercentComplete = new(PropPercentComplete)
+			if err := s.PercentComplete.decode(params, value); err != nil {
 				return err
 			}
 		case "PRIORITY":
 			if s.Priority != nil {
 				return ErrMultipleSingle
 			}
-			s.Priority = new(Priority)
+			s.Priority = new(PropPriority)
 			if err := s.Priority.decode(params, value); err != nil {
 				return err
 			}
-		case "RECURID":
-			if s.RecurID != nil {
+		case "RECURRENCE-ID":
+			if s.RecurrenceId != nil {
 				return ErrMultipleSingle
 			}
-			s.RecurID = new(RecurID)
-			if err := s.RecurID.decode(params, value); err != nil {
+			s.RecurrenceId = new(PropRecurrenceId)
+			if err := s.RecurrenceId.decode(params, value); err != nil {
 				return err
 			}
-		case "SEQ":
-			if s.Seq != nil {
+		case "SEQUENCE":
+			if s.Sequence != nil {
 				return ErrMultipleSingle
 			}
-			s.Seq = new(Seq)
-			if err := s.Seq.decode(params, value); err != nil {
+			s.Sequence = new(PropSequence)
+			if err := s.Sequence.decode(params, value); err != nil {
 				return err
 			}
 		case "STATUS":
 			if s.Status != nil {
 				return ErrMultipleSingle
 			}
-			s.Status = new(Status)
+			s.Status = new(PropStatus)
 			if err := s.Status.decode(params, value); err != nil {
 				return err
 			}
@@ -880,7 +874,7 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.Summary != nil {
 				return ErrMultipleSingle
 			}
-			s.Summary = new(Summary)
+			s.Summary = new(PropSummary)
 			if err := s.Summary.decode(params, value); err != nil {
 				return err
 			}
@@ -888,7 +882,7 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.URL != nil {
 				return ErrMultipleSingle
 			}
-			s.URL = new(URL)
+			s.URL = new(PropURL)
 			if err := s.URL.decode(params, value); err != nil {
 				return err
 			}
@@ -896,7 +890,7 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.Due != nil {
 				return ErrMultipleSingle
 			}
-			s.Due = new(Due)
+			s.Due = new(PropDue)
 			if err := s.Due.decode(params, value); err != nil {
 				return err
 			}
@@ -904,72 +898,72 @@ func (s *Todo) decode(t tokeniser) error {
 			if s.Duration != nil {
 				return ErrMultipleSingle
 			}
-			s.Duration = new(Duration)
+			s.Duration = new(PropDuration)
 			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
 		case "ATTACH":
-			var e Attachment
-			if err := e.Attachment.decode(params, value); err != nil {
+			var e PropAttachment
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Attachment = append(s.Attachment, e)
 		case "ATTENDEE":
-			var e Attendee
-			if err := e.Attendee.decode(params, value); err != nil {
+			var e PropAttendee
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Attendee = append(s.Attendee, e)
 		case "CATEGORIES":
-			var e Categories
-			if err := e.Categories.decode(params, value); err != nil {
+			var e PropCategories
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Categories = append(s.Categories, e)
 		case "COMMENT":
-			var e Comment
-			if err := e.Comment.decode(params, value); err != nil {
+			var e PropComment
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "CONTACT":
-			var e Contact
-			if err := e.Contact.decode(params, value); err != nil {
+			var e PropContact
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Contact = append(s.Contact, e)
 		case "EXDATE":
-			var e ExceptionDateTime
-			if err := e.ExceptionDateTime.decode(params, value); err != nil {
+			var e PropExceptionDateTime
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.ExceptionDateTime = append(s.ExceptionDateTime, e)
 		case "REQUEST-STATUS":
-			var e RequestStatus
-			if err := e.RequestStatus.decode(params, value); err != nil {
+			var e PropRequestStatus
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.RequestStatus = append(s.RequestStatus, e)
-		case "RELATED":
-			var e Related
-			if err := e.Related.decode(params, value); err != nil {
+		case "RELATED-TO":
+			var e PropRelatedTo
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
-			s.Related = append(s.Related, e)
+			s.RelatedTo = append(s.RelatedTo, e)
 		case "RESOURCES":
-			var e Resources
-			if err := e.Resources.decode(params, value); err != nil {
+			var e PropResources
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Resources = append(s.Resources, e)
 		case "RDATE":
-			var e RecurrenceDateTimes
-			if err := e.RecurrenceDateTimes.decode(params, value); err != nil {
+			var e PropRecurrenceDateTimes
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.RecurrenceDateTimes = append(s.RecurrenceDateTimes, e)
 		case "END":
-			if value.Data != "VTODO" {
+			if value != "VTODO" {
 				return ErrInvalidEnd
 			}
 			break
@@ -987,7 +981,7 @@ func (s *Todo) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *Todo) encode(w writer) {
+func (s *SectionTodo) encode(w writer) {
 	w.WriteString("BEGIN:VTODO\r\n")
 	s.DateTimeStamp.encode(w)
 	s.UID.encode(w)
@@ -1006,9 +1000,6 @@ func (s *Todo) encode(w writer) {
 	if s.DateTimeStart != nil {
 		s.DateTimeStart.encode(w)
 	}
-	if s.Duration != nil {
-		s.Duration.encode(w)
-	}
 	if s.Geo != nil {
 		s.Geo.encode(w)
 	}
@@ -1021,17 +1012,17 @@ func (s *Todo) encode(w writer) {
 	if s.Organizer != nil {
 		s.Organizer.encode(w)
 	}
-	if s.Percent != nil {
-		s.Percent.encode(w)
+	if s.PercentComplete != nil {
+		s.PercentComplete.encode(w)
 	}
 	if s.Priority != nil {
 		s.Priority.encode(w)
 	}
-	if s.RecurID != nil {
-		s.RecurID.encode(w)
+	if s.RecurrenceId != nil {
+		s.RecurrenceId.encode(w)
 	}
-	if s.Seq != nil {
-		s.Seq.encode(w)
+	if s.Sequence != nil {
+		s.Sequence.encode(w)
 	}
 	if s.Status != nil {
 		s.Status.encode(w)
@@ -1069,8 +1060,8 @@ func (s *Todo) encode(w writer) {
 	for n := range s.RequestStatus {
 		s.RequestStatus[n].encode(w)
 	}
-	for n := range s.Related {
-		s.Related[n].encode(w)
+	for n := range s.RelatedTo {
+		s.RelatedTo[n].encode(w)
 	}
 	for n := range s.Resources {
 		s.Resources[n].encode(w)
@@ -1081,7 +1072,7 @@ func (s *Todo) encode(w writer) {
 	w.WriteString("END:VTODO\r\n")
 }
 
-func (s *Todo) valid() error {
+func (s *SectionTodo) valid() error {
 	if err := s.DateTimeStamp.valid(); err != nil {
 		return err
 	}
@@ -1113,11 +1104,6 @@ func (s *Todo) valid() error {
 			return err
 		}
 	}
-	if s.Duration != nil {
-		if err := s.Duration.valid(); err != nil {
-			return err
-		}
-	}
 	if s.Geo != nil {
 		if err := s.Geo.valid(); err != nil {
 			return err
@@ -1138,8 +1124,8 @@ func (s *Todo) valid() error {
 			return err
 		}
 	}
-	if s.Percent != nil {
-		if err := s.Percent.valid(); err != nil {
+	if s.PercentComplete != nil {
+		if err := s.PercentComplete.valid(); err != nil {
 			return err
 		}
 	}
@@ -1148,13 +1134,13 @@ func (s *Todo) valid() error {
 			return err
 		}
 	}
-	if s.RecurID != nil {
-		if err := s.RecurID.valid(); err != nil {
+	if s.RecurrenceId != nil {
+		if err := s.RecurrenceId.valid(); err != nil {
 			return err
 		}
 	}
-	if s.Seq != nil {
-		if err := s.Seq.valid(); err != nil {
+	if s.Sequence != nil {
+		if err := s.Sequence.valid(); err != nil {
 			return err
 		}
 	}
@@ -1218,8 +1204,8 @@ func (s *Todo) valid() error {
 			return err
 		}
 	}
-	for n := range s.Related {
-		if err := s.Related[n].valid(); err != nil {
+	for n := range s.RelatedTo {
+		if err := s.RelatedTo[n].valid(); err != nil {
 			return err
 		}
 	}
@@ -1236,33 +1222,33 @@ func (s *Todo) valid() error {
 	return nil
 }
 
-type Journal struct {
-	DateTimeStamp       DateTimeStamp
-	UID                 UID
-	Class               *Class
-	Created             *Created
-	DateTimeStart       *DateTimeStart
-	LastModified        *LastModified
-	Organizer           *Organizer
-	RecurID             *RecurID
-	Seq                 *Seq
-	Status              *Status
-	Summary             *Summary
-	URL                 *URL
-	RecurrenceRule      *RecurrenceRule
-	Attachment          []Attachment
-	Attendee            []Attendee
-	Categories          []Categories
-	Comment             []Comment
-	Contact             []Contact
-	ExceptionDateTime   []ExceptionDateTime
-	RequestStatus       []RequestStatus
-	Related             []Related
-	Resources           []Resources
-	RecurrenceDateTimes []RecurrenceDateTimes
+type SectionJournal struct {
+	DateTimeStamp       PropDateTimeStamp
+	UID                 PropUID
+	Class               *PropClass
+	Created             *PropCreated
+	DateTimeStart       *PropDateTimeStart
+	LastModified        *PropLastModified
+	Organizer           *PropOrganizer
+	RecurrenceId        *PropRecurrenceId
+	Sequence            *PropSequence
+	Status              *PropStatus
+	Summary             *PropSummary
+	URL                 *PropURL
+	RecurrenceRule      *PropRecurrenceRule
+	Attachment          []PropAttachment
+	Attendee            []PropAttendee
+	Categories          []PropCategories
+	Comment             []PropComment
+	Contact             []PropContact
+	ExceptionDateTime   []PropExceptionDateTime
+	RequestStatus       []PropRequestStatus
+	RelatedTo           []PropRelatedTo
+	Resources           []PropResources
+	RecurrenceDateTimes []PropRecurrenceDateTimes
 }
 
-func (s *Journal) decode(t tokeniser) error {
+func (s *SectionJournal) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
 	for {
 		p, err := t.GetPhrase()
@@ -1299,7 +1285,7 @@ func (s *Journal) decode(t tokeniser) error {
 			if s.Class != nil {
 				return ErrMultipleSingle
 			}
-			s.Class = new(Class)
+			s.Class = new(PropClass)
 			if err := s.Class.decode(params, value); err != nil {
 				return err
 			}
@@ -1307,7 +1293,7 @@ func (s *Journal) decode(t tokeniser) error {
 			if s.Created != nil {
 				return ErrMultipleSingle
 			}
-			s.Created = new(Created)
+			s.Created = new(PropCreated)
 			if err := s.Created.decode(params, value); err != nil {
 				return err
 			}
@@ -1315,7 +1301,7 @@ func (s *Journal) decode(t tokeniser) error {
 			if s.DateTimeStart != nil {
 				return ErrMultipleSingle
 			}
-			s.DateTimeStart = new(DateTimeStart)
+			s.DateTimeStart = new(PropDateTimeStart)
 			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return err
 			}
@@ -1323,7 +1309,7 @@ func (s *Journal) decode(t tokeniser) error {
 			if s.LastModified != nil {
 				return ErrMultipleSingle
 			}
-			s.LastModified = new(LastModified)
+			s.LastModified = new(PropLastModified)
 			if err := s.LastModified.decode(params, value); err != nil {
 				return err
 			}
@@ -1331,31 +1317,31 @@ func (s *Journal) decode(t tokeniser) error {
 			if s.Organizer != nil {
 				return ErrMultipleSingle
 			}
-			s.Organizer = new(Organizer)
+			s.Organizer = new(PropOrganizer)
 			if err := s.Organizer.decode(params, value); err != nil {
 				return err
 			}
-		case "RECURID":
-			if s.RecurID != nil {
+		case "RECURRENCE-ID":
+			if s.RecurrenceId != nil {
 				return ErrMultipleSingle
 			}
-			s.RecurID = new(RecurID)
-			if err := s.RecurID.decode(params, value); err != nil {
+			s.RecurrenceId = new(PropRecurrenceId)
+			if err := s.RecurrenceId.decode(params, value); err != nil {
 				return err
 			}
-		case "SEQ":
-			if s.Seq != nil {
+		case "SEQUENCE":
+			if s.Sequence != nil {
 				return ErrMultipleSingle
 			}
-			s.Seq = new(Seq)
-			if err := s.Seq.decode(params, value); err != nil {
+			s.Sequence = new(PropSequence)
+			if err := s.Sequence.decode(params, value); err != nil {
 				return err
 			}
 		case "STATUS":
 			if s.Status != nil {
 				return ErrMultipleSingle
 			}
-			s.Status = new(Status)
+			s.Status = new(PropStatus)
 			if err := s.Status.decode(params, value); err != nil {
 				return err
 			}
@@ -1363,7 +1349,7 @@ func (s *Journal) decode(t tokeniser) error {
 			if s.Summary != nil {
 				return ErrMultipleSingle
 			}
-			s.Summary = new(Summary)
+			s.Summary = new(PropSummary)
 			if err := s.Summary.decode(params, value); err != nil {
 				return err
 			}
@@ -1371,7 +1357,7 @@ func (s *Journal) decode(t tokeniser) error {
 			if s.URL != nil {
 				return ErrMultipleSingle
 			}
-			s.URL = new(URL)
+			s.URL = new(PropURL)
 			if err := s.URL.decode(params, value); err != nil {
 				return err
 			}
@@ -1379,72 +1365,72 @@ func (s *Journal) decode(t tokeniser) error {
 			if s.RecurrenceRule != nil {
 				return ErrMultipleSingle
 			}
-			s.RecurrenceRule = new(RecurrenceRule)
+			s.RecurrenceRule = new(PropRecurrenceRule)
 			if err := s.RecurrenceRule.decode(params, value); err != nil {
 				return err
 			}
 		case "ATTACH":
-			var e Attachment
-			if err := e.Attachment.decode(params, value); err != nil {
+			var e PropAttachment
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Attachment = append(s.Attachment, e)
 		case "ATTENDEE":
-			var e Attendee
-			if err := e.Attendee.decode(params, value); err != nil {
+			var e PropAttendee
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Attendee = append(s.Attendee, e)
 		case "CATEGORIES":
-			var e Categories
-			if err := e.Categories.decode(params, value); err != nil {
+			var e PropCategories
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Categories = append(s.Categories, e)
 		case "COMMENT":
-			var e Comment
-			if err := e.Comment.decode(params, value); err != nil {
+			var e PropComment
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "CONTACT":
-			var e Contact
-			if err := e.Contact.decode(params, value); err != nil {
+			var e PropContact
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Contact = append(s.Contact, e)
 		case "EXDATE":
-			var e ExceptionDateTime
-			if err := e.ExceptionDateTime.decode(params, value); err != nil {
+			var e PropExceptionDateTime
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.ExceptionDateTime = append(s.ExceptionDateTime, e)
 		case "REQUEST-STATUS":
-			var e RequestStatus
-			if err := e.RequestStatus.decode(params, value); err != nil {
+			var e PropRequestStatus
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.RequestStatus = append(s.RequestStatus, e)
-		case "RELATED":
-			var e Related
-			if err := e.Related.decode(params, value); err != nil {
+		case "RELATED-TO":
+			var e PropRelatedTo
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
-			s.Related = append(s.Related, e)
+			s.RelatedTo = append(s.RelatedTo, e)
 		case "RESOURCES":
-			var e Resources
-			if err := e.Resources.decode(params, value); err != nil {
+			var e PropResources
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Resources = append(s.Resources, e)
 		case "RDATE":
-			var e RecurrenceDateTimes
-			if err := e.RecurrenceDateTimes.decode(params, value); err != nil {
+			var e PropRecurrenceDateTimes
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.RecurrenceDateTimes = append(s.RecurrenceDateTimes, e)
 		case "END":
-			if value.Data != "VJOURNAL" {
+			if value != "VJOURNAL" {
 				return ErrInvalidEnd
 			}
 			break
@@ -1456,7 +1442,7 @@ func (s *Journal) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *Journal) encode(w writer) {
+func (s *SectionJournal) encode(w writer) {
 	w.WriteString("BEGIN:VJOURNAL\r\n")
 	s.DateTimeStamp.encode(w)
 	s.UID.encode(w)
@@ -1475,11 +1461,11 @@ func (s *Journal) encode(w writer) {
 	if s.Organizer != nil {
 		s.Organizer.encode(w)
 	}
-	if s.RecurID != nil {
-		s.RecurID.encode(w)
+	if s.RecurrenceId != nil {
+		s.RecurrenceId.encode(w)
 	}
-	if s.Seq != nil {
-		s.Seq.encode(w)
+	if s.Sequence != nil {
+		s.Sequence.encode(w)
 	}
 	if s.Status != nil {
 		s.Status.encode(w)
@@ -1514,8 +1500,8 @@ func (s *Journal) encode(w writer) {
 	for n := range s.RequestStatus {
 		s.RequestStatus[n].encode(w)
 	}
-	for n := range s.Related {
-		s.Related[n].encode(w)
+	for n := range s.RelatedTo {
+		s.RelatedTo[n].encode(w)
 	}
 	for n := range s.Resources {
 		s.Resources[n].encode(w)
@@ -1526,7 +1512,7 @@ func (s *Journal) encode(w writer) {
 	w.WriteString("END:VJOURNAL\r\n")
 }
 
-func (s *Journal) valid() error {
+func (s *SectionJournal) valid() error {
 	if err := s.DateTimeStamp.valid(); err != nil {
 		return err
 	}
@@ -1558,13 +1544,13 @@ func (s *Journal) valid() error {
 			return err
 		}
 	}
-	if s.RecurID != nil {
-		if err := s.RecurID.valid(); err != nil {
+	if s.RecurrenceId != nil {
+		if err := s.RecurrenceId.valid(); err != nil {
 			return err
 		}
 	}
-	if s.Seq != nil {
-		if err := s.Seq.valid(); err != nil {
+	if s.Sequence != nil {
+		if err := s.Sequence.valid(); err != nil {
 			return err
 		}
 	}
@@ -1623,8 +1609,8 @@ func (s *Journal) valid() error {
 			return err
 		}
 	}
-	for n := range s.Related {
-		if err := s.Related[n].valid(); err != nil {
+	for n := range s.RelatedTo {
+		if err := s.RelatedTo[n].valid(); err != nil {
 			return err
 		}
 	}
@@ -1641,21 +1627,21 @@ func (s *Journal) valid() error {
 	return nil
 }
 
-type FreeBusy struct {
-	DateTimeStamp DateTimeStamp
-	UID           UID
-	Contact       *Contact
-	DateTimeStart *DateTimeStart
-	DateTimeEnd   *DateTimeEnd
-	Organizer     *Organizer
-	URL           *URL
-	Attendee      []Attendee
-	Comment       []Comment
-	FreeBusy      []FreeBusy
-	RequestStatus []RequestStatus
+type SectionFreeBusy struct {
+	DateTimeStamp PropDateTimeStamp
+	UID           PropUID
+	Contact       *PropContact
+	DateTimeStart *PropDateTimeStart
+	DateTimeEnd   *PropDateTimeEnd
+	Organizer     *PropOrganizer
+	URL           *PropURL
+	Attendee      []PropAttendee
+	Comment       []PropComment
+	FreeBusy      []PropFreeBusy
+	RequestStatus []PropRequestStatus
 }
 
-func (s *FreeBusy) decode(t tokeniser) error {
+func (s *SectionFreeBusy) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
 	for {
 		p, err := t.GetPhrase()
@@ -1692,7 +1678,7 @@ func (s *FreeBusy) decode(t tokeniser) error {
 			if s.Contact != nil {
 				return ErrMultipleSingle
 			}
-			s.Contact = new(Contact)
+			s.Contact = new(PropContact)
 			if err := s.Contact.decode(params, value); err != nil {
 				return err
 			}
@@ -1700,7 +1686,7 @@ func (s *FreeBusy) decode(t tokeniser) error {
 			if s.DateTimeStart != nil {
 				return ErrMultipleSingle
 			}
-			s.DateTimeStart = new(DateTimeStart)
+			s.DateTimeStart = new(PropDateTimeStart)
 			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return err
 			}
@@ -1708,7 +1694,7 @@ func (s *FreeBusy) decode(t tokeniser) error {
 			if s.DateTimeEnd != nil {
 				return ErrMultipleSingle
 			}
-			s.DateTimeEnd = new(DateTimeEnd)
+			s.DateTimeEnd = new(PropDateTimeEnd)
 			if err := s.DateTimeEnd.decode(params, value); err != nil {
 				return err
 			}
@@ -1716,7 +1702,7 @@ func (s *FreeBusy) decode(t tokeniser) error {
 			if s.Organizer != nil {
 				return ErrMultipleSingle
 			}
-			s.Organizer = new(Organizer)
+			s.Organizer = new(PropOrganizer)
 			if err := s.Organizer.decode(params, value); err != nil {
 				return err
 			}
@@ -1724,36 +1710,36 @@ func (s *FreeBusy) decode(t tokeniser) error {
 			if s.URL != nil {
 				return ErrMultipleSingle
 			}
-			s.URL = new(URL)
+			s.URL = new(PropURL)
 			if err := s.URL.decode(params, value); err != nil {
 				return err
 			}
 		case "ATTENDEE":
-			var e Attendee
-			if err := e.Attendee.decode(params, value); err != nil {
+			var e PropAttendee
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Attendee = append(s.Attendee, e)
 		case "COMMENT":
-			var e Comment
-			if err := e.Comment.decode(params, value); err != nil {
+			var e PropComment
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "FREEBUSY":
-			var e FreeBusy
-			if err := e.FreeBusy.decode(params, value); err != nil {
+			var e PropFreeBusy
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.FreeBusy = append(s.FreeBusy, e)
 		case "REQUEST-STATUS":
-			var e RequestStatus
-			if err := e.RequestStatus.decode(params, value); err != nil {
+			var e PropRequestStatus
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.RequestStatus = append(s.RequestStatus, e)
 		case "END":
-			if value.Data != "VFREEBUSY" {
+			if value != "VFREEBUSY" {
 				return ErrInvalidEnd
 			}
 			break
@@ -1765,7 +1751,7 @@ func (s *FreeBusy) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *FreeBusy) encode(w writer) {
+func (s *SectionFreeBusy) encode(w writer) {
 	w.WriteString("BEGIN:VFREEBUSY\r\n")
 	s.DateTimeStamp.encode(w)
 	s.UID.encode(w)
@@ -1799,7 +1785,7 @@ func (s *FreeBusy) encode(w writer) {
 	w.WriteString("END:VFREEBUSY\r\n")
 }
 
-func (s *FreeBusy) valid() error {
+func (s *SectionFreeBusy) valid() error {
 	if err := s.DateTimeStamp.valid(); err != nil {
 		return err
 	}
@@ -1854,15 +1840,15 @@ func (s *FreeBusy) valid() error {
 	return nil
 }
 
-type Timezone struct {
-	TimezoneID   TimezoneID
-	LastModified *LastModified
-	TimezoneURL  *TimezoneURL
-	Standard     []Standard
-	Daylight     []Daylight
+type SectionTimezone struct {
+	TimezoneID   PropTimezoneID
+	LastModified *PropLastModified
+	TimezoneURL  *PropTimezoneURL
+	Standard     []SectionStandard
+	Daylight     []SectionDaylight
 }
 
-func (s *Timezone) decode(t tokeniser) error {
+func (s *SectionTimezone) decode(t tokeniser) error {
 	var requiredTimezoneID bool
 	for {
 		p, err := t.GetPhrase()
@@ -1875,14 +1861,14 @@ func (s *Timezone) decode(t tokeniser) error {
 		case "BEGIN":
 			switch n := strings.ToUpper(value); n {
 			case "STANDARD":
-				var e Standard
-				if err := e.Standard.decode(t); err != nil {
+				var e SectionStandard
+				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.Standard = append(s.Standard, e)
 			case "DAYLIGHT":
-				var e Daylight
-				if err := e.Daylight.decode(t); err != nil {
+				var e SectionDaylight
+				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.Daylight = append(s.Daylight, e)
@@ -1903,7 +1889,7 @@ func (s *Timezone) decode(t tokeniser) error {
 			if s.LastModified != nil {
 				return ErrMultipleSingle
 			}
-			s.LastModified = new(LastModified)
+			s.LastModified = new(PropLastModified)
 			if err := s.LastModified.decode(params, value); err != nil {
 				return err
 			}
@@ -1911,12 +1897,12 @@ func (s *Timezone) decode(t tokeniser) error {
 			if s.TimezoneURL != nil {
 				return ErrMultipleSingle
 			}
-			s.TimezoneURL = new(TimezoneURL)
+			s.TimezoneURL = new(PropTimezoneURL)
 			if err := s.TimezoneURL.decode(params, value); err != nil {
 				return err
 			}
 		case "END":
-			if value.Data != "VTIMEZONE" {
+			if value != "VTIMEZONE" {
 				return ErrInvalidEnd
 			}
 			break
@@ -1931,7 +1917,7 @@ func (s *Timezone) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *Timezone) encode(w writer) {
+func (s *SectionTimezone) encode(w writer) {
 	w.WriteString("BEGIN:VTIMEZONE\r\n")
 	s.TimezoneID.encode(w)
 	if s.LastModified != nil {
@@ -1949,7 +1935,7 @@ func (s *Timezone) encode(w writer) {
 	w.WriteString("END:VTIMEZONE\r\n")
 }
 
-func (s *Timezone) valid() error {
+func (s *SectionTimezone) valid() error {
 	if err := s.TimezoneID.valid(); err != nil {
 		return err
 	}
@@ -1976,18 +1962,18 @@ func (s *Timezone) valid() error {
 	return nil
 }
 
-type Standard struct {
-	DateTimeStart       DateTimeStart
-	TimezoneOffset      TimezoneOffset
-	TimezoneOffsetFrom  TimezoneOffsetFrom
-	RecurrenceRule      *RecurrenceRule
-	Comment             []Comment
-	RecurrenceDateTimes []RecurrenceDateTimes
-	TimezoneName        []TimezoneName
+type SectionStandard struct {
+	DateTimeStart       PropDateTimeStart
+	TimezoneOffsetTo    PropTimezoneOffsetTo
+	TimezoneOffsetFrom  PropTimezoneOffsetFrom
+	RecurrenceRule      *PropRecurrenceRule
+	Comment             []PropComment
+	RecurrenceDateTimes []PropRecurrenceDateTimes
+	TimezoneName        []PropTimezoneName
 }
 
-func (s *Standard) decode(t tokeniser) error {
-	var requiredDateTimeStart, requiredTimezoneOffset, requiredTimezoneOffsetFrom bool
+func (s *SectionStandard) decode(t tokeniser) error {
+	var requiredDateTimeStart, requiredTimezoneOffsetTo, requiredTimezoneOffsetFrom bool
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -2011,12 +1997,12 @@ func (s *Standard) decode(t tokeniser) error {
 			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return err
 			}
-		case "TZOFFSET":
-			if requiredTimezoneOffset {
+		case "TZOFFSETTO":
+			if requiredTimezoneOffsetTo {
 				return ErrMultipleSingle
 			}
-			requiredTimezoneOffset = true
-			if err := s.TimezoneOffset.decode(params, value); err != nil {
+			requiredTimezoneOffsetTo = true
+			if err := s.TimezoneOffsetTo.decode(params, value); err != nil {
 				return err
 			}
 		case "TZOFFSETFROM":
@@ -2031,45 +2017,45 @@ func (s *Standard) decode(t tokeniser) error {
 			if s.RecurrenceRule != nil {
 				return ErrMultipleSingle
 			}
-			s.RecurrenceRule = new(RecurrenceRule)
+			s.RecurrenceRule = new(PropRecurrenceRule)
 			if err := s.RecurrenceRule.decode(params, value); err != nil {
 				return err
 			}
 		case "COMMENT":
-			var e Comment
-			if err := e.Comment.decode(params, value); err != nil {
+			var e PropComment
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "RDATE":
-			var e RecurrenceDateTimes
-			if err := e.RecurrenceDateTimes.decode(params, value); err != nil {
+			var e PropRecurrenceDateTimes
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.RecurrenceDateTimes = append(s.RecurrenceDateTimes, e)
 		case "TZNAME":
-			var e TimezoneName
-			if err := e.TimezoneName.decode(params, value); err != nil {
+			var e PropTimezoneName
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.TimezoneName = append(s.TimezoneName, e)
 		case "END":
-			if value.Data != "STANDARD" {
+			if value != "STANDARD" {
 				return ErrInvalidEnd
 			}
 			break
 		}
 	}
-	if !requiredDateTimeStart || !requiredTimezoneOffset || !requiredTimezoneOffsetFrom {
+	if !requiredDateTimeStart || !requiredTimezoneOffsetTo || !requiredTimezoneOffsetFrom {
 		return ErrMissingRequired
 	}
 	return nil
 }
 
-func (s *Standard) encode(w writer) {
+func (s *SectionStandard) encode(w writer) {
 	w.WriteString("BEGIN:STANDARD\r\n")
 	s.DateTimeStart.encode(w)
-	s.TimezoneOffset.encode(w)
+	s.TimezoneOffsetTo.encode(w)
 	s.TimezoneOffsetFrom.encode(w)
 	if s.RecurrenceRule != nil {
 		s.RecurrenceRule.encode(w)
@@ -2086,11 +2072,11 @@ func (s *Standard) encode(w writer) {
 	w.WriteString("END:STANDARD\r\n")
 }
 
-func (s *Standard) valid() error {
+func (s *SectionStandard) valid() error {
 	if err := s.DateTimeStart.valid(); err != nil {
 		return err
 	}
-	if err := s.TimezoneOffset.valid(); err != nil {
+	if err := s.TimezoneOffsetTo.valid(); err != nil {
 		return err
 	}
 	if err := s.TimezoneOffsetFrom.valid(); err != nil {
@@ -2119,18 +2105,18 @@ func (s *Standard) valid() error {
 	return nil
 }
 
-type Daylight struct {
-	DateTimeStart       DateTimeStart
-	TimezoneOffset      TimezoneOffset
-	TimezoneOffsetFrom  TimezoneOffsetFrom
-	RecurrenceRule      *RecurrenceRule
-	Comment             []Comment
-	RecurrenceDateTimes []RecurrenceDateTimes
-	TimezoneName        []TimezoneName
+type SectionDaylight struct {
+	DateTimeStart       PropDateTimeStart
+	TimezoneOffsetTo    PropTimezoneOffsetTo
+	TimezoneOffsetFrom  PropTimezoneOffsetFrom
+	RecurrenceRule      *PropRecurrenceRule
+	Comment             []PropComment
+	RecurrenceDateTimes []PropRecurrenceDateTimes
+	TimezoneName        []PropTimezoneName
 }
 
-func (s *Daylight) decode(t tokeniser) error {
-	var requiredDateTimeStart, requiredTimezoneOffset, requiredTimezoneOffsetFrom bool
+func (s *SectionDaylight) decode(t tokeniser) error {
+	var requiredDateTimeStart, requiredTimezoneOffsetTo, requiredTimezoneOffsetFrom bool
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -2154,12 +2140,12 @@ func (s *Daylight) decode(t tokeniser) error {
 			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return err
 			}
-		case "TZOFFSET":
-			if requiredTimezoneOffset {
+		case "TZOFFSETTO":
+			if requiredTimezoneOffsetTo {
 				return ErrMultipleSingle
 			}
-			requiredTimezoneOffset = true
-			if err := s.TimezoneOffset.decode(params, value); err != nil {
+			requiredTimezoneOffsetTo = true
+			if err := s.TimezoneOffsetTo.decode(params, value); err != nil {
 				return err
 			}
 		case "TZOFFSETFROM":
@@ -2174,45 +2160,45 @@ func (s *Daylight) decode(t tokeniser) error {
 			if s.RecurrenceRule != nil {
 				return ErrMultipleSingle
 			}
-			s.RecurrenceRule = new(RecurrenceRule)
+			s.RecurrenceRule = new(PropRecurrenceRule)
 			if err := s.RecurrenceRule.decode(params, value); err != nil {
 				return err
 			}
 		case "COMMENT":
-			var e Comment
-			if err := e.Comment.decode(params, value); err != nil {
+			var e PropComment
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Comment = append(s.Comment, e)
 		case "RDATE":
-			var e RecurrenceDateTimes
-			if err := e.RecurrenceDateTimes.decode(params, value); err != nil {
+			var e PropRecurrenceDateTimes
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.RecurrenceDateTimes = append(s.RecurrenceDateTimes, e)
 		case "TZNAME":
-			var e TimezoneName
-			if err := e.TimezoneName.decode(params, value); err != nil {
+			var e PropTimezoneName
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.TimezoneName = append(s.TimezoneName, e)
 		case "END":
-			if value.Data != "DAYLIGHT" {
+			if value != "DAYLIGHT" {
 				return ErrInvalidEnd
 			}
 			break
 		}
 	}
-	if !requiredDateTimeStart || !requiredTimezoneOffset || !requiredTimezoneOffsetFrom {
+	if !requiredDateTimeStart || !requiredTimezoneOffsetTo || !requiredTimezoneOffsetFrom {
 		return ErrMissingRequired
 	}
 	return nil
 }
 
-func (s *Daylight) encode(w writer) {
+func (s *SectionDaylight) encode(w writer) {
 	w.WriteString("BEGIN:DAYLIGHT\r\n")
 	s.DateTimeStart.encode(w)
-	s.TimezoneOffset.encode(w)
+	s.TimezoneOffsetTo.encode(w)
 	s.TimezoneOffsetFrom.encode(w)
 	if s.RecurrenceRule != nil {
 		s.RecurrenceRule.encode(w)
@@ -2229,11 +2215,11 @@ func (s *Daylight) encode(w writer) {
 	w.WriteString("END:DAYLIGHT\r\n")
 }
 
-func (s *Daylight) valid() error {
+func (s *SectionDaylight) valid() error {
 	if err := s.DateTimeStart.valid(); err != nil {
 		return err
 	}
-	if err := s.TimezoneOffset.valid(); err != nil {
+	if err := s.TimezoneOffsetTo.valid(); err != nil {
 		return err
 	}
 	if err := s.TimezoneOffsetFrom.valid(); err != nil {
@@ -2262,14 +2248,14 @@ func (s *Daylight) valid() error {
 	return nil
 }
 
-type AlarmAudio struct {
-	Trigger    Trigger
-	Duration   *Duration
-	Repeat     *Repeat
-	Attachment []Attachment
+type SectionAlarmAudio struct {
+	Trigger    PropTrigger
+	Duration   *PropDuration
+	Repeat     *PropRepeat
+	Attachment []PropAttachment
 }
 
-func (s *AlarmAudio) decode(t tokeniser) error {
+func (s *SectionAlarmAudio) decode(t tokeniser) error {
 	var requiredTrigger bool
 	for {
 		p, err := t.GetPhrase()
@@ -2298,7 +2284,7 @@ func (s *AlarmAudio) decode(t tokeniser) error {
 			if s.Duration != nil {
 				return ErrMultipleSingle
 			}
-			s.Duration = new(Duration)
+			s.Duration = new(PropDuration)
 			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
@@ -2306,18 +2292,18 @@ func (s *AlarmAudio) decode(t tokeniser) error {
 			if s.Repeat != nil {
 				return ErrMultipleSingle
 			}
-			s.Repeat = new(Repeat)
+			s.Repeat = new(PropRepeat)
 			if err := s.Repeat.decode(params, value); err != nil {
 				return err
 			}
 		case "ATTACH":
-			var e Attachment
-			if err := e.Attachment.decode(params, value); err != nil {
+			var e PropAttachment
+			if err := e.decode(params, value); err != nil {
 				return err
 			}
 			s.Attachment = append(s.Attachment, e)
 		case "END":
-			if value.Data != "VALARM" {
+			if value != "VALARM" {
 				return ErrInvalidEnd
 			}
 			break
@@ -2329,7 +2315,7 @@ func (s *AlarmAudio) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *AlarmAudio) encode(w writer) {
+func (s *SectionAlarmAudio) encode(w writer) {
 	s.Trigger.encode(w)
 	if s.Duration != nil {
 		s.Duration.encode(w)
@@ -2342,7 +2328,7 @@ func (s *AlarmAudio) encode(w writer) {
 	}
 }
 
-func (s *AlarmAudio) valid() error {
+func (s *SectionAlarmAudio) valid() error {
 	if err := s.Trigger.valid(); err != nil {
 		return err
 	}
@@ -2364,14 +2350,14 @@ func (s *AlarmAudio) valid() error {
 	return nil
 }
 
-type AlarmDisplay struct {
-	Description Description
-	Trigger     Trigger
-	Duration    *Duration
-	Repeat      *Repeat
+type SectionAlarmDisplay struct {
+	Description PropDescription
+	Trigger     PropTrigger
+	Duration    *PropDuration
+	Repeat      *PropRepeat
 }
 
-func (s *AlarmDisplay) decode(t tokeniser) error {
+func (s *SectionAlarmDisplay) decode(t tokeniser) error {
 	var requiredDescription, requiredTrigger bool
 	for {
 		p, err := t.GetPhrase()
@@ -2408,7 +2394,7 @@ func (s *AlarmDisplay) decode(t tokeniser) error {
 			if s.Duration != nil {
 				return ErrMultipleSingle
 			}
-			s.Duration = new(Duration)
+			s.Duration = new(PropDuration)
 			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
@@ -2416,12 +2402,12 @@ func (s *AlarmDisplay) decode(t tokeniser) error {
 			if s.Repeat != nil {
 				return ErrMultipleSingle
 			}
-			s.Repeat = new(Repeat)
+			s.Repeat = new(PropRepeat)
 			if err := s.Repeat.decode(params, value); err != nil {
 				return err
 			}
 		case "END":
-			if value.Data != "VALARM" {
+			if value != "VALARM" {
 				return ErrInvalidEnd
 			}
 			break
@@ -2433,7 +2419,7 @@ func (s *AlarmDisplay) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *AlarmDisplay) encode(w writer) {
+func (s *SectionAlarmDisplay) encode(w writer) {
 	s.Description.encode(w)
 	s.Trigger.encode(w)
 	if s.Duration != nil {
@@ -2444,7 +2430,7 @@ func (s *AlarmDisplay) encode(w writer) {
 	}
 }
 
-func (s *AlarmDisplay) valid() error {
+func (s *SectionAlarmDisplay) valid() error {
 	if err := s.Description.valid(); err != nil {
 		return err
 	}
@@ -2464,16 +2450,16 @@ func (s *AlarmDisplay) valid() error {
 	return nil
 }
 
-type AlarmEmail struct {
-	Description Description
-	Trigger     Trigger
-	Summary     Summary
-	Attendee    *Attendee
-	Duration    *Duration
-	Repeat      *Repeat
+type SectionAlarmEmail struct {
+	Description PropDescription
+	Trigger     PropTrigger
+	Summary     PropSummary
+	Attendee    *PropAttendee
+	Duration    *PropDuration
+	Repeat      *PropRepeat
 }
 
-func (s *AlarmEmail) decode(t tokeniser) error {
+func (s *SectionAlarmEmail) decode(t tokeniser) error {
 	var requiredDescription, requiredTrigger, requiredSummary bool
 	for {
 		p, err := t.GetPhrase()
@@ -2518,7 +2504,7 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 			if s.Attendee != nil {
 				return ErrMultipleSingle
 			}
-			s.Attendee = new(Attendee)
+			s.Attendee = new(PropAttendee)
 			if err := s.Attendee.decode(params, value); err != nil {
 				return err
 			}
@@ -2526,7 +2512,7 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 			if s.Duration != nil {
 				return ErrMultipleSingle
 			}
-			s.Duration = new(Duration)
+			s.Duration = new(PropDuration)
 			if err := s.Duration.decode(params, value); err != nil {
 				return err
 			}
@@ -2534,12 +2520,12 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 			if s.Repeat != nil {
 				return ErrMultipleSingle
 			}
-			s.Repeat = new(Repeat)
+			s.Repeat = new(PropRepeat)
 			if err := s.Repeat.decode(params, value); err != nil {
 				return err
 			}
 		case "END":
-			if value.Data != "VALARM" {
+			if value != "VALARM" {
 				return ErrInvalidEnd
 			}
 			break
@@ -2554,7 +2540,7 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *AlarmEmail) encode(w writer) {
+func (s *SectionAlarmEmail) encode(w writer) {
 	s.Description.encode(w)
 	s.Trigger.encode(w)
 	s.Summary.encode(w)
@@ -2569,7 +2555,7 @@ func (s *AlarmEmail) encode(w writer) {
 	}
 }
 
-func (s *AlarmEmail) valid() error {
+func (s *SectionAlarmEmail) valid() error {
 	if err := s.Description.valid(); err != nil {
 		return err
 	}
@@ -2604,13 +2590,13 @@ func decodeDummy(t tokeniser, n string) error {
 		if err != nil {
 			return err
 		}
-		switch strings.ToUpper(p[0].Data) {
+		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			if err := decodeDummy(t, p[len(p)-1].Data); err != nil {
+			if err := decodeDummy(t, p.Data[len(p.Data)-1].Data); err != nil {
 				return err
 			}
 		case "END":
-			if strings.ToUpper(p[len(p)-1].Data) == n {
+			if strings.ToUpper(p.Data[len(p.Data)-1].Data) == n {
 				return nil
 			}
 			return ErrInvalidEnd
