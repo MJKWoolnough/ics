@@ -25,6 +25,7 @@ func (f *folder) Write(p []byte) (int, error) {
 		f.line += uint8(s)
 		if r == '\n' {
 			f.line = 0
+		} else if r == '\r' {
 		} else if f.line > maxLineLength {
 			if pos > 0 {
 				m, err := f.w.Write(q[:pos])
