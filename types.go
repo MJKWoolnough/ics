@@ -26,18 +26,18 @@ func (b *Binary) decode(params map[string]string, data string) error {
 	return err
 }
 
-func (b *Binary) aencode(w writer) {
+func (b Binary) aencode(w writer) {
 	w.WriteString(";ENCODING=BASE64:")
 	b.encode(w)
 }
 
-func (b *Binary) encode(w writer) {
+func (b Binary) encode(w writer) {
 	e := base64.NewEncoder(base64.StdEncoding, w)
-	e.Write(*b)
+	e.Write(b)
 	e.Close()
 }
 
-func (b *Binary) valid() error {
+func (Binary) valid() error {
 	return nil
 }
 
@@ -57,20 +57,20 @@ var (
 	booleanFalse = [...]byte{'F', 'A', 'L', 'S', 'E'}
 )
 
-func (b *Boolean) aencode(w writer) {
+func (b Boolean) aencode(w writer) {
 	w.WriteString(":")
 	b.encode(w)
 }
 
-func (b *Boolean) encode(w writer) {
-	if *b {
+func (b Boolean) encode(w writer) {
+	if b {
 		w.Write(booleanTrue[:])
 	} else {
 		w.Write(booleanFalse[:])
 	}
 }
 
-func (b *Boolean) valid() error {
+func (Boolean) valid() error {
 	return nil
 }
 
@@ -91,17 +91,17 @@ func (d *Date) decode(_ map[string]string, data string) error {
 	return nil
 }
 
-func (d *Date) aencode(w writer) {
+func (d Date) aencode(w writer) {
 	w.WriteString(":")
 	d.encode(w)
 }
 
-func (d *Date) encode(w writer) {
+func (d Date) encode(w writer) {
 	b := make([]byte, 0, 8)
 	w.Write(d.AppendFormat(b, dateTimeFormat[:8]))
 }
 
-func (d *Date) valid() error {
+func (d Date) valid() error {
 	if d.IsZero() {
 		return ErrInvalidTime
 	}
@@ -139,13 +139,13 @@ func (d *DateTime) decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (d *DateTime) aencode(w writer) {
+func (d DateTime) aencode(w writer) {
 	writeTimezone(w, d.Time)
 	w.WriteString(":")
 	d.encode(w)
 }
 
-func (d *DateTime) encode(w writer) {
+func (d DateTime) encode(w writer) {
 	b := make([]byte, 0, 16)
 	switch d.Location() {
 	case time.UTC:
@@ -158,7 +158,7 @@ func (d *DateTime) encode(w writer) {
 	w.Write(b)
 }
 
-func (d *DateTime) valid() error {
+func (d DateTime) valid() error {
 	if d.IsZero() {
 		return ErrInvalidTime
 	}
@@ -256,12 +256,12 @@ func itoa(n uint) []byte {
 	return digits[pos:]
 }
 
-func (d *Duration) aencode(w writer) {
+func (d Duration) aencode(w writer) {
 	w.WriteString(":")
 	d.encode(w)
 }
 
-func (d *Duration) encode(w writer) {
+func (d Duration) encode(w writer) {
 	data := make([]byte, 0, 64)
 	if d.Negative {
 		data = append(data, '-')
@@ -304,7 +304,7 @@ func (d *Duration) encode(w writer) {
 	w.Write(data)
 }
 
-func (d *Duration) valid() error {
+func (Duration) valid() error {
 	return nil
 }
 
@@ -319,16 +319,16 @@ func (f *Float) decode(_ map[string]string, data string) error {
 	return nil
 }
 
-func (f *Float) aencode(w writer) {
+func (f Float) aencode(w writer) {
 	w.WriteString(":")
 	f.encode(w)
 }
 
-func (f *Float) encode(w writer) {
-	w.WriteString(strconv.FormatFloat(float64(*f), 'f', -1, 64))
+func (f Float) encode(w writer) {
+	w.WriteString(strconv.FormatFloat(float64(f), 'f', -1, 64))
 }
 
-func (f *Float) valid() error {
+func (f Float) valid() error {
 	d := float64(*f)
 	if !math.IsNaN(d) && !math.IsInf(d, 0) {
 		return ErrInvalidFloat
@@ -355,23 +355,23 @@ func (t *TFloat) decode(_ map[string]string, data string) error {
 	return nil
 }
 
-func (t *TFloat) aencode(w writer) {
+func (t TFloat) aencode(w writer) {
 	w.WriteString(":")
 	t.encode(w)
 }
 
-func (t *TFloat) encode(w writer) {
+func (t TFloat) encode(w writer) {
 	w.WriteString(strconv.FormatFloat((*t)[0], 'f', -1, 64))
 	w.WriteString(";")
 	w.WriteString(strconv.FormatFloat((*t)[1], 'f', -1, 64))
 }
 
-func (t *TFloat) valid() error {
-	d := float64((*t)[0])
+func (t TFloat) valid() error {
+	d := float64(t[0])
 	if !math.IsNaN(d) && !math.IsInf(d, 0) {
 		return ErrInvalidFloat
 	}
-	d = float64((*t)[1])
+	d = float64(t[1])
 	if !math.IsNaN(d) && !math.IsInf(d, 0) {
 		return ErrInvalidFloat
 	}
@@ -389,16 +389,16 @@ func (i *Integer) decode(_ map[string]string, data string) error {
 	return nil
 }
 
-func (i *Integer) aencode(w writer) {
+func (i Integer) aencode(w writer) {
 	w.WriteString(":")
 	i.encode(w)
 }
 
-func (i *Integer) encode(w writer) {
+func (i Integer) encode(w writer) {
 	w.WriteString(strconv.FormatInt(int64(*i), 10))
 }
 
-func (i *Integer) valid() error {
+func (Integer) valid() error {
 	return nil
 }
 
@@ -422,12 +422,12 @@ func (p *Period) decode(params map[string]string, data string) error {
 	return p.End.decode(params, data[i+1:])
 }
 
-func (p *Period) aencode(w writer) {
+func (p Period) aencode(w writer) {
 	writeTimezone(w, p.Start.Time)
 	p.encode(w)
 }
 
-func (p *Period) encode(w writer) {
+func (p Period) encode(w writer) {
 	p.Start.encode(w)
 	w.Write([]byte{'/'})
 	if p.End.IsZero() {
@@ -437,7 +437,7 @@ func (p *Period) encode(w writer) {
 	}
 }
 
-func (p *Period) valid() error {
+func (p Period) valid() error {
 	if p.Start.IsZero() {
 		return ErrInvalidPeriodStart
 	}
@@ -1064,10 +1064,10 @@ func (t *Text) aencode(w writer) {
 	t.encode(w)
 }
 
-func (t *Text) encode(w writer) {
-	d := make([]byte, 0, len(*t)+256)
+func (t Text) encode(w writer) {
+	d := make([]byte, 0, len(t)+256)
 	var ru [4]byte
-	for _, c := range *t {
+	for _, c := range t {
 		switch c {
 		case '\\':
 			d = append(d, '\\', '\\')
@@ -1085,7 +1085,10 @@ func (t *Text) encode(w writer) {
 	w.Write(d)
 }
 
-func (t *Text) valid() error {
+func (t Text) valid() error {
+	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
+		return ErrInvalidText
+	}
 	return nil
 }
 
@@ -1102,13 +1105,13 @@ func (t *MText) decode(_ map[string]string, data string) error {
 	return nil
 }
 
-func (t *MText) aencode(w writer) {
+func (t MText) aencode(w writer) {
 	w.WriteString(":")
 	t.encode(w)
 }
 
-func (t *MText) encode(w writer) {
-	for n, tx := range *t {
+func (t MText) encode(w writer) {
+	for n, tx := range t {
 		if n > 0 {
 			w.WriteString(",")
 			tx.encode(w)
@@ -1116,7 +1119,12 @@ func (t *MText) encode(w writer) {
 	}
 }
 
-func (t *MText) valid() error {
+func (t MText) valid() error {
+	for _, m := range t {
+		if err := m.valid(); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -1151,13 +1159,13 @@ func (t *Time) decode(params map[string]string, data string) error {
 	return nil
 }
 
-func (t *Time) aencode(w writer) {
+func (t Time) aencode(w writer) {
 	writeTimezone(w, t.Time)
 	w.WriteString(":")
 	t.encode(w)
 }
 
-func (t *Time) encode(w writer) {
+func (t Time) encode(w writer) {
 	b := make([]byte, 0, 7)
 	switch t.Location() {
 	case time.UTC:
@@ -1170,7 +1178,7 @@ func (t *Time) encode(w writer) {
 	w.Write(b)
 }
 
-func (t *Time) valid() error {
+func (t Time) valid() error {
 	if t.IsZero() {
 		return ErrInvalidTime
 	}
@@ -1190,16 +1198,16 @@ func (u *URI) decode(_ map[string]string, data string) error {
 	return nil
 }
 
-func (u *URI) aencode(w writer) {
+func (u URI) aencode(w writer) {
 	w.WriteString(":")
 	u.encode(w)
 }
 
-func (u *URI) encode(w writer) {
+func (u URI) encode(w writer) {
 	w.WriteString(u.URL.String())
 }
 
-func (u *URI) valid() error {
+func (URI) valid() error {
 	return nil
 }
 
@@ -1246,12 +1254,12 @@ func (u *UTCOffset) decode(_ map[string]string, data string) error {
 	}
 	return nil
 }
-func (u *UTCOffset) aencode(w writer) {
+func (u UTCOffset) aencode(w writer) {
 	w.WriteString(":")
 	u.encode(w)
 }
 
-func (u *UTCOffset) encode(w writer) {
+func (u UTCOffset) encode(w writer) {
 	o := int64(*u)
 	b := make([]byte, 0, 7)
 	if o < 0 {
@@ -1276,7 +1284,7 @@ func (u *UTCOffset) encode(w writer) {
 	w.Write(b)
 }
 
-func (u *UTCOffset) valid() error {
+func (UTCOffset) valid() error {
 	return nil
 }
 
