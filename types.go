@@ -1086,7 +1086,7 @@ func (t Text) encode(w writer) {
 }
 
 func (t Text) valid() error {
-	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
+	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return ErrInvalidText
 	}
 	return nil
