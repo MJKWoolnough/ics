@@ -1031,7 +1031,7 @@ func decodeText(t parser.Tokeniser) string {
 	var ru [4]byte
 Loop:
 	for {
-		c := t.ExceptRun("\\,")
+		c := t.ExceptRun("\\,;:")
 		d = append(d, t.Get()...)
 		switch c {
 		case '\\':

@@ -703,39 +703,6 @@ func TestText(t *testing.T) {
 			Input: new(Text),
 			Error: ErrInvalidText,
 		},
-		{
-			Data:  "\\",
-			Input: new(Text),
-			Error: ErrInvalidText,
-		},
-		{
-			Data:  "\"",
-			Input: new(Text),
-			Error: ErrInvalidText,
-		},
-		{
-			Data:  "\\g",
-			Input: new(Text),
-			Error: ErrInvalidText,
-		},
-		{
-			Data:   "^n",
-			Input:  new(Text),
-			Match:  newText("\n"),
-			Output: "\\n",
-		},
-		{
-			Data:   "^^",
-			Input:  new(Text),
-			Match:  newText("^"),
-			Output: "^^",
-		},
-		{
-			Data:   "^'",
-			Input:  new(Text),
-			Match:  newText("\""),
-			Output: "^'",
-		},
 	})
 }
 
