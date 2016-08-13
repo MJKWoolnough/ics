@@ -329,7 +329,7 @@ func (f Float) encode(w writer) {
 }
 
 func (f Float) valid() error {
-	d := float64(*f)
+	d := float64(f)
 	if !math.IsNaN(d) && !math.IsInf(d, 0) {
 		return ErrInvalidFloat
 	}
@@ -361,9 +361,9 @@ func (t TFloat) aencode(w writer) {
 }
 
 func (t TFloat) encode(w writer) {
-	w.WriteString(strconv.FormatFloat((*t)[0], 'f', -1, 64))
+	w.WriteString(strconv.FormatFloat(t[0], 'f', -1, 64))
 	w.WriteString(";")
-	w.WriteString(strconv.FormatFloat((*t)[1], 'f', -1, 64))
+	w.WriteString(strconv.FormatFloat(t[1], 'f', -1, 64))
 }
 
 func (t TFloat) valid() error {
@@ -395,7 +395,7 @@ func (i Integer) aencode(w writer) {
 }
 
 func (i Integer) encode(w writer) {
-	w.WriteString(strconv.FormatInt(int64(*i), 10))
+	w.WriteString(strconv.FormatInt(int64(i), 10))
 }
 
 func (Integer) valid() error {
@@ -1260,7 +1260,7 @@ func (u UTCOffset) aencode(w writer) {
 }
 
 func (u UTCOffset) encode(w writer) {
-	o := int64(*u)
+	o := int64(u)
 	b := make([]byte, 0, 7)
 	if o < 0 {
 		b = append(b, '-')
