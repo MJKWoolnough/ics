@@ -276,7 +276,7 @@ source "names.sh";
 					echo "$indent		return ErrInvalidValue";
 					echo "$indent	}";
 				else
-					echo "$indent	if strings.ContainsAny(string($vName), nonsafeChars[:32]) {";
+					echo "$indent	if strings.ContainsAny(string($vName), nonsafeChars[:31]) {";
 					echo "$indent		return ErrInvalidText";
 					echo "$indent	}";
 				fi;

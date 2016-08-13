@@ -68,7 +68,7 @@ func (t CommonName) encode(w writer) {
 }
 
 func (t CommonName) valid() error {
-	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
+	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return ErrInvalidText
 	}
 	return nil
@@ -226,7 +226,7 @@ func (t DirectoryEntry) encode(w writer) {
 }
 
 func (t DirectoryEntry) valid() error {
-	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
+	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return ErrInvalidText
 	}
 	return nil
@@ -386,7 +386,7 @@ func (t Language) encode(w writer) {
 }
 
 func (t Language) valid() error {
-	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
+	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return ErrInvalidText
 	}
 	return nil
@@ -422,7 +422,7 @@ func (t Member) encode(w writer) {
 
 func (t Member) valid() error {
 	for _, v := range t {
-		if strings.ContainsAny(string(v), nonsafeChars[:32]) {
+		if strings.ContainsAny(string(v), nonsafeChars[:31]) {
 			return ErrInvalidText
 		}
 	}
@@ -701,7 +701,7 @@ func (t SentBy) encode(w writer) {
 }
 
 func (t SentBy) valid() error {
-	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
+	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return ErrInvalidText
 	}
 	return nil
@@ -733,7 +733,7 @@ func (t TimezoneID) encode(w writer) {
 }
 
 func (t TimezoneID) valid() error {
-	if strings.ContainsAny(string(t), nonsafeChars[:32]) {
+	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return ErrInvalidText
 	}
 	return nil
