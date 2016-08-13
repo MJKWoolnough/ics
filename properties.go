@@ -1267,12 +1267,12 @@ func (p *PropExceptionDateTime) valid() error {
 	return nil
 }
 
-type PropFreeBusy struct {
+type PropFreeBusyP struct {
 	FreeBusyType *FreeBusyType
 	Period
 }
 
-func (p *PropFreeBusy) decode(params []parser.Token, value string) error {
+func (p *PropFreeBusyP) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -1306,7 +1306,7 @@ func (p *PropFreeBusy) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *PropFreeBusy) encode(w writer) {
+func (p *PropFreeBusyP) encode(w writer) {
 	w.WriteString("FREEBUSY")
 	if p.FreeBusyType != nil {
 		p.FreeBusyType.encode(w)
@@ -1315,7 +1315,7 @@ func (p *PropFreeBusy) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *PropFreeBusy) valid() error {
+func (p *PropFreeBusyP) valid() error {
 	if p.FreeBusyType != nil {
 		if err := p.FreeBusyType.valid(); err != nil {
 			return err

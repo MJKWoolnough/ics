@@ -26,11 +26,11 @@ type AlarmType interface {
 	Type() string
 }
 
-type SectionAlarm struct {
+type Alarm struct {
 	AlarmType
 }
 
-func (a *SectionAlarm) decode(t tokeniser) error {
+func (a *Alarm) decode(t tokeniser) error {
 	var pt psuedoTokeniser
 Loop:
 	for {
@@ -48,11 +48,11 @@ Loop:
 			}
 			switch ph.Data[len(ph.Data)-1].Data {
 			case "AUDIO":
-				a.AlarmType = new(SectionAlarmAudio)
+				a.AlarmType = new(AlarmAudio)
 			case "DISPLAY":
-				a.AlarmType = new(SectionAlarmDisplay)
+				a.AlarmType = new(AlarmDisplay)
 			case "EMAIL":
-				a.AlarmType = new(SectionAlarmEmail)
+				a.AlarmType = new(AlarmEmail)
 			}
 		case "END":
 			break Loop
@@ -64,37 +64,37 @@ Loop:
 	return a.AlarmType.decode(&pt)
 }
 
-func (a *SectionAlarm) encode(w writer) {
+func (a *Alarm) encode(w writer) {
 	w.WriteString("BEGIN:VALARM\r\n")
 	switch a.AlarmType.(type) {
-	case *SectionAlarmAudio:
+	case *AlarmAudio:
 		w.WriteString("ACTION:AUDIO\r\n")
-	case *SectionAlarmDisplay:
+	case *AlarmDisplay:
 		w.WriteString("ACTION:DISPLAY\r\n")
-	case *SectionAlarmEmail:
+	case *AlarmEmail:
 		w.WriteString("ACTION:EMAIL\r\n")
 	}
 	a.encode(w)
 	w.WriteString("END:VALARM\r\n")
 }
 
-func (a *SectionAlarm) valid() error {
+func (a *Alarm) valid() error {
 	switch a.AlarmType.(type) {
-	case *SectionAlarmAudio, *SectionAlarmDisplay, *SectionAlarmEmail:
+	case *AlarmAudio, *AlarmDisplay, *AlarmEmail:
 		return a.AlarmType.valid()
 	}
 	return ErrInvalidAlarm
 }
 
-func (SectionAlarmAudio) Type() string {
+func (AlarmAudio) Type() string {
 	return "AUDIO"
 }
 
-func (SectionAlarmDisplay) Type() string {
+func (AlarmDisplay) Type() string {
 	return "DISPLAY"
 }
 
-func (SectionAlarmEmail) Type() string {
+func (AlarmEmail) Type() string {
 	return "EMAIL"
 }
 

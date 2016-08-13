@@ -8,8 +8,8 @@ type section interface {
 	valid() error
 }
 
-func Decode(r io.Reader) (*SectionCalendar, error) {
-	cal := new(SectionCalendar)
+func Decode(r io.Reader) (*Calendar, error) {
+	cal := new(Calendar)
 	err := cal.decode(newTokeniser(&unfolder{r: r}))
 	return cal, err
 }

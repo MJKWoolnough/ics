@@ -7,17 +7,17 @@ import (
 	"strings"
 )
 
-type SectionCalendar struct {
+type Calendar struct {
 	Version  PropVersion
 	ProdID   PropProdID
-	Event    []SectionEvent
-	Todo     []SectionTodo
-	Journal  []SectionJournal
-	FreeBusy []SectionFreeBusy
-	Timezone []SectionTimezone
+	Event    []Event
+	Todo     []Todo
+	Journal  []Journal
+	FreeBusy []FreeBusy
+	Timezone []Timezone
 }
 
-func (s *SectionCalendar) decode(t tokeniser) error {
+func (s *Calendar) decode(t tokeniser) error {
 	var requiredVersion, requiredProdID bool
 	for {
 		p, err := t.GetPhrase()
@@ -30,31 +30,31 @@ func (s *SectionCalendar) decode(t tokeniser) error {
 		case "BEGIN":
 			switch n := strings.ToUpper(value); n {
 			case "VEVENT":
-				var e SectionEvent
+				var e Event
 				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.Event = append(s.Event, e)
 			case "VTODO":
-				var e SectionTodo
+				var e Todo
 				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.Todo = append(s.Todo, e)
 			case "VJOURNAL":
-				var e SectionJournal
+				var e Journal
 				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.Journal = append(s.Journal, e)
 			case "VFREEBUSY":
-				var e SectionFreeBusy
+				var e FreeBusy
 				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.FreeBusy = append(s.FreeBusy, e)
 			case "VTIMEZONE":
-				var e SectionTimezone
+				var e Timezone
 				if err := e.decode(t); err != nil {
 					return err
 				}
@@ -93,7 +93,7 @@ func (s *SectionCalendar) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *SectionCalendar) encode(w writer) {
+func (s *Calendar) encode(w writer) {
 	w.WriteString("BEGIN:VCALENDAR\r\n")
 	s.Version.encode(w)
 	s.ProdID.encode(w)
@@ -115,7 +115,7 @@ func (s *SectionCalendar) encode(w writer) {
 	w.WriteString("END:VCALENDAR\r\n")
 }
 
-func (s *SectionCalendar) valid() error {
+func (s *Calendar) valid() error {
 	if err := s.Version.valid(); err != nil {
 		return err
 	}
@@ -150,7 +150,7 @@ func (s *SectionCalendar) valid() error {
 	return nil
 }
 
-type SectionEvent struct {
+type Event struct {
 	DateTimeStamp       PropDateTimeStamp
 	UID                 PropUID
 	DateTimeStart       *PropDateTimeStart
@@ -181,10 +181,10 @@ type SectionEvent struct {
 	RelatedTo           []PropRelatedTo
 	Resources           []PropResources
 	RecurrenceDateTimes []PropRecurrenceDateTimes
-	Alarm               []SectionAlarm
+	Alarm               []Alarm
 }
 
-func (s *SectionEvent) decode(t tokeniser) error {
+func (s *Event) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
 	for {
 		p, err := t.GetPhrase()
@@ -197,7 +197,7 @@ func (s *SectionEvent) decode(t tokeniser) error {
 		case "BEGIN":
 			switch n := strings.ToUpper(value); n {
 			case "VALARM":
-				var e SectionAlarm
+				var e Alarm
 				if err := e.decode(t); err != nil {
 					return err
 				}
@@ -443,7 +443,7 @@ func (s *SectionEvent) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *SectionEvent) encode(w writer) {
+func (s *Event) encode(w writer) {
 	w.WriteString("BEGIN:VEVENT\r\n")
 	s.DateTimeStamp.encode(w)
 	s.UID.encode(w)
@@ -537,7 +537,7 @@ func (s *SectionEvent) encode(w writer) {
 	w.WriteString("END:VEVENT\r\n")
 }
 
-func (s *SectionEvent) valid() error {
+func (s *Event) valid() error {
 	if err := s.DateTimeStamp.valid(); err != nil {
 		return err
 	}
@@ -692,7 +692,7 @@ func (s *SectionEvent) valid() error {
 	return nil
 }
 
-type SectionTodo struct {
+type Todo struct {
 	DateTimeStamp       PropDateTimeStamp
 	UID                 PropUID
 	Class               *PropClass
@@ -725,7 +725,7 @@ type SectionTodo struct {
 	RecurrenceDateTimes []PropRecurrenceDateTimes
 }
 
-func (s *SectionTodo) decode(t tokeniser) error {
+func (s *Todo) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
 	for {
 		p, err := t.GetPhrase()
@@ -981,7 +981,7 @@ func (s *SectionTodo) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *SectionTodo) encode(w writer) {
+func (s *Todo) encode(w writer) {
 	w.WriteString("BEGIN:VTODO\r\n")
 	s.DateTimeStamp.encode(w)
 	s.UID.encode(w)
@@ -1072,7 +1072,7 @@ func (s *SectionTodo) encode(w writer) {
 	w.WriteString("END:VTODO\r\n")
 }
 
-func (s *SectionTodo) valid() error {
+func (s *Todo) valid() error {
 	if err := s.DateTimeStamp.valid(); err != nil {
 		return err
 	}
@@ -1222,7 +1222,7 @@ func (s *SectionTodo) valid() error {
 	return nil
 }
 
-type SectionJournal struct {
+type Journal struct {
 	DateTimeStamp       PropDateTimeStamp
 	UID                 PropUID
 	Class               *PropClass
@@ -1248,7 +1248,7 @@ type SectionJournal struct {
 	RecurrenceDateTimes []PropRecurrenceDateTimes
 }
 
-func (s *SectionJournal) decode(t tokeniser) error {
+func (s *Journal) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
 	for {
 		p, err := t.GetPhrase()
@@ -1442,7 +1442,7 @@ func (s *SectionJournal) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *SectionJournal) encode(w writer) {
+func (s *Journal) encode(w writer) {
 	w.WriteString("BEGIN:VJOURNAL\r\n")
 	s.DateTimeStamp.encode(w)
 	s.UID.encode(w)
@@ -1512,7 +1512,7 @@ func (s *SectionJournal) encode(w writer) {
 	w.WriteString("END:VJOURNAL\r\n")
 }
 
-func (s *SectionJournal) valid() error {
+func (s *Journal) valid() error {
 	if err := s.DateTimeStamp.valid(); err != nil {
 		return err
 	}
@@ -1627,7 +1627,7 @@ func (s *SectionJournal) valid() error {
 	return nil
 }
 
-type SectionFreeBusy struct {
+type FreeBusy struct {
 	DateTimeStamp PropDateTimeStamp
 	UID           PropUID
 	Contact       *PropContact
@@ -1637,11 +1637,11 @@ type SectionFreeBusy struct {
 	URL           *PropURL
 	Attendee      []PropAttendee
 	Comment       []PropComment
-	FreeBusy      []PropFreeBusy
+	FreeBusyP     []PropFreeBusyP
 	RequestStatus []PropRequestStatus
 }
 
-func (s *SectionFreeBusy) decode(t tokeniser) error {
+func (s *FreeBusy) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
 	for {
 		p, err := t.GetPhrase()
@@ -1727,11 +1727,11 @@ func (s *SectionFreeBusy) decode(t tokeniser) error {
 			}
 			s.Comment = append(s.Comment, e)
 		case "FREEBUSY":
-			var e PropFreeBusy
+			var e PropFreeBusyP
 			if err := e.decode(params, value); err != nil {
 				return err
 			}
-			s.FreeBusy = append(s.FreeBusy, e)
+			s.FreeBusyP = append(s.FreeBusyP, e)
 		case "REQUEST-STATUS":
 			var e PropRequestStatus
 			if err := e.decode(params, value); err != nil {
@@ -1751,7 +1751,7 @@ func (s *SectionFreeBusy) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *SectionFreeBusy) encode(w writer) {
+func (s *FreeBusy) encode(w writer) {
 	w.WriteString("BEGIN:VFREEBUSY\r\n")
 	s.DateTimeStamp.encode(w)
 	s.UID.encode(w)
@@ -1776,8 +1776,8 @@ func (s *SectionFreeBusy) encode(w writer) {
 	for n := range s.Comment {
 		s.Comment[n].encode(w)
 	}
-	for n := range s.FreeBusy {
-		s.FreeBusy[n].encode(w)
+	for n := range s.FreeBusyP {
+		s.FreeBusyP[n].encode(w)
 	}
 	for n := range s.RequestStatus {
 		s.RequestStatus[n].encode(w)
@@ -1785,7 +1785,7 @@ func (s *SectionFreeBusy) encode(w writer) {
 	w.WriteString("END:VFREEBUSY\r\n")
 }
 
-func (s *SectionFreeBusy) valid() error {
+func (s *FreeBusy) valid() error {
 	if err := s.DateTimeStamp.valid(); err != nil {
 		return err
 	}
@@ -1827,8 +1827,8 @@ func (s *SectionFreeBusy) valid() error {
 			return err
 		}
 	}
-	for n := range s.FreeBusy {
-		if err := s.FreeBusy[n].valid(); err != nil {
+	for n := range s.FreeBusyP {
+		if err := s.FreeBusyP[n].valid(); err != nil {
 			return err
 		}
 	}
@@ -1840,15 +1840,15 @@ func (s *SectionFreeBusy) valid() error {
 	return nil
 }
 
-type SectionTimezone struct {
+type Timezone struct {
 	TimezoneID   PropTimezoneID
 	LastModified *PropLastModified
 	TimezoneURL  *PropTimezoneURL
-	Standard     []SectionStandard
-	Daylight     []SectionDaylight
+	Standard     []Standard
+	Daylight     []Daylight
 }
 
-func (s *SectionTimezone) decode(t tokeniser) error {
+func (s *Timezone) decode(t tokeniser) error {
 	var requiredTimezoneID bool
 	for {
 		p, err := t.GetPhrase()
@@ -1861,13 +1861,13 @@ func (s *SectionTimezone) decode(t tokeniser) error {
 		case "BEGIN":
 			switch n := strings.ToUpper(value); n {
 			case "STANDARD":
-				var e SectionStandard
+				var e Standard
 				if err := e.decode(t); err != nil {
 					return err
 				}
 				s.Standard = append(s.Standard, e)
 			case "DAYLIGHT":
-				var e SectionDaylight
+				var e Daylight
 				if err := e.decode(t); err != nil {
 					return err
 				}
@@ -1917,7 +1917,7 @@ func (s *SectionTimezone) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *SectionTimezone) encode(w writer) {
+func (s *Timezone) encode(w writer) {
 	w.WriteString("BEGIN:VTIMEZONE\r\n")
 	s.TimezoneID.encode(w)
 	if s.LastModified != nil {
@@ -1935,7 +1935,7 @@ func (s *SectionTimezone) encode(w writer) {
 	w.WriteString("END:VTIMEZONE\r\n")
 }
 
-func (s *SectionTimezone) valid() error {
+func (s *Timezone) valid() error {
 	if err := s.TimezoneID.valid(); err != nil {
 		return err
 	}
@@ -1962,7 +1962,7 @@ func (s *SectionTimezone) valid() error {
 	return nil
 }
 
-type SectionStandard struct {
+type Standard struct {
 	DateTimeStart       PropDateTimeStart
 	TimezoneOffsetTo    PropTimezoneOffsetTo
 	TimezoneOffsetFrom  PropTimezoneOffsetFrom
@@ -1972,7 +1972,7 @@ type SectionStandard struct {
 	TimezoneName        []PropTimezoneName
 }
 
-func (s *SectionStandard) decode(t tokeniser) error {
+func (s *Standard) decode(t tokeniser) error {
 	var requiredDateTimeStart, requiredTimezoneOffsetTo, requiredTimezoneOffsetFrom bool
 	for {
 		p, err := t.GetPhrase()
@@ -2052,7 +2052,7 @@ func (s *SectionStandard) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *SectionStandard) encode(w writer) {
+func (s *Standard) encode(w writer) {
 	w.WriteString("BEGIN:STANDARD\r\n")
 	s.DateTimeStart.encode(w)
 	s.TimezoneOffsetTo.encode(w)
@@ -2072,7 +2072,7 @@ func (s *SectionStandard) encode(w writer) {
 	w.WriteString("END:STANDARD\r\n")
 }
 
-func (s *SectionStandard) valid() error {
+func (s *Standard) valid() error {
 	if err := s.DateTimeStart.valid(); err != nil {
 		return err
 	}
@@ -2105,7 +2105,7 @@ func (s *SectionStandard) valid() error {
 	return nil
 }
 
-type SectionDaylight struct {
+type Daylight struct {
 	DateTimeStart       PropDateTimeStart
 	TimezoneOffsetTo    PropTimezoneOffsetTo
 	TimezoneOffsetFrom  PropTimezoneOffsetFrom
@@ -2115,7 +2115,7 @@ type SectionDaylight struct {
 	TimezoneName        []PropTimezoneName
 }
 
-func (s *SectionDaylight) decode(t tokeniser) error {
+func (s *Daylight) decode(t tokeniser) error {
 	var requiredDateTimeStart, requiredTimezoneOffsetTo, requiredTimezoneOffsetFrom bool
 	for {
 		p, err := t.GetPhrase()
@@ -2195,7 +2195,7 @@ func (s *SectionDaylight) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *SectionDaylight) encode(w writer) {
+func (s *Daylight) encode(w writer) {
 	w.WriteString("BEGIN:DAYLIGHT\r\n")
 	s.DateTimeStart.encode(w)
 	s.TimezoneOffsetTo.encode(w)
@@ -2215,7 +2215,7 @@ func (s *SectionDaylight) encode(w writer) {
 	w.WriteString("END:DAYLIGHT\r\n")
 }
 
-func (s *SectionDaylight) valid() error {
+func (s *Daylight) valid() error {
 	if err := s.DateTimeStart.valid(); err != nil {
 		return err
 	}
@@ -2248,14 +2248,14 @@ func (s *SectionDaylight) valid() error {
 	return nil
 }
 
-type SectionAlarmAudio struct {
+type AlarmAudio struct {
 	Trigger    PropTrigger
 	Duration   *PropDuration
 	Repeat     *PropRepeat
 	Attachment []PropAttachment
 }
 
-func (s *SectionAlarmAudio) decode(t tokeniser) error {
+func (s *AlarmAudio) decode(t tokeniser) error {
 	var requiredTrigger bool
 	for {
 		p, err := t.GetPhrase()
@@ -2315,7 +2315,7 @@ func (s *SectionAlarmAudio) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *SectionAlarmAudio) encode(w writer) {
+func (s *AlarmAudio) encode(w writer) {
 	s.Trigger.encode(w)
 	if s.Duration != nil {
 		s.Duration.encode(w)
@@ -2328,7 +2328,7 @@ func (s *SectionAlarmAudio) encode(w writer) {
 	}
 }
 
-func (s *SectionAlarmAudio) valid() error {
+func (s *AlarmAudio) valid() error {
 	if err := s.Trigger.valid(); err != nil {
 		return err
 	}
@@ -2350,14 +2350,14 @@ func (s *SectionAlarmAudio) valid() error {
 	return nil
 }
 
-type SectionAlarmDisplay struct {
+type AlarmDisplay struct {
 	Description PropDescription
 	Trigger     PropTrigger
 	Duration    *PropDuration
 	Repeat      *PropRepeat
 }
 
-func (s *SectionAlarmDisplay) decode(t tokeniser) error {
+func (s *AlarmDisplay) decode(t tokeniser) error {
 	var requiredDescription, requiredTrigger bool
 	for {
 		p, err := t.GetPhrase()
@@ -2419,7 +2419,7 @@ func (s *SectionAlarmDisplay) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *SectionAlarmDisplay) encode(w writer) {
+func (s *AlarmDisplay) encode(w writer) {
 	s.Description.encode(w)
 	s.Trigger.encode(w)
 	if s.Duration != nil {
@@ -2430,7 +2430,7 @@ func (s *SectionAlarmDisplay) encode(w writer) {
 	}
 }
 
-func (s *SectionAlarmDisplay) valid() error {
+func (s *AlarmDisplay) valid() error {
 	if err := s.Description.valid(); err != nil {
 		return err
 	}
@@ -2450,7 +2450,7 @@ func (s *SectionAlarmDisplay) valid() error {
 	return nil
 }
 
-type SectionAlarmEmail struct {
+type AlarmEmail struct {
 	Description PropDescription
 	Trigger     PropTrigger
 	Summary     PropSummary
@@ -2459,7 +2459,7 @@ type SectionAlarmEmail struct {
 	Repeat      *PropRepeat
 }
 
-func (s *SectionAlarmEmail) decode(t tokeniser) error {
+func (s *AlarmEmail) decode(t tokeniser) error {
 	var requiredDescription, requiredTrigger, requiredSummary bool
 	for {
 		p, err := t.GetPhrase()
@@ -2540,7 +2540,7 @@ func (s *SectionAlarmEmail) decode(t tokeniser) error {
 	return nil
 }
 
-func (s *SectionAlarmEmail) encode(w writer) {
+func (s *AlarmEmail) encode(w writer) {
 	s.Description.encode(w)
 	s.Trigger.encode(w)
 	s.Summary.encode(w)
@@ -2555,7 +2555,7 @@ func (s *SectionAlarmEmail) encode(w writer) {
 	}
 }
 
-func (s *SectionAlarmEmail) valid() error {
+func (s *AlarmEmail) valid() error {
 	if err := s.Description.valid(); err != nil {
 		return err
 	}

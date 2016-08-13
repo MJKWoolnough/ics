@@ -21,7 +21,7 @@ function printSection {
 
 	# type declaration
 
-	echo "type Section$sName struct {";
+	echo "type $sName struct {";
 	IFS="$OFS";
 	declare checkRequired=false;
 	for tline in "${currSection[@]}"; do
@@ -42,9 +42,7 @@ function printSection {
 		elif ! $required; then
 			echo -n "*";
 		fi;
-		if $section; then
-			echo -n "Section";
-		else
+		if ! $section; then
 			echo -n "Prop";
 		fi;
 		echo "$name";
@@ -54,7 +52,7 @@ function printSection {
 
 	# decoder
 
-	echo "func (s *Section$sName) decode(t tokeniser) error {";
+	echo "func (s *$sName) decode(t tokeniser) error {";
 
 	# required bools
 
@@ -110,7 +108,7 @@ function printSection {
 			echo "					return err";
 			echo "				}";
 		elif $multiple; then
-			echo "				var e Section$name";
+			echo "				var e $name";
 			echo "				if err := e.decode(t); err != nil {";
 			echo "					return err";
 			echo "				}";
@@ -119,7 +117,7 @@ function printSection {
 			echo "				if s.$name != nil {";
 			echo "					return ErrMultipleSingle";
 			echo "				}";
-			echo "				s.$name = new(Section$name)";
+			echo "				s.$name = new($name)";
 			echo "				if err := s.${name}.decode(t); err != nil {";
 			echo "					return err";
 			echo "				}";
@@ -274,7 +272,7 @@ function printSection {
 
 	# encoder
 
-	echo "func (s *Section$sName) encode(w writer) {"
+	echo "func (s *$sName) encode(w writer) {"
 	if [ "${sectionName:0:6}" != "VALARM" ]; then
 		echo "	w.WriteString(\"BEGIN:$sectionName\r\n\")";
 	fi;
@@ -303,7 +301,7 @@ function printSection {
 
 	# validator
 
-	echo "func (s *Section$sName) valid() error {";
+	echo "func (s *$sName) valid() error {";
 	for tline in "${currSection[@]}"; do
 		aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
 		name="${aline[0]}";
