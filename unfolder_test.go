@@ -28,6 +28,8 @@ func TestUnfolder(t *testing.T) {
 		for {
 			if _, err := u.Read(b[:]); err == io.EOF {
 				break
+			} else if err != nil {
+				t.Errorf("test %d: unexpected error: %s", n+1, err)
 			}
 			buf.Write(b[:])
 		}
