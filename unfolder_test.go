@@ -15,6 +15,7 @@ func TestUnfolder(t *testing.T) {
 		{"A\nB", "A\nB"},
 		{"A\r\n B", "AB"},
 		{"ABCDEFGHIJKL\r\n MNOP\r\n QRSTUV\r\nWXY\r\n Z", "ABCDEFGHIJKLMNOPQRSTUV\r\nWXYZ"},
+		{"\xe2\r\n \x82\r\n \xac", "€"},
 	}
 	var buf bytes.Buffer
 	for n, test := range tests {
