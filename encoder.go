@@ -29,11 +29,9 @@ func Encode(w io.Writer, cal *Calendar) error {
 	if err := cal.valid(); err != nil {
 		return err
 	}
-	we := writeError{
-		w: &folder{w: w},
-	}
+	we := writeError{w: w}
 	b := bufio.NewWriter(&we)
-	cal.encode(b)
+	cal.encode(&folder{w: b})
 	b.Flush()
 	return we.err
 }
