@@ -283,9 +283,10 @@ source "names.sh";
 				if $multiple; then
 					echo "	}";
 				fi;
-				echo "	return nil";
-			fi;
-			if [ -z "$vType" ] ; then
+				if [ -z "$vType" ] || $multiple; then
+					echo "	return nil";
+				fi;
+			else
 				echo "	return nil";
 			fi;
 			echo "}";

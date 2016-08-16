@@ -40,7 +40,6 @@ func (t AlternativeRepresentation) encode(w writer) {
 func (t AlternativeRepresentation) valid() error {
 	q := URI(t)
 	return q.valid()
-	return nil
 }
 
 type CommonName string
@@ -71,7 +70,6 @@ func (t CommonName) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return ErrInvalidText
 	}
-	return nil
 	return nil
 }
 
@@ -230,7 +228,6 @@ func (t DirectoryEntry) valid() error {
 		return ErrInvalidText
 	}
 	return nil
-	return nil
 }
 
 type Encoding uint8
@@ -272,7 +269,6 @@ func (t Encoding) valid() error {
 		return ErrInvalidValue
 	}
 	return nil
-	return nil
 }
 
 type FormatType string
@@ -308,7 +304,6 @@ func (t FormatType) valid() error {
 	if !regexFormatType.Match([]byte(t)) {
 		return ErrInvalidValue
 	}
-	return nil
 	return nil
 }
 
@@ -390,7 +385,6 @@ func (t Language) valid() error {
 		return ErrInvalidText
 	}
 	return nil
-	return nil
 }
 
 type Member []string
@@ -426,7 +420,6 @@ func (t Member) valid() error {
 			return ErrInvalidText
 		}
 	}
-	return nil
 	return nil
 }
 
@@ -553,7 +546,6 @@ func (t Related) valid() error {
 	default:
 		return ErrInvalidValue
 	}
-	return nil
 	return nil
 }
 
@@ -705,7 +697,6 @@ func (t SentBy) valid() error {
 		return ErrInvalidText
 	}
 	return nil
-	return nil
 }
 
 type TimezoneID string
@@ -736,7 +727,6 @@ func (t TimezoneID) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return ErrInvalidText
 	}
-	return nil
 	return nil
 }
 
