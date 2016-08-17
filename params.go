@@ -11,6 +11,8 @@ import (
 	"github.com/MJKWoolnough/parser"
 )
 
+// AlternativeRepresentation is an alternate text representation for the
+// property value
 type AlternativeRepresentation URI
 
 func (t *AlternativeRepresentation) decode(vs []parser.Token) error {
@@ -42,6 +44,8 @@ func (t AlternativeRepresentation) valid() error {
 	return q.valid()
 }
 
+// CommonName is the common name to be associated with the calendar user
+// specified by the property
 type CommonName string
 
 func (t *CommonName) decode(vs []parser.Token) error {
@@ -73,6 +77,8 @@ func (t CommonName) valid() error {
 	return nil
 }
 
+// CalendarUserType is identify the type of calendar user specified by the
+// property
 type CalendarUserType uint8
 
 // CalendarUserType constant values
@@ -123,6 +129,8 @@ func (t CalendarUserType) valid() error {
 	return nil
 }
 
+// Delegator is used to specify the calendar users that have delegated their
+// participation to the calendar user specified by the property
 type Delegator []CalendarAddress
 
 func (t *Delegator) decode(vs []parser.Token) error {
@@ -162,6 +170,8 @@ func (t Delegator) valid() error {
 	return nil
 }
 
+// Delagatee is used to specify the calendar users to whom the calendar user
+// specified by the property has delegated participation
 type Delagatee []CalendarAddress
 
 func (t *Delagatee) decode(vs []parser.Token) error {
@@ -201,6 +211,8 @@ func (t Delagatee) valid() error {
 	return nil
 }
 
+// DirectoryEntry is a reference to a directory entry associated with the
+// calendar
 type DirectoryEntry string
 
 func (t *DirectoryEntry) decode(vs []parser.Token) error {
@@ -231,6 +243,7 @@ func (t DirectoryEntry) valid() error {
 	return nil
 }
 
+// Encoding is the inline encoding for the property value
 type Encoding uint8
 
 // Encoding constant values
@@ -273,6 +286,7 @@ func (t Encoding) valid() error {
 	return nil
 }
 
+// FormatType is the content type of a referenced object
 type FormatType string
 
 var regexFormatType *regexp.Regexp
@@ -309,6 +323,7 @@ func (t FormatType) valid() error {
 	return nil
 }
 
+// FreeBusyType is used to specify the free or busy time type
 type FreeBusyType uint8
 
 // FreeBusyType constant values
@@ -359,6 +374,7 @@ func (t FreeBusyType) valid() error {
 	return nil
 }
 
+// Language is the language for text values
 type Language string
 
 func (t *Language) decode(vs []parser.Token) error {
@@ -390,6 +406,7 @@ func (t Language) valid() error {
 	return nil
 }
 
+// Member is used to specify the group or list membership of the calendar
 type Member []string
 
 func (t *Member) decode(vs []parser.Token) error {
@@ -426,6 +443,8 @@ func (t Member) valid() error {
 	return nil
 }
 
+// ParticipationStatus is used to specify the participation status for the
+// calendar
 type ParticipationStatus uint8
 
 // ParticipationStatus constant values
@@ -491,6 +510,8 @@ func (t ParticipationStatus) valid() error {
 	return nil
 }
 
+// Range is used to specify the effective range of recurrence instances from the
+// instance specified by the recurrence identifier specified by the property
 type Range struct{}
 
 func (t *Range) decode(vs []parser.Token) error {
@@ -512,6 +533,8 @@ func (t Range) valid() error {
 	return nil
 }
 
+// Related is the relationship of the alarm trigger with respect to the start or
+// end of the calendar component
 type Related uint8
 
 // Related constant values
@@ -554,6 +577,8 @@ func (t Related) valid() error {
 	return nil
 }
 
+// RelationshipType is the type of hierarchical relationship associated with the
+// calendar component specified by the property
 type RelationshipType uint8
 
 // RelationshipType constant values
@@ -599,6 +624,8 @@ func (t RelationshipType) valid() error {
 	return nil
 }
 
+// ParticipationRole is used to specify the participation role for the calendar
+// user specified by the property
 type ParticipationRole uint8
 
 // ParticipationRole constant values
@@ -649,6 +676,8 @@ func (t ParticipationRole) valid() error {
 	return nil
 }
 
+// RSVP is used to specify whether there is an expectation of a favor of a reply
+// from the calendar user specified by the property value
 type RSVP Boolean
 
 func (t *RSVP) decode(vs []parser.Token) error {
@@ -676,6 +705,8 @@ func (t RSVP) valid() error {
 	return nil
 }
 
+// SentBy is used to specify the calendar user that is acting on behalf of the
+// calendar user specified by the property
 type SentBy string
 
 func (t *SentBy) decode(vs []parser.Token) error {
@@ -706,6 +737,8 @@ func (t SentBy) valid() error {
 	return nil
 }
 
+// TimezoneID is used to specify the identifier for the time zone definition for
+// a time component in the property value
 type TimezoneID string
 
 func (t *TimezoneID) decode(vs []parser.Token) error {
@@ -737,6 +770,8 @@ func (t TimezoneID) valid() error {
 	return nil
 }
 
+// Value is used to explicitly specify the value type format for a property
+// value
 type Value uint8
 
 // Value constant values

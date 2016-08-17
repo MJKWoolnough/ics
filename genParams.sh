@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source "names.sh";
+source "comments.sh";
 
 (
 	declare -A regexes;
@@ -23,6 +24,7 @@ source "names.sh";
 			type="$(getName "$keyword")";
 			values="$(echo "$line" | cut -d'=' -f2)";
 
+			getComment "$type";
 			echo -n "type $type ";
 
 			declare multiple=false;
