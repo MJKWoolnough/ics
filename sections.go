@@ -1637,7 +1637,7 @@ type FreeBusy struct {
 	URL           *PropURL
 	Attendee      []PropAttendee
 	Comment       []PropComment
-	FreeBusyP     []PropFreeBusyP
+	FreeBusy      []PropFreeBusy
 	RequestStatus []PropRequestStatus
 }
 
@@ -1727,11 +1727,11 @@ func (s *FreeBusy) decode(t tokeniser) error {
 			}
 			s.Comment = append(s.Comment, e)
 		case "FREEBUSY":
-			var e PropFreeBusyP
+			var e PropFreeBusy
 			if err := e.decode(params, value); err != nil {
 				return err
 			}
-			s.FreeBusyP = append(s.FreeBusyP, e)
+			s.FreeBusy = append(s.FreeBusy, e)
 		case "REQUEST-STATUS":
 			var e PropRequestStatus
 			if err := e.decode(params, value); err != nil {
@@ -1776,8 +1776,8 @@ func (s *FreeBusy) encode(w writer) {
 	for n := range s.Comment {
 		s.Comment[n].encode(w)
 	}
-	for n := range s.FreeBusyP {
-		s.FreeBusyP[n].encode(w)
+	for n := range s.FreeBusy {
+		s.FreeBusy[n].encode(w)
 	}
 	for n := range s.RequestStatus {
 		s.RequestStatus[n].encode(w)
@@ -1827,8 +1827,8 @@ func (s *FreeBusy) valid() error {
 			return err
 		}
 	}
-	for n := range s.FreeBusyP {
-		if err := s.FreeBusyP[n].valid(); err != nil {
+	for n := range s.FreeBusy {
+		if err := s.FreeBusy[n].valid(); err != nil {
 			return err
 		}
 	}
