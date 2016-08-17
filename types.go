@@ -15,6 +15,7 @@ import (
 
 const dateTimeFormat = "20060102T150405Z"
 
+// Binary is inline binary data
 type Binary []byte
 
 func (b *Binary) decode(params map[string]string, data string) error {
@@ -41,6 +42,7 @@ func (Binary) valid() error {
 	return nil
 }
 
+// Boolean is true or false
 type Boolean bool
 
 func (b *Boolean) decode(_ map[string]string, data string) error {
@@ -74,10 +76,12 @@ func (Boolean) valid() error {
 	return nil
 }
 
+// CalendarAddress contains a calendar user address
 type CalendarAddress struct {
 	URI
 }
 
+// Date is a Calendar Data
 type Date struct {
 	time.Time
 }
@@ -108,6 +112,7 @@ func (d Date) valid() error {
 	return nil
 }
 
+// DateTime is a Calendar Date and Time
 type DateTime struct {
 	time.Time
 }
@@ -165,6 +170,7 @@ func (d DateTime) valid() error {
 	return nil
 }
 
+// Duration is a duration of time
 type Duration struct {
 	Negative                             bool
 	Weeks, Days, Hours, Minutes, Seconds uint
@@ -308,6 +314,7 @@ func (Duration) valid() error {
 	return nil
 }
 
+// Float contains a real-number value
 type Float float64
 
 func (f *Float) decode(_ map[string]string, data string) error {
@@ -336,6 +343,7 @@ func (f Float) valid() error {
 	return nil
 }
 
+// TFloat is a pair of float values used for coords
 type TFloat [2]float64
 
 func (t *TFloat) decode(_ map[string]string, data string) error {
@@ -378,6 +386,7 @@ func (t TFloat) valid() error {
 	return nil
 }
 
+// Integer is a signed integer value
 type Integer int32
 
 func (i *Integer) decode(_ map[string]string, data string) error {
@@ -402,6 +411,10 @@ func (Integer) valid() error {
 	return nil
 }
 
+// Period represents a precise period of time/
+//
+// Only one of End or Duration will be used. If Period.End.IsZero() is true,
+// then it uses Period.Duration
 type Period struct {
 	Start, End DateTime
 	Duration   Duration
@@ -451,8 +464,18 @@ func (p Period) valid() error {
 	return nil
 }
 
-type Frequency uint8
+// Types used in Recur
+type (
+	Frequency uint8
+	WeekDay   uint8
+	Month     uint8
+	DayRecur  struct {
+		Day       WeekDay
+		Occurence int8
+	}
+)
 
+// Frequency constant values
 const (
 	Secondly Frequency = iota
 	Minutely
@@ -463,8 +486,7 @@ const (
 	Yearly
 )
 
-type WeekDay uint8
-
+// Weekdat constant values
 const (
 	UnknownDay WeekDay = iota
 	Sunday
@@ -476,8 +498,7 @@ const (
 	Saturday
 )
 
-type Month uint8
-
+// Month Constant Values
 const (
 	UnknownMonth Month = iota
 	January
@@ -494,11 +515,7 @@ const (
 	December
 )
 
-type DayRecur struct {
-	Day       WeekDay
-	Occurence int8
-}
-
+// Recur contains a recurrence rule specification
 type Recur struct {
 	Frequency  Frequency
 	Until      time.Time
@@ -1015,6 +1032,7 @@ func (r *Recur) valid() error {
 	return nil
 }
 
+// Text contains human-readable text
 type Text string
 
 func (t *Text) decode(_ map[string]string, data string) error {
@@ -1092,6 +1110,7 @@ func (t Text) valid() error {
 	return nil
 }
 
+// MText contains multiple text values
 type MText []Text
 
 func (t *MText) decode(_ map[string]string, data string) error {
@@ -1128,6 +1147,7 @@ func (t MText) valid() error {
 	return nil
 }
 
+// Time contains a precise time
 type Time struct {
 	time.Time
 }
@@ -1185,6 +1205,7 @@ func (t Time) valid() error {
 	return nil
 }
 
+// URI contains a reference to another piece of data
 type URI struct {
 	url.URL
 }
@@ -1211,6 +1232,7 @@ func (URI) valid() error {
 	return nil
 }
 
+// UTCOffset contains the offset from UTC to local time
 type UTCOffset int
 
 func (u *UTCOffset) decode(_ map[string]string, data string) error {
