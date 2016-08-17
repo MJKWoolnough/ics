@@ -21,11 +21,14 @@ func (p *psuedoTokeniser) GetPhrase() (parser.Phrase, error) {
 	return ph, nil
 }
 
+// AlarmType is an interface this is fulfilled by AlarmAudio, AlarmDisplay and
+// AlarmEmail
 type AlarmType interface {
 	section
 	Type() string
 }
 
+// Alarm is the encompassing type for the three alarm types
 type Alarm struct {
 	AlarmType
 }
@@ -86,14 +89,17 @@ func (a *Alarm) valid() error {
 	return ErrInvalidAlarm
 }
 
+// Type returns the type of the alarm "AUDIO"
 func (AlarmAudio) Type() string {
 	return "AUDIO"
 }
 
+// Type returns the type of the alarm "DISPLAY"
 func (AlarmDisplay) Type() string {
 	return "DISPLAY"
 }
 
+// Type returns the type of the alarm "EMAIL"
 func (AlarmEmail) Type() string {
 	return "EMAIL"
 }
