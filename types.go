@@ -464,16 +464,8 @@ func (p Period) valid() error {
 	return nil
 }
 
-// Types used in Recur
-type (
-	Frequency uint8
-	WeekDay   uint8
-	Month     uint8
-	DayRecur  struct {
-		Day       WeekDay
-		Occurence int8
-	}
-)
+// Frequency represents the Recurrence frequency
+type Frequency uint8
 
 // Frequency constant values
 const (
@@ -486,7 +478,10 @@ const (
 	Yearly
 )
 
-// Weekdat constant values
+// WeekDay is a numeric representation of a Day of the Week
+type WeekDay uint8
+
+// Weekday constant values
 const (
 	UnknownDay WeekDay = iota
 	Sunday
@@ -497,6 +492,9 @@ const (
 	Friday
 	Saturday
 )
+
+// Month is a numeric representation of a Month of the Year
+type Month uint8
 
 // Month Constant Values
 const (
@@ -514,6 +512,13 @@ const (
 	November
 	December
 )
+
+// DayRecur is used to reprent the nth day in a time period, be it 2nd Monday
+// in a Month, or 31st Friday in a year, etc.
+type DayRecur struct {
+	Day       WeekDay
+	Occurence int8
+}
 
 // Recur contains a recurrence rule specification
 type Recur struct {
