@@ -18,3 +18,49 @@ RSVP is used to specify whether there is an expectation of a favor of a reply fr
 SentBy is used to specify the calendar user that is acting on behalf of the calendar user specified by the property
 TimezoneID is used to specify the identifier for the time zone definition for a time component in the property value
 Value is used to explicitly specify the value type format for a property value
+PropAction defines the action to be invoked when an alarm is triggered
+PropAttachment provides the capability to associate a document object with a calendar component
+PropAttendee defines an "Attendee" within a calendar component
+PropCalendarScale defines the calendar scale
+PropCategories defines the categories for a calendar component
+PropClass defines the access classification for a calendar component
+PropComment specifies non-processing information intended to provide a comment to the calendar user
+PropCompleted defines the date and time that a to-do was actually completed
+PropContact is used to represent contact information or alternately a reference to contact information associated with the calendar component
+PropCreated specifies the date and time that the calendar information was created by the calendar user agent in the calendar store
+PropDescription provides a more complete description of the calendar component than that provided by the "SUMMARY" property
+PropDateTimeEnd specifies the date and time that a calendar component ends
+PropDateTimeStamp specifies the date and time that the calendar object was created unless the calendar object has no METHOD property, in which case it specifies the date and time that the information with the calendar was last revised
+PropDateTimeStart specifies when the calendar component begins
+PropDue defines the date and time that a to-do is expected to be completed
+PropDuration specifies a positive duration of time
+PropExceptionDateTime defines the list of DATE-TIME exceptions for recurring events, to-dos, journal entries, or time zone definitions
+PropFreeBusy defines one or more free or busy time intervals
+PropGeo specifies information related to the global position for the activity specified by a calendar component
+PropLastModified specifies the date and time that the information associated with the calendar component was last revised in the calendar store
+PropLocation defines the intended venue for the activity defined by a calendar component
+PropMethod defines the iCalendar object method associated with the calendar object
+PropOrganizer defines the organizer for a calendar component
+PropPercentComplete is used by an assignee or delegatee of a to-do to convey the percent completion of a to-do to the "Organizer"
+PropPriority defines the relative priority for a calendar component
+PropProdID specifies the identifier for the product that created the iCalendar object
+PropRecurrenceDateTimes defines the list of DATE-TIME values for recurring events, to-dos, journal entries, or time zone definitions
+PropRecurrenceID is used to identify a specific instance of a recurring Event, Todo or Journal
+PropRecurrenceRule defines a rule or repeating pattern for recurring events, to-dos, journal entries, or time zone definitions
+PropRelatedTo is used to represent a relationship or reference between one calendar component and another
+PropRepeat defines the number of times the alarm should be repeated, after the initial trigger
+PropRequestStatus defines the status code returned for a scheduling request
+PropResources defines the equipment or resources anticipated for an activity specified by a calendar component
+PropSequence defines the revision sequence number of the calendar component within a sequence of revisions
+PropStatus defines the overall status or confirmation for the calendar component
+PropSummary defines a short summary or subject for the calendar component
+PropTimeTransparency defines whether or not an event is transparent to busy time searches
+PropTimezoneID specifies the text value that uniquely identifies the "VTIMEZONE" calendar component in the scope of an iCalendar object
+PropTimezoneName specifies the customary designation for a time zone description
+PropTimezoneOffsetFrom specifies the offset that is in use prior to this time zone observance
+PropTimezoneOffsetTo specifies the offset that is in use in this time zone observance
+PropTimezoneURL provides a means for a "VTIMEZONE" component to point to a network location that can be used to retrieve an up- to-date version of itself
+PropTrigger specifies when an alarm will trigger
+PropUID defines the persistent, globally unique identifier for the calendar component
+PropURL defines a Uniform Resource Locator associated with the iCalendar object
+PropVersion specifies the identifier corresponding to the highest version number or the minimum and maximum range of the iCalendar specification that is required in order to interpret the iCalendar object

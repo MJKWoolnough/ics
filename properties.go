@@ -9,6 +9,7 @@ import (
 	"github.com/MJKWoolnough/parser"
 )
 
+// PropAction defines the action to be invoked when an alarm is triggered
 type PropAction uint8
 
 // PropAction constant values
@@ -54,6 +55,8 @@ func (p *PropAction) valid() error {
 	return nil
 }
 
+// PropAttachment provides the capability to associate a document object with a
+// calendar component
 type PropAttachment struct {
 	FormatType *FormatType
 	URI        *URI
@@ -160,6 +163,7 @@ func (p *PropAttachment) valid() error {
 	return nil
 }
 
+// PropAttendee defines an "Attendee" within a calendar component
 type PropAttendee struct {
 	CalendarUserType    *CalendarUserType
 	Member              Member
@@ -387,6 +391,7 @@ func (p *PropAttendee) valid() error {
 	return nil
 }
 
+// PropCalendarScale defines the calendar scale
 type PropCalendarScale uint8
 
 // PropCalendarScale constant values
@@ -422,6 +427,7 @@ func (p *PropCalendarScale) valid() error {
 	return nil
 }
 
+// PropCategories defines the categories for a calendar component
 type PropCategories struct {
 	Language *Language
 	MText
@@ -482,6 +488,7 @@ func (p *PropCategories) valid() error {
 	return nil
 }
 
+// PropClass defines the access classification for a calendar component
 type PropClass uint8
 
 // PropClass constant values
@@ -527,6 +534,8 @@ func (p *PropClass) valid() error {
 	return nil
 }
 
+// PropComment specifies non-processing information intended to provide a
+// comment to the calendar user
 type PropComment struct {
 	AlternativeRepresentation *AlternativeRepresentation
 	Language                  *Language
@@ -604,6 +613,7 @@ func (p *PropComment) valid() error {
 	return nil
 }
 
+// PropCompleted defines the date and time that a to-do was actually completed
 type PropCompleted DateTime
 
 func (p *PropCompleted) decode(params []parser.Token, value string) error {
@@ -642,6 +652,8 @@ func (p *PropCompleted) valid() error {
 	return t.valid()
 }
 
+// PropContact is used to represent contact information or alternately a
+// reference to contact information associated with the calendar component
 type PropContact struct {
 	AlternativeRepresentation *AlternativeRepresentation
 	Language                  *Language
@@ -719,6 +731,8 @@ func (p *PropContact) valid() error {
 	return nil
 }
 
+// PropCreated specifies the date and time that the calendar information was
+// created by the calendar user agent in the calendar store
 type PropCreated DateTime
 
 func (p *PropCreated) decode(params []parser.Token, value string) error {
@@ -757,6 +771,8 @@ func (p *PropCreated) valid() error {
 	return t.valid()
 }
 
+// PropDescription provides a more complete description of the calendar
+// component than that provided by the "SUMMARY" property
 type PropDescription struct {
 	AlternativeRepresentation *AlternativeRepresentation
 	Language                  *Language
@@ -834,6 +850,7 @@ func (p *PropDescription) valid() error {
 	return nil
 }
 
+// PropDateTimeEnd specifies the date and time that a calendar component ends
 type PropDateTimeEnd struct {
 	DateTime *DateTime
 	Date     *Date
@@ -924,6 +941,10 @@ func (p *PropDateTimeEnd) valid() error {
 	return nil
 }
 
+// PropDateTimeStamp specifies the date and time that the calendar object was
+// created unless the calendar object has no METHOD property, in which case it
+// specifies the date and time that the information with the calendar was last
+// revised
 type PropDateTimeStamp DateTime
 
 func (p *PropDateTimeStamp) decode(params []parser.Token, value string) error {
@@ -962,6 +983,7 @@ func (p *PropDateTimeStamp) valid() error {
 	return t.valid()
 }
 
+// PropDateTimeStart specifies when the calendar component begins
 type PropDateTimeStart struct {
 	DateTime *DateTime
 	Date     *Date
@@ -1052,6 +1074,7 @@ func (p *PropDateTimeStart) valid() error {
 	return nil
 }
 
+// PropDue defines the date and time that a to-do is expected to be completed
 type PropDue struct {
 	DateTime *DateTime
 	Date     *Date
@@ -1142,6 +1165,7 @@ func (p *PropDue) valid() error {
 	return nil
 }
 
+// PropDuration specifies a positive duration of time
 type PropDuration Duration
 
 func (p *PropDuration) decode(params []parser.Token, value string) error {
@@ -1180,6 +1204,8 @@ func (p *PropDuration) valid() error {
 	return t.valid()
 }
 
+// PropExceptionDateTime defines the list of DATE-TIME exceptions for recurring
+// events, to-dos, journal entries, or time zone definitions
 type PropExceptionDateTime struct {
 	DateTime *DateTime
 	Date     *Date
@@ -1270,6 +1296,7 @@ func (p *PropExceptionDateTime) valid() error {
 	return nil
 }
 
+// PropFreeBusy defines one or more free or busy time intervals
 type PropFreeBusy struct {
 	FreeBusyType *FreeBusyType
 	Period
@@ -1330,6 +1357,8 @@ func (p *PropFreeBusy) valid() error {
 	return nil
 }
 
+// PropGeo specifies information related to the global position for the activity
+// specified by a calendar component
 type PropGeo TFloat
 
 func (p *PropGeo) decode(params []parser.Token, value string) error {
@@ -1368,6 +1397,8 @@ func (p *PropGeo) valid() error {
 	return t.valid()
 }
 
+// PropLastModified specifies the date and time that the information associated
+// with the calendar component was last revised in the calendar store
 type PropLastModified DateTime
 
 func (p *PropLastModified) decode(params []parser.Token, value string) error {
@@ -1406,6 +1437,8 @@ func (p *PropLastModified) valid() error {
 	return t.valid()
 }
 
+// PropLocation defines the intended venue for the activity defined by a
+// calendar component
 type PropLocation struct {
 	AlternativeRepresentation *AlternativeRepresentation
 	Language                  *Language
@@ -1483,6 +1516,8 @@ func (p *PropLocation) valid() error {
 	return nil
 }
 
+// PropMethod defines the iCalendar object method associated with the calendar
+// object
 type PropMethod Text
 
 func (p *PropMethod) decode(params []parser.Token, value string) error {
@@ -1521,6 +1556,7 @@ func (p *PropMethod) valid() error {
 	return t.valid()
 }
 
+// PropOrganizer defines the organizer for a calendar component
 type PropOrganizer struct {
 	CommonName     *CommonName
 	DirectoryEntry *DirectoryEntry
@@ -1632,6 +1668,8 @@ func (p *PropOrganizer) valid() error {
 	return nil
 }
 
+// PropPercentComplete is used by an assignee or delegatee of a to-do to convey
+// the percent completion of a to-do to the "Organizer"
 type PropPercentComplete Integer
 
 func (p *PropPercentComplete) decode(params []parser.Token, value string) error {
@@ -1670,6 +1708,7 @@ func (p *PropPercentComplete) valid() error {
 	return t.valid()
 }
 
+// PropPriority defines the relative priority for a calendar component
 type PropPriority Integer
 
 func (p *PropPriority) decode(params []parser.Token, value string) error {
@@ -1708,6 +1747,8 @@ func (p *PropPriority) valid() error {
 	return t.valid()
 }
 
+// PropProdID specifies the identifier for the product that created the
+// iCalendar object
 type PropProdID Text
 
 func (p *PropProdID) decode(params []parser.Token, value string) error {
@@ -1746,6 +1787,8 @@ func (p *PropProdID) valid() error {
 	return t.valid()
 }
 
+// PropRecurrenceDateTimes defines the list of DATE-TIME values for recurring
+// events, to-dos, journal entries, or time zone definitions
 type PropRecurrenceDateTimes struct {
 	DateTime *DateTime
 	Date     *Date
@@ -1853,6 +1896,8 @@ func (p *PropRecurrenceDateTimes) valid() error {
 	return nil
 }
 
+// PropRecurrenceID is used to identify a specific instance of a recurring
+// Event, Todo or Journal
 type PropRecurrenceID struct {
 	Range    *Range
 	DateTime *DateTime
@@ -1960,6 +2005,8 @@ func (p *PropRecurrenceID) valid() error {
 	return nil
 }
 
+// PropRelatedTo is used to represent a relationship or reference between one
+// calendar component and another
 type PropRelatedTo struct {
 	RelationshipType *RelationshipType
 	Text
@@ -2020,6 +2067,8 @@ func (p *PropRelatedTo) valid() error {
 	return nil
 }
 
+// PropRepeat defines the number of times the alarm should be repeated, after
+// the initial trigger
 type PropRepeat Integer
 
 func (p *PropRepeat) decode(params []parser.Token, value string) error {
@@ -2058,6 +2107,7 @@ func (p *PropRepeat) valid() error {
 	return t.valid()
 }
 
+// PropRequestStatus defines the status code returned for a scheduling request
 type PropRequestStatus Text
 
 func (p *PropRequestStatus) decode(params []parser.Token, value string) error {
@@ -2096,6 +2146,8 @@ func (p *PropRequestStatus) valid() error {
 	return t.valid()
 }
 
+// PropResources defines the equipment or resources anticipated for an activity
+// specified by a calendar component
 type PropResources struct {
 	AlternativeRepresentation *AlternativeRepresentation
 	Language                  *Language
@@ -2173,6 +2225,8 @@ func (p *PropResources) valid() error {
 	return nil
 }
 
+// PropRecurrenceRule defines a rule or repeating pattern for recurring events,
+// to-dos, journal entries, or time zone definitions
 type PropRecurrenceRule Recur
 
 func (p *PropRecurrenceRule) decode(params []parser.Token, value string) error {
@@ -2211,6 +2265,8 @@ func (p *PropRecurrenceRule) valid() error {
 	return t.valid()
 }
 
+// PropSequence defines the revision sequence number of the calendar component
+// within a sequence of revisions
 type PropSequence Integer
 
 func (p *PropSequence) decode(params []parser.Token, value string) error {
@@ -2249,6 +2305,8 @@ func (p *PropSequence) valid() error {
 	return t.valid()
 }
 
+// PropStatus defines the overall status or confirmation for the calendar
+// component
 type PropStatus uint8
 
 // PropStatus constant values
@@ -2319,6 +2377,7 @@ func (p *PropStatus) valid() error {
 	return nil
 }
 
+// PropSummary defines a short summary or subject for the calendar component
 type PropSummary struct {
 	AlternativeRepresentation *AlternativeRepresentation
 	Language                  *Language
@@ -2396,6 +2455,8 @@ func (p *PropSummary) valid() error {
 	return nil
 }
 
+// PropTimeTransparency defines whether or not an event is transparent to busy
+// time searches
 type PropTimeTransparency uint8
 
 // PropTimeTransparency constant values
@@ -2436,6 +2497,7 @@ func (p *PropTimeTransparency) valid() error {
 	return nil
 }
 
+// PropTrigger specifies when an alarm will trigger
 type PropTrigger struct {
 	Duration *Duration
 	DateTime *DateTime
@@ -2526,6 +2588,8 @@ func (p *PropTrigger) valid() error {
 	return nil
 }
 
+// PropTimezoneID specifies the text value that uniquely identifies the
+// "VTIMEZONE" calendar component in the scope of an iCalendar object
 type PropTimezoneID Text
 
 func (p *PropTimezoneID) decode(params []parser.Token, value string) error {
@@ -2564,6 +2628,8 @@ func (p *PropTimezoneID) valid() error {
 	return t.valid()
 }
 
+// PropTimezoneName specifies the customary designation for a time zone
+// description
 type PropTimezoneName struct {
 	Language *Language
 	Text
@@ -2624,6 +2690,8 @@ func (p *PropTimezoneName) valid() error {
 	return nil
 }
 
+// PropTimezoneOffsetFrom specifies the offset that is in use prior to this time
+// zone observance
 type PropTimezoneOffsetFrom UTCOffset
 
 func (p *PropTimezoneOffsetFrom) decode(params []parser.Token, value string) error {
@@ -2662,6 +2730,8 @@ func (p *PropTimezoneOffsetFrom) valid() error {
 	return t.valid()
 }
 
+// PropTimezoneOffsetTo specifies the offset that is in use in this time zone
+// observance
 type PropTimezoneOffsetTo UTCOffset
 
 func (p *PropTimezoneOffsetTo) decode(params []parser.Token, value string) error {
@@ -2700,6 +2770,9 @@ func (p *PropTimezoneOffsetTo) valid() error {
 	return t.valid()
 }
 
+// PropTimezoneURL provides a means for a "VTIMEZONE" component to point to a
+// network location that can be used to retrieve an up- to-date version of
+// itself
 type PropTimezoneURL URI
 
 func (p *PropTimezoneURL) decode(params []parser.Token, value string) error {
@@ -2738,6 +2811,8 @@ func (p *PropTimezoneURL) valid() error {
 	return t.valid()
 }
 
+// PropUID defines the persistent, globally unique identifier for the calendar
+// component
 type PropUID Text
 
 func (p *PropUID) decode(params []parser.Token, value string) error {
@@ -2776,6 +2851,8 @@ func (p *PropUID) valid() error {
 	return t.valid()
 }
 
+// PropURL defines a Uniform Resource Locator associated with the iCalendar
+// object
 type PropURL URI
 
 func (p *PropURL) decode(params []parser.Token, value string) error {
@@ -2814,6 +2891,9 @@ func (p *PropURL) valid() error {
 	return t.valid()
 }
 
+// PropVersion specifies the identifier corresponding to the highest version
+// number or the minimum and maximum range of the iCalendar specification that
+// is required in order to interpret the iCalendar object
 type PropVersion Text
 
 func (p *PropVersion) decode(params []parser.Token, value string) error {

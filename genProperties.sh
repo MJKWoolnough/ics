@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source "names.sh";
+source "comments.sh";
 
 declare currProperty="";
 declare valueType=false;
@@ -16,6 +17,7 @@ function printProperty {
 	# typedef
 
 	local mode=0;
+	getComment "Prop$tName";
 	if [ ${#params[@]} -eq 0 ] && ! $valueType; then
 		echo "type Prop$tName uint8";
 		echo;
