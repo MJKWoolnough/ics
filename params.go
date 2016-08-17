@@ -75,6 +75,7 @@ func (t CommonName) valid() error {
 
 type CalendarUserType uint8
 
+// CalendarUserType constant values
 const (
 	CalendarUserTypeUnknown CalendarUserType = iota
 	CalendarUserTypeIndividual
@@ -232,6 +233,7 @@ func (t DirectoryEntry) valid() error {
 
 type Encoding uint8
 
+// Encoding constant values
 const (
 	Encoding8bit Encoding = iota
 	EncodingBase64
@@ -309,6 +311,7 @@ func (t FormatType) valid() error {
 
 type FreeBusyType uint8
 
+// FreeBusyType constant values
 const (
 	FreeBusyTypeUnknown FreeBusyType = iota
 	FreeBusyTypeFree
@@ -425,6 +428,7 @@ func (t Member) valid() error {
 
 type ParticipationStatus uint8
 
+// ParticipationStatus constant values
 const (
 	ParticipationStatusUnknown ParticipationStatus = iota
 	ParticipationStatusNeedsAction
@@ -510,6 +514,7 @@ func (t Range) valid() error {
 
 type Related uint8
 
+// Related constant values
 const (
 	RelatedStart Related = iota
 	RelatedEnd
@@ -551,6 +556,7 @@ func (t Related) valid() error {
 
 type RelationshipType uint8
 
+// RelationshipType constant values
 const (
 	RelationshipTypeUnknown RelationshipType = iota
 	RelationshipTypeParent
@@ -595,6 +601,7 @@ func (t RelationshipType) valid() error {
 
 type ParticipationRole uint8
 
+// ParticipationRole constant values
 const (
 	ParticipationRoleUnknown ParticipationRole = iota
 	ParticipationRoleRequiredParticipant
@@ -732,6 +739,7 @@ func (t TimezoneID) valid() error {
 
 type Value uint8
 
+// Value constant values
 const (
 	ValueUnknown Value = iota
 	ValueBinary

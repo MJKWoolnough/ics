@@ -19,6 +19,7 @@ function printProperty {
 	if [ ${#params[@]} -eq 0 ] && ! $valueType; then
 		echo "type Prop$tName uint8";
 		echo;
+		echo "// Prop$tName constant values";
 		echo "const ("
 		local first=true;
 		for value in ${values[@]}; do

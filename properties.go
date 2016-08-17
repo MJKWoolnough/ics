@@ -11,6 +11,7 @@ import (
 
 type PropAction uint8
 
+// PropAction constant values
 const (
 	ActionAudio PropAction = iota
 	ActionDisplay
@@ -388,6 +389,7 @@ func (p *PropAttendee) valid() error {
 
 type PropCalendarScale uint8
 
+// PropCalendarScale constant values
 const (
 	CalendarScaleGregorian PropCalendarScale = iota
 )
@@ -482,6 +484,7 @@ func (p *PropCategories) valid() error {
 
 type PropClass uint8
 
+// PropClass constant values
 const (
 	ClassPublic PropClass = iota
 	ClassPrivate
@@ -2248,6 +2251,7 @@ func (p *PropSequence) valid() error {
 
 type PropStatus uint8
 
+// PropStatus constant values
 const (
 	StatusTentative PropStatus = iota
 	StatusConfirmed
@@ -2394,6 +2398,7 @@ func (p *PropSummary) valid() error {
 
 type PropTimeTransparency uint8
 
+// PropTimeTransparency constant values
 const (
 	TimeTransparencyOpaque PropTimeTransparency = iota
 	TimeTransparencyTransparent

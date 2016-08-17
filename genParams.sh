@@ -82,6 +82,7 @@ source "names.sh";
 				*)
 					echo "uint8";
 					echo;
+					echo "// $type constant values";
 					echo "const (";
 					declare first=true;
 					for choice in ${choices[@]};do
