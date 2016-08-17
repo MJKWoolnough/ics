@@ -1,7 +1,6 @@
 package ics
 
 import (
-	"bufio"
 	"errors"
 	"io"
 )
@@ -30,9 +29,7 @@ func Encode(w io.Writer, cal *Calendar) error {
 		return err
 	}
 	we := writeError{w: w}
-	b := bufio.NewWriter(&we)
-	cal.encode(&folder{w: b})
-	b.Flush()
+	cal.encode(&folder{w: &we})
 	return we.err
 }
 
