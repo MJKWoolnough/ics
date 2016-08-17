@@ -1853,13 +1853,13 @@ func (p *PropRecurrenceDateTimes) valid() error {
 	return nil
 }
 
-type PropRecurrenceId struct {
+type PropRecurrenceID struct {
 	Range    *Range
 	DateTime *DateTime
 	Date     *Date
 }
 
-func (p *PropRecurrenceId) decode(params []parser.Token, value string) error {
+func (p *PropRecurrenceID) decode(params []parser.Token, value string) error {
 	vType := -1
 	oParams := make(map[string]string)
 	var ts []string
@@ -1921,7 +1921,7 @@ func (p *PropRecurrenceId) decode(params []parser.Token, value string) error {
 	return nil
 }
 
-func (p *PropRecurrenceId) encode(w writer) {
+func (p *PropRecurrenceID) encode(w writer) {
 	w.WriteString("RECURRENCE-ID")
 	if p.Range != nil {
 		p.Range.encode(w)
@@ -1935,7 +1935,7 @@ func (p *PropRecurrenceId) encode(w writer) {
 	w.WriteString("\r\n")
 }
 
-func (p *PropRecurrenceId) valid() error {
+func (p *PropRecurrenceID) valid() error {
 	if p.Range != nil {
 		if err := p.Range.valid(); err != nil {
 			return err

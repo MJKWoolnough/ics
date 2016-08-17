@@ -42,6 +42,7 @@ PRODID=ProdID
 UID=UID
 LAST-MOD=LastModified
 RECURID=RecurID
+RECURRENCE-ID=RecurrenceID
 TZOFFSET=TimezoneOffset
 CAL-ADDRESS=CalendarAddress
 UTC-OFFSET=UTCOffset

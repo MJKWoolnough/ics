@@ -167,7 +167,7 @@ type Event struct {
 	Summary             *PropSummary
 	TimeTransparency    *PropTimeTransparency
 	URL                 *PropURL
-	RecurrenceId        *PropRecurrenceId
+	RecurrenceID        *PropRecurrenceID
 	RecurrenceRule      *PropRecurrenceRule
 	DateTimeEnd         *PropDateTimeEnd
 	Duration            *PropDuration
@@ -336,11 +336,11 @@ func (s *Event) decode(t tokeniser) error {
 				return err
 			}
 		case "RECURRENCE-ID":
-			if s.RecurrenceId != nil {
+			if s.RecurrenceID != nil {
 				return ErrMultipleSingle
 			}
-			s.RecurrenceId = new(PropRecurrenceId)
-			if err := s.RecurrenceId.decode(params, value); err != nil {
+			s.RecurrenceID = new(PropRecurrenceID)
+			if err := s.RecurrenceID.decode(params, value); err != nil {
 				return err
 			}
 		case "RRULE":
@@ -489,8 +489,8 @@ func (s *Event) encode(w writer) {
 	if s.URL != nil {
 		s.URL.encode(w)
 	}
-	if s.RecurrenceId != nil {
-		s.RecurrenceId.encode(w)
+	if s.RecurrenceID != nil {
+		s.RecurrenceID.encode(w)
 	}
 	if s.RecurrenceRule != nil {
 		s.RecurrenceRule.encode(w)
@@ -614,8 +614,8 @@ func (s *Event) valid() error {
 			return err
 		}
 	}
-	if s.RecurrenceId != nil {
-		if err := s.RecurrenceId.valid(); err != nil {
+	if s.RecurrenceID != nil {
+		if err := s.RecurrenceID.valid(); err != nil {
 			return err
 		}
 	}
@@ -706,7 +706,7 @@ type Todo struct {
 	Organizer           *PropOrganizer
 	PercentComplete     *PropPercentComplete
 	Priority            *PropPriority
-	RecurrenceId        *PropRecurrenceId
+	RecurrenceID        *PropRecurrenceID
 	Sequence            *PropSequence
 	Status              *PropStatus
 	Summary             *PropSummary
@@ -847,11 +847,11 @@ func (s *Todo) decode(t tokeniser) error {
 				return err
 			}
 		case "RECURRENCE-ID":
-			if s.RecurrenceId != nil {
+			if s.RecurrenceID != nil {
 				return ErrMultipleSingle
 			}
-			s.RecurrenceId = new(PropRecurrenceId)
-			if err := s.RecurrenceId.decode(params, value); err != nil {
+			s.RecurrenceID = new(PropRecurrenceID)
+			if err := s.RecurrenceID.decode(params, value); err != nil {
 				return err
 			}
 		case "SEQUENCE":
@@ -1018,8 +1018,8 @@ func (s *Todo) encode(w writer) {
 	if s.Priority != nil {
 		s.Priority.encode(w)
 	}
-	if s.RecurrenceId != nil {
-		s.RecurrenceId.encode(w)
+	if s.RecurrenceID != nil {
+		s.RecurrenceID.encode(w)
 	}
 	if s.Sequence != nil {
 		s.Sequence.encode(w)
@@ -1134,8 +1134,8 @@ func (s *Todo) valid() error {
 			return err
 		}
 	}
-	if s.RecurrenceId != nil {
-		if err := s.RecurrenceId.valid(); err != nil {
+	if s.RecurrenceID != nil {
+		if err := s.RecurrenceID.valid(); err != nil {
 			return err
 		}
 	}
@@ -1230,7 +1230,7 @@ type Journal struct {
 	DateTimeStart       *PropDateTimeStart
 	LastModified        *PropLastModified
 	Organizer           *PropOrganizer
-	RecurrenceId        *PropRecurrenceId
+	RecurrenceID        *PropRecurrenceID
 	Sequence            *PropSequence
 	Status              *PropStatus
 	Summary             *PropSummary
@@ -1322,11 +1322,11 @@ func (s *Journal) decode(t tokeniser) error {
 				return err
 			}
 		case "RECURRENCE-ID":
-			if s.RecurrenceId != nil {
+			if s.RecurrenceID != nil {
 				return ErrMultipleSingle
 			}
-			s.RecurrenceId = new(PropRecurrenceId)
-			if err := s.RecurrenceId.decode(params, value); err != nil {
+			s.RecurrenceID = new(PropRecurrenceID)
+			if err := s.RecurrenceID.decode(params, value); err != nil {
 				return err
 			}
 		case "SEQUENCE":
@@ -1461,8 +1461,8 @@ func (s *Journal) encode(w writer) {
 	if s.Organizer != nil {
 		s.Organizer.encode(w)
 	}
-	if s.RecurrenceId != nil {
-		s.RecurrenceId.encode(w)
+	if s.RecurrenceID != nil {
+		s.RecurrenceID.encode(w)
 	}
 	if s.Sequence != nil {
 		s.Sequence.encode(w)
@@ -1544,8 +1544,8 @@ func (s *Journal) valid() error {
 			return err
 		}
 	}
-	if s.RecurrenceId != nil {
-		if err := s.RecurrenceId.valid(); err != nil {
+	if s.RecurrenceID != nil {
+		if err := s.RecurrenceID.valid(); err != nil {
 			return err
 		}
 	}
