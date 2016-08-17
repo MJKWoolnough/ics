@@ -1,9 +1,13 @@
 package ics
 
-import "unicode/utf8"
+import (
+	"io"
+	"unicode/utf8"
+)
 
 type folder struct {
-	w    writer
+	w    io.Writer
+	err  error
 	line uint8
 }
 
@@ -12,9 +16,12 @@ const maxLineLength = 75
 var eol = [...]byte{'\r', '\n', ' '}
 
 func (f *folder) Write(q []byte) (int, error) {
+	if f.err != nil {
+		return 0, f.err
+	}
 	var (
-		r    rune
-		s, n int
+		r       rune
+		s, n, m int
 	)
 	for pos := 0; pos < len(q); pos += s {
 		r, s = utf8.DecodeRune(q[pos:])
@@ -24,16 +31,16 @@ func (f *folder) Write(q []byte) (int, error) {
 		} else if r == '\r' {
 		} else if f.line > maxLineLength {
 			if pos > 0 {
-				m, err := f.w.Write(q[:pos])
+				m, f.err = f.w.Write(q[:pos])
 				n += m
-				if err != nil {
-					return n, err
+				if f.err != nil {
+					return n, f.err
 				}
 				q = q[pos:]
 			}
-			_, err := f.w.Write(eol[:])
-			if err != nil {
-				return n, err
+			_, f.err = f.w.Write(eol[:])
+			if f.err != nil {
+				return n, f.err
 			}
 
 			pos = 0
@@ -41,46 +48,12 @@ func (f *folder) Write(q []byte) (int, error) {
 		}
 	}
 	if len(q) > 0 {
-		m, err := f.w.Write(q)
+		m, f.err = f.w.Write(q)
 		n += m
-		return n, err
 	}
-	return n, nil
+	return n, f.err
 }
 
 func (f *folder) WriteString(q string) (int, error) {
-	var (
-		r    rune
-		s, n int
-	)
-	for pos := 0; pos < len(q); pos += s {
-		r, s = utf8.DecodeRuneInString(q[pos:])
-		f.line += uint8(s)
-		if r == '\n' {
-			f.line = 0
-		} else if r == '\r' {
-		} else if f.line > maxLineLength {
-			if pos > 0 {
-				m, err := f.w.WriteString(q[:pos])
-				n += m
-				if err != nil {
-					return n, err
-				}
-				q = q[pos:]
-			}
-			_, err := f.w.Write(eol[:])
-			if err != nil {
-				return n, err
-			}
-
-			pos = 0
-			f.line = uint8(s)
-		}
-	}
-	if len(q) > 0 {
-		m, err := f.w.WriteString(q)
-		n += m
-		return n, err
-	}
-	return n, nil
+	return f.Write([]byte(q))
 }
