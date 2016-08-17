@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Calendar represents a iCalendar object
 type Calendar struct {
 	Version  PropVersion
 	ProdID   PropProdID
@@ -150,6 +151,7 @@ func (s *Calendar) valid() error {
 	return nil
 }
 
+// Event provides a group of components that describe an event
 type Event struct {
 	DateTimeStamp       PropDateTimeStamp
 	UID                 PropUID
@@ -692,6 +694,7 @@ func (s *Event) valid() error {
 	return nil
 }
 
+// Todo provides a group of components that describe a to-do
 type Todo struct {
 	DateTimeStamp       PropDateTimeStamp
 	UID                 PropUID
@@ -1222,6 +1225,7 @@ func (s *Todo) valid() error {
 	return nil
 }
 
+// Journal provides a group of components that describe a journal entry
 type Journal struct {
 	DateTimeStamp       PropDateTimeStamp
 	UID                 PropUID
@@ -1627,6 +1631,9 @@ func (s *Journal) valid() error {
 	return nil
 }
 
+// FreeBusy provides a group of components that describe either a request for
+// free/busy time, describe a response to a request for free/busy time, or
+// describe a published set of busy time
 type FreeBusy struct {
 	DateTimeStamp PropDateTimeStamp
 	UID           PropUID
@@ -1840,6 +1847,7 @@ func (s *FreeBusy) valid() error {
 	return nil
 }
 
+// Timezone provide a group of components that defines a time zone
 type Timezone struct {
 	TimezoneID   PropTimezoneID
 	LastModified *PropLastModified
@@ -1962,6 +1970,7 @@ func (s *Timezone) valid() error {
 	return nil
 }
 
+// Standard represents standard timezone rules
 type Standard struct {
 	DateTimeStart       PropDateTimeStart
 	TimezoneOffsetTo    PropTimezoneOffsetTo
@@ -2105,6 +2114,7 @@ func (s *Standard) valid() error {
 	return nil
 }
 
+// Daylight represents daylight savings timezone rules
 type Daylight struct {
 	DateTimeStart       PropDateTimeStart
 	TimezoneOffsetTo    PropTimezoneOffsetTo
@@ -2248,6 +2258,7 @@ func (s *Daylight) valid() error {
 	return nil
 }
 
+// AlarmAudio provides a group of components that define an Audio Alarm
 type AlarmAudio struct {
 	Trigger    PropTrigger
 	Duration   *PropDuration
@@ -2350,6 +2361,7 @@ func (s *AlarmAudio) valid() error {
 	return nil
 }
 
+// AlarmDisplay provides a group of components that define a Display Alarm
 type AlarmDisplay struct {
 	Description PropDescription
 	Trigger     PropTrigger
@@ -2450,6 +2462,7 @@ func (s *AlarmDisplay) valid() error {
 	return nil
 }
 
+// AlarmEmail provides a group of components that define an Email Alarm
 type AlarmEmail struct {
 	Description PropDescription
 	Trigger     PropTrigger

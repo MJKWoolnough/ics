@@ -64,3 +64,14 @@ PropTrigger specifies when an alarm will trigger
 PropUID defines the persistent, globally unique identifier for the calendar component
 PropURL defines a Uniform Resource Locator associated with the iCalendar object
 PropVersion specifies the identifier corresponding to the highest version number or the minimum and maximum range of the iCalendar specification that is required in order to interpret the iCalendar object
+AlarmAudio provides a group of components that define an Audio Alarm
+AlarmDisplay provides a group of components that define a Display Alarm
+AlarmEmail provides a group of components that define an Email Alarm
+Calendar represents a iCalendar object
+Daylight represents daylight savings timezone rules
+Event provides a group of components that describe an event
+FreeBusy provides a group of components that describe either a request for free/busy time, describe a response to a request for free/busy time, or describe a published set of busy time
+Journal provides a group of components that describe a journal entry
+Standard represents standard timezone rules
+Timezone provide a group of components that defines a time zone
+Todo provides a group of components that describe a to-do

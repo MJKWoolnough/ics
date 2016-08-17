@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source "names.sh";
+source "comments.sh";
 
 declare -a currSection;
 declare -a requirements;
@@ -21,6 +22,7 @@ function printSection {
 
 	# type declaration
 
+	getComment "$sName";
 	echo "type $sName struct {";
 	IFS="$OFS";
 	declare checkRequired=false;
