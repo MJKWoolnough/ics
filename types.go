@@ -78,7 +78,29 @@ func (Boolean) valid() error {
 
 // CalendarAddress contains a calendar user address
 type CalendarAddress struct {
-	URI
+	url.URL
+}
+
+func (c *CalendarAddress) decode(_ map[string]string, data string) error {
+	cu, err := url.Parse(data)
+	if err != nil {
+		return err
+	}
+	c.URL = *cu
+	return nil
+}
+
+func (c CalendarAddress) aencode(w writer) {
+	w.WriteString(":")
+	c.encode(w)
+}
+
+func (c CalendarAddress) encode(w writer) {
+	w.WriteString(c.URL.String())
+}
+
+func (CalendarAddress) valid() error {
+	return nil
 }
 
 // Date is a Calendar Data
