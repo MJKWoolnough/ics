@@ -63,10 +63,10 @@ func (t CommonName) encode(w writer) {
 	w.WriteString(";CN=")
 	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(encode6868(string(t)))
+		w.Write(encode6868(string(t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(encode6868(string(t)))
+		w.Write(encode6868(string(t)))
 	}
 }
 
@@ -232,7 +232,7 @@ func (t DirectoryEntry) encode(w writer) {
 	}
 	w.WriteString(";DIR=")
 	w.WriteString("\"")
-	w.WriteString(encode6868(string(t)))
+	w.Write(encode6868(string(t)))
 	w.WriteString("\"")
 }
 
@@ -309,10 +309,10 @@ func (t FormatType) encode(w writer) {
 	w.WriteString(";FMTTYPE=")
 	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(encode6868(string(t)))
+		w.Write(encode6868(string(t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(encode6868(string(t)))
+		w.Write(encode6868(string(t)))
 	}
 }
 
@@ -392,10 +392,10 @@ func (t Language) encode(w writer) {
 	w.WriteString(";LANGUAGE=")
 	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(encode6868(string(t)))
+		w.Write(encode6868(string(t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(encode6868(string(t)))
+		w.Write(encode6868(string(t)))
 	}
 }
 
@@ -429,7 +429,7 @@ func (t Member) encode(w writer) {
 			w.WriteString(",")
 		}
 		w.WriteString("\"")
-		w.WriteString(encode6868(string(v)))
+		w.Write(encode6868(string(v)))
 		w.WriteString("\"")
 	}
 }
@@ -726,7 +726,7 @@ func (t SentBy) encode(w writer) {
 	}
 	w.WriteString(";SENT-BY=")
 	w.WriteString("\"")
-	w.WriteString(encode6868(string(t)))
+	w.Write(encode6868(string(t)))
 	w.WriteString("\"")
 }
 
@@ -756,10 +756,10 @@ func (t TimezoneID) encode(w writer) {
 	w.WriteString(";TZID=")
 	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
-		w.WriteString(encode6868(string(t)))
+		w.Write(encode6868(string(t)))
 		w.WriteString("\"")
 	} else {
-		w.WriteString(encode6868(string(t)))
+		w.Write(encode6868(string(t)))
 	}
 }
 
@@ -906,7 +906,7 @@ Loop:
 	return string(d)
 }
 
-func encode6868(s string) string {
+func encode6868(s string) []byte {
 	t := parser.NewStringTokeniser(s)
 	d := make([]byte, 0, len(s))
 Loop:
@@ -924,7 +924,7 @@ Loop:
 			d = append(d, '^', '\'')
 		}
 	}
-	return string(d)
+	return d
 }
 
 func init() {

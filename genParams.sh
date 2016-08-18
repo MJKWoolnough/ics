@@ -223,15 +223,15 @@ source "comments.sh";
 			else
 				if $doubleQuote; then
 					echo "$indent	w.WriteString(\"\\\"\")";
-					echo "$indent	w.WriteString(encode6868(string($vName)))";
+					echo "$indent	w.Write(encode6868(string($vName)))";
 					echo "$indent	w.WriteString(\"\\\"\")";
 				else
 					echo "$indent	if strings.ContainsAny(string($vName), nonsafeChars[32:]) {";
 					echo "$indent		w.WriteString(\"\\\"\")";
-					echo "$indent		w.WriteString(encode6868(string($vName)))";
+					echo "$indent		w.Write(encode6868(string($vName)))";
 					echo "$indent		w.WriteString(\"\\\"\")";
 					echo "$indent	} else {";
-					echo "$indent		w.WriteString(encode6868(string($vName)))";
+					echo "$indent		w.Write(encode6868(string($vName)))";
 					echo "$indent	}";
 				fi;
 			fi;
@@ -332,7 +332,7 @@ Loop:
 	return string(d)
 }
 
-func encode6868(s string) string {
+func encode6868(s string) []byte {
 	t := parser.NewStringTokeniser(s)
 	d := make([]byte, 0, len(s))
 Loop:
@@ -350,7 +350,7 @@ Loop:
 			d = append(d, '^', '\'')
 		}
 	}
-	return string(d)
+	return d
 }
 
 HEREDOC
