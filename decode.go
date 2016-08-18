@@ -11,6 +11,8 @@ type section interface {
 // Decode decodes an iCalendar object from the given reader
 func Decode(r io.Reader) (*Calendar, error) {
 	cal := new(Calendar)
-	err := cal.decode(newTokeniser(&unfolder{r: r}))
-	return cal, err
+	if err := cal.decode(newTokeniser(&unfolder{r: r})); err != nil {
+		return nil, err
+	}
+	return cal, nil
 }
