@@ -23,6 +23,7 @@ type Calendar struct {
 
 func (s *Calendar) decode(t tokeniser) error {
 	var requiredVersion, requiredProdID bool
+Loop:
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -90,7 +91,7 @@ func (s *Calendar) decode(t tokeniser) error {
 			if value != "VCALENDAR" {
 				return ErrInvalidEnd
 			}
-			break
+			break Loop
 		}
 	}
 	if !requiredVersion || !requiredProdID {
@@ -193,6 +194,7 @@ type Event struct {
 
 func (s *Event) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
+Loop:
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -440,7 +442,7 @@ func (s *Event) decode(t tokeniser) error {
 			if value != "VEVENT" {
 				return ErrInvalidEnd
 			}
-			break
+			break Loop
 		}
 	}
 	if !requiredDateTimeStamp || !requiredUID {
@@ -737,6 +739,7 @@ type Todo struct {
 
 func (s *Todo) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
+Loop:
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -978,7 +981,7 @@ func (s *Todo) decode(t tokeniser) error {
 			if value != "VTODO" {
 				return ErrInvalidEnd
 			}
-			break
+			break Loop
 		}
 	}
 	if !requiredDateTimeStamp || !requiredUID {
@@ -1263,6 +1266,7 @@ type Journal struct {
 
 func (s *Journal) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
+Loop:
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -1448,7 +1452,7 @@ func (s *Journal) decode(t tokeniser) error {
 			if value != "VJOURNAL" {
 				return ErrInvalidEnd
 			}
-			break
+			break Loop
 		}
 	}
 	if !requiredDateTimeStamp || !requiredUID {
@@ -1661,6 +1665,7 @@ type FreeBusy struct {
 
 func (s *FreeBusy) decode(t tokeniser) error {
 	var requiredDateTimeStamp, requiredUID bool
+Loop:
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -1762,7 +1767,7 @@ func (s *FreeBusy) decode(t tokeniser) error {
 			if value != "VFREEBUSY" {
 				return ErrInvalidEnd
 			}
-			break
+			break Loop
 		}
 	}
 	if !requiredDateTimeStamp || !requiredUID {
@@ -1871,6 +1876,7 @@ type Timezone struct {
 
 func (s *Timezone) decode(t tokeniser) error {
 	var requiredTimezoneID bool
+Loop:
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -1928,7 +1934,7 @@ func (s *Timezone) decode(t tokeniser) error {
 			if value != "VTIMEZONE" {
 				return ErrInvalidEnd
 			}
-			break
+			break Loop
 		}
 	}
 	if !requiredTimezoneID {
@@ -1998,6 +2004,7 @@ type Standard struct {
 
 func (s *Standard) decode(t tokeniser) error {
 	var requiredDateTimeStart, requiredTimezoneOffsetTo, requiredTimezoneOffsetFrom bool
+Loop:
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -2069,7 +2076,7 @@ func (s *Standard) decode(t tokeniser) error {
 			if value != "STANDARD" {
 				return ErrInvalidEnd
 			}
-			break
+			break Loop
 		}
 	}
 	if !requiredDateTimeStart || !requiredTimezoneOffsetTo || !requiredTimezoneOffsetFrom {
@@ -2144,6 +2151,7 @@ type Daylight struct {
 
 func (s *Daylight) decode(t tokeniser) error {
 	var requiredDateTimeStart, requiredTimezoneOffsetTo, requiredTimezoneOffsetFrom bool
+Loop:
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -2215,7 +2223,7 @@ func (s *Daylight) decode(t tokeniser) error {
 			if value != "DAYLIGHT" {
 				return ErrInvalidEnd
 			}
-			break
+			break Loop
 		}
 	}
 	if !requiredDateTimeStart || !requiredTimezoneOffsetTo || !requiredTimezoneOffsetFrom {
@@ -2287,6 +2295,7 @@ type AlarmAudio struct {
 
 func (s *AlarmAudio) decode(t tokeniser) error {
 	var requiredTrigger bool
+Loop:
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -2338,7 +2347,7 @@ func (s *AlarmAudio) decode(t tokeniser) error {
 			if value != "VALARM" {
 				return ErrInvalidEnd
 			}
-			break
+			break Loop
 		}
 	}
 	if !requiredTrigger {
@@ -2392,6 +2401,7 @@ type AlarmDisplay struct {
 
 func (s *AlarmDisplay) decode(t tokeniser) error {
 	var requiredDescription, requiredTrigger bool
+Loop:
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -2445,7 +2455,7 @@ func (s *AlarmDisplay) decode(t tokeniser) error {
 			if value != "VALARM" {
 				return ErrInvalidEnd
 			}
-			break
+			break Loop
 		}
 	}
 	if !requiredDescription || !requiredTrigger {
@@ -2497,6 +2507,7 @@ type AlarmEmail struct {
 
 func (s *AlarmEmail) decode(t tokeniser) error {
 	var requiredDescription, requiredTrigger, requiredSummary bool
+Loop:
 	for {
 		p, err := t.GetPhrase()
 		if err != nil {
@@ -2566,7 +2577,7 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 			if value != "VALARM" {
 				return ErrInvalidEnd
 			}
-			break
+			break Loop
 		}
 	}
 	if !requiredDescription || !requiredTrigger || !requiredSummary {
@@ -2627,6 +2638,8 @@ func decodeDummy(t tokeniser, n string) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":

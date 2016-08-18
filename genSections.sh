@@ -77,6 +77,7 @@ function printSection {
 
 	# type switch
 
+	echo "Loop:";
 	echo "	for {"
 	echo "		p, err := t.GetPhrase()";
 	echo "		if err != nil {";
@@ -178,7 +179,7 @@ function printSection {
 	fi;
 	echo "				return ErrInvalidEnd"
 	echo "			}";
-	echo "			break";
+	echo "			break Loop";
 	echo "		}";
 	echo "	}";
 
@@ -415,6 +416,8 @@ func decodeDummy(t tokeniser, n string) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
