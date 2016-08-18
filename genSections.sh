@@ -81,6 +81,8 @@ function printSection {
 	echo "		p, err := t.GetPhrase()";
 	echo "		if err != nil {";
 	echo "			return err";
+	echo "		} else if p.Type == parser.PhraseDone {";
+	echo "			return io.ErrUnexpectedEOF";
 	echo "		}";
 	echo "		params := p.Data[1 : len(p.Data)-1]";
 	echo "		value := p.Data[len(p.Data)-1].Data";
@@ -351,7 +353,10 @@ OFS="$IFS";
 	echo;
 	echo "import (";
 	echo "	\"errors\"";
+	echo "	\"io\"";
 	echo "	\"strings\"";
+	echo;
+	echo "	\"github.com/MJKWoolnough/parser\"";
 	echo ")";
 	echo;
 

@@ -4,7 +4,10 @@ package ics
 
 import (
 	"errors"
+	"io"
 	"strings"
+
+	"github.com/MJKWoolnough/parser"
 )
 
 // Calendar represents a iCalendar object
@@ -24,6 +27,8 @@ func (s *Calendar) decode(t tokeniser) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		params := p.Data[1 : len(p.Data)-1]
 		value := p.Data[len(p.Data)-1].Data
@@ -192,6 +197,8 @@ func (s *Event) decode(t tokeniser) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		params := p.Data[1 : len(p.Data)-1]
 		value := p.Data[len(p.Data)-1].Data
@@ -734,6 +741,8 @@ func (s *Todo) decode(t tokeniser) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		params := p.Data[1 : len(p.Data)-1]
 		value := p.Data[len(p.Data)-1].Data
@@ -1258,6 +1267,8 @@ func (s *Journal) decode(t tokeniser) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		params := p.Data[1 : len(p.Data)-1]
 		value := p.Data[len(p.Data)-1].Data
@@ -1654,6 +1665,8 @@ func (s *FreeBusy) decode(t tokeniser) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		params := p.Data[1 : len(p.Data)-1]
 		value := p.Data[len(p.Data)-1].Data
@@ -1862,6 +1875,8 @@ func (s *Timezone) decode(t tokeniser) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		params := p.Data[1 : len(p.Data)-1]
 		value := p.Data[len(p.Data)-1].Data
@@ -1987,6 +2002,8 @@ func (s *Standard) decode(t tokeniser) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		params := p.Data[1 : len(p.Data)-1]
 		value := p.Data[len(p.Data)-1].Data
@@ -2131,6 +2148,8 @@ func (s *Daylight) decode(t tokeniser) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		params := p.Data[1 : len(p.Data)-1]
 		value := p.Data[len(p.Data)-1].Data
@@ -2272,6 +2291,8 @@ func (s *AlarmAudio) decode(t tokeniser) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		params := p.Data[1 : len(p.Data)-1]
 		value := p.Data[len(p.Data)-1].Data
@@ -2375,6 +2396,8 @@ func (s *AlarmDisplay) decode(t tokeniser) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		params := p.Data[1 : len(p.Data)-1]
 		value := p.Data[len(p.Data)-1].Data
@@ -2478,6 +2501,8 @@ func (s *AlarmEmail) decode(t tokeniser) error {
 		p, err := t.GetPhrase()
 		if err != nil {
 			return err
+		} else if p.Type == parser.PhraseDone {
+			return io.ErrUnexpectedEOF
 		}
 		params := p.Data[1 : len(p.Data)-1]
 		value := p.Data[len(p.Data)-1].Data
