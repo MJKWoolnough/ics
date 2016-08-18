@@ -110,6 +110,7 @@ func parseValue(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 		data := t.Get()
 		t.Accept("\r")
 		if t.Accept("\n") {
+			t.Get()
 			return parser.Token{
 				Type: tokenValue,
 				Data: data,
