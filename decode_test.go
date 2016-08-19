@@ -465,6 +465,92 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
+		{
+			Input: "BEGIN:VCALENDAR\r\n" +
+				"VERSION:2.0\r\n" +
+				"PRODID:-//RDU Software//NONSGML HandCal//EN\r\n" +
+				"BEGIN:VFREEBUSY\r\n" +
+				"DTSTAMP:19970324T120000Z\r\n" +
+				"UID:uid5@example.com\r\n" +
+				"ORGANIZER:mailto:jsmith@example.com\r\n" +
+				"DTSTART:19980313T141711Z\r\n" +
+				"DTEND:19980410T141711Z\r\n" +
+				"FREEBUSY:19980314T233000Z/19980315T003000Z\r\n" +
+				"FREEBUSY:19980316T153000Z/19980316T163000Z\r\n" +
+				"FREEBUSY:19980318T030000Z/19980318T040000Z\r\n" +
+				"URL:http://www.example.com/calendar/busytime/jsmith.ifb\r\n" +
+				"END:VFREEBUSY\r\n" +
+				"END:VCALENDAR\r\n",
+			Output: &Calendar{
+				Version: "2.0",
+				ProdID:  "-//RDU Software//NONSGML HandCal//EN",
+				FreeBusy: []FreeBusy{
+					{
+						DateTimeStamp: PropDateTimeStamp{
+							Time: time.Date(1997, 3, 24, 12, 0, 0, 0, time.UTC),
+						},
+						UID: "uid5@example.com",
+						Organizer: &PropOrganizer{
+							CalendarAddress: CalendarAddress{
+								URL: url.URL{
+									Scheme: "mailto",
+									Opaque: "jsmith@example.com",
+								},
+							},
+						},
+						DateTimeStart: &PropDateTimeStart{
+							DateTime: &DateTime{
+								Time: time.Date(1998, 3, 13, 14, 17, 11, 0, time.UTC),
+							},
+						},
+						DateTimeEnd: &PropDateTimeEnd{
+							DateTime: &DateTime{
+								Time: time.Date(1998, 4, 10, 14, 17, 11, 0, time.UTC),
+							},
+						},
+						FreeBusy: []PropFreeBusy{
+							{
+								Period: Period{
+									Start: DateTime{
+										Time: time.Date(1998, 3, 14, 23, 30, 0, 0, time.UTC),
+									},
+									End: DateTime{
+										Time: time.Date(1998, 3, 15, 0, 30, 0, 0, time.UTC),
+									},
+								},
+							},
+							{
+								Period: Period{
+									Start: DateTime{
+										Time: time.Date(1998, 3, 16, 15, 30, 0, 0, time.UTC),
+									},
+									End: DateTime{
+										Time: time.Date(1998, 3, 16, 16, 30, 0, 0, time.UTC),
+									},
+								},
+							},
+							{
+								Period: Period{
+									Start: DateTime{
+										Time: time.Date(1998, 3, 18, 3, 0, 0, 0, time.UTC),
+									},
+									End: DateTime{
+										Time: time.Date(1998, 3, 18, 4, 0, 0, 0, time.UTC),
+									},
+								},
+							},
+						},
+						URL: &PropURL{
+							URL: url.URL{
+								Scheme: "http",
+								Host:   "www.example.com",
+								Path:   "/calendar/busytime/jsmith.ifb",
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for n, test := range tests {
