@@ -1690,6 +1690,12 @@ func (p *PropOrganizer) valid() error {
 // the percent completion of a to-do to the "Organizer"
 type PropPercentComplete Integer
 
+// NewPercentComplete generates a pointer to a constant value.
+// Used when manually creating Calendar values
+func NewPercentComplete(v PropPercentComplete) *PropPercentComplete {
+	return &v
+}
+
 func (p *PropPercentComplete) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
@@ -1728,6 +1734,12 @@ func (p *PropPercentComplete) valid() error {
 
 // PropPriority defines the relative priority for a calendar component
 type PropPriority Integer
+
+// NewPriority generates a pointer to a constant value.
+// Used when manually creating Calendar values
+func NewPriority(v PropPriority) *PropPriority {
+	return &v
+}
 
 func (p *PropPriority) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
@@ -2089,6 +2101,12 @@ func (p *PropRelatedTo) valid() error {
 // the initial trigger
 type PropRepeat Integer
 
+// NewRepeat generates a pointer to a constant value.
+// Used when manually creating Calendar values
+func NewRepeat(v PropRepeat) *PropRepeat {
+	return &v
+}
+
 func (p *PropRepeat) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
@@ -2286,6 +2304,12 @@ func (p *PropRecurrenceRule) valid() error {
 // PropSequence defines the revision sequence number of the calendar component
 // within a sequence of revisions
 type PropSequence Integer
+
+// NewSequence generates a pointer to a constant value.
+// Used when manually creating Calendar values
+func NewSequence(v PropSequence) *PropSequence {
+	return &v
+}
 
 func (p *PropSequence) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)

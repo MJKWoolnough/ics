@@ -42,6 +42,14 @@ function printProperty {
 		mode=1;
 	elif [ ${#params[@]} -eq 0 ] && $valueType && [ ${#values[@]} -eq 1 ]; then
 		echo "type Prop$tName ${values[0]}";
+		if [ "${values[0]}" = "Integer" ]; then
+			echo;
+			echo "// New$tName generates a pointer to a constant value.";
+			echo "// Used when manually creating Calendar values";
+			echo "func New$tName(v Prop$tName) *Prop$tName {";
+			echo "	return &v";
+			echo "}";
+		fi;
 		mode=2;
 	else
 		echo "type Prop$tName struct {";
