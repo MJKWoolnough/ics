@@ -90,7 +90,11 @@ func indent(w io.Writer, indentLevel int) {
 }
 
 func TestDecode(t *testing.T) {
-	confirmed := StatusConfirmed
+	tzny, err := time.LoadLocation("America/New_York")
+	if err != nil {
+		t.Errorf("unexpected error: %s", err)
+		return
+	}
 	tests := []struct {
 		Input  string
 		Output *Calendar
@@ -149,7 +153,7 @@ func TestDecode(t *testing.T) {
 								Time: time.Date(1996, 9, 20, 22, 0, 0, 0, time.UTC),
 							},
 						},
-						Status: &confirmed,
+						Status: StatusConfirmed.New(),
 						Categories: []PropCategories{
 							{
 								MText: MText{"CONFERENCE"},
@@ -160,6 +164,140 @@ func TestDecode(t *testing.T) {
 						},
 						Description: &PropDescription{
 							Text: "Networld+Interop Conference and Exhibit\nAtlanta World Congress Center\nAtlanta, Georgia",
+						},
+					},
+				},
+			},
+		},
+		{
+			Input: "BEGIN:VCALENDAR\r\n" +
+				"PRODID:-//RDU Software//NONSGML HandCal//EN\r\n" +
+				"VERSION:2.0\r\n" +
+				"BEGIN:VTIMEZONE\r\n" +
+				"TZID:America/New_York\r\n" +
+				"BEGIN:STANDARD\r\n" +
+				"DTSTART:19981025T020000\r\n" +
+				"TZOFFSETFROM:-0400\r\n" +
+				"TZOFFSETTO:-0500\r\n" +
+				"TZNAME:EST\r\n" +
+				"END:STANDARD\r\n" +
+				"BEGIN:DAYLIGHT\r\n" +
+				"DTSTART:19990404T020000\r\n" +
+				"TZOFFSETFROM:-0500\r\n" +
+				"TZOFFSETTO:-0400\r\n" +
+				"TZNAME:EDT\r\n" +
+				"END:DAYLIGHT\r\n" +
+				"END:VTIMEZONE\r\n" +
+				"BEGIN:VEVENT\r\n" +
+				"DTSTAMP:19980309T231000Z\r\n" +
+				"UID:guid-1.example.com\r\n" +
+				"ORGANIZER:mailto:mrbig@example.com\r\n" +
+				"ATTENDEE;RSVP=TRUE;ROLE=REQ-PARTICIPANT;CUTYPE=GROUP:\r\n" +
+				" mailto:employee-A@example.com\r\n" +
+				"DESCRIPTION:Project XYZ Review Meeting\r\n" +
+				"CATEGORIES:MEETING\r\n" +
+				"CLASS:PUBLIC\r\n" +
+				"CREATED:19980309T130000Z\r\n" +
+				"SUMMARY:XYZ Project Review\r\n" +
+				"DTSTART;TZID=America/New_York:19980312T083000\r\n" +
+				"DTEND;TZID=America/New_York:19980312T093000\r\n" +
+				"LOCATION:1CP Conference Room 4350\r\n" +
+				"END:VEVENT\r\n" +
+				"END:VCALENDAR\r\n",
+			Output: &Calendar{
+				ProdID:  "-//RDU Software//NONSGML HandCal//EN",
+				Version: "2.0",
+				Event: []Event{
+					{
+						DateTimeStamp: PropDateTimeStamp{
+							Time: time.Date(1998, 3, 9, 23, 10, 0, 0, time.UTC),
+						},
+						UID: "guid-1.example.com",
+						Organizer: &PropOrganizer{
+							CalendarAddress: CalendarAddress{
+								URL: url.URL{
+									Scheme: "mailto",
+									Opaque: "mrbig@example.com",
+								},
+							},
+						},
+						Attendee: []PropAttendee{
+							{
+								CalendarUserType:  CalendarUserTypeGroup.New(),
+								RSVP:              NewRSVP(true),
+								ParticipationRole: ParticipationRoleRequiredParticipant.New(),
+								CalendarAddress: CalendarAddress{
+									URL: url.URL{
+										Scheme: "mailto",
+										Opaque: "employee-A@example.com",
+									},
+								},
+							},
+						},
+						Description: &PropDescription{
+							Text: "Project XYZ Review Meeting",
+						},
+						Categories: []PropCategories{
+							{
+								MText: MText{"MEETING"},
+							},
+						},
+						Class: ClassPublic.New(),
+						Created: &PropCreated{
+							Time: time.Date(1998, 3, 9, 13, 0, 0, 0, time.UTC),
+						},
+						DateTimeStart: &PropDateTimeStart{
+							DateTime: &DateTime{
+								Time: time.Date(1998, 3, 12, 8, 30, 0, 0, tzny),
+							},
+						},
+						DateTimeEnd: &PropDateTimeEnd{
+							DateTime: &DateTime{
+								Time: time.Date(1998, 3, 12, 9, 30, 0, 0, tzny),
+							},
+						},
+						Location: &PropLocation{
+							Text: "1CP Conference Room 4350",
+						},
+						Summary: &PropSummary{
+							Text: "XYZ Project Review",
+						},
+					},
+				},
+				Timezone: []Timezone{
+					{
+						TimezoneID: "America/New_York",
+						Standard: []Standard{
+							{
+								DateTimeStart: PropDateTimeStart{
+									DateTime: &DateTime{
+										Time: time.Date(1998, 10, 25, 2, 0, 0, 0, time.Local),
+									},
+								},
+								TimezoneOffsetFrom: -4 * 3600,
+								TimezoneOffsetTo:   -5 * 3600,
+								TimezoneName: []PropTimezoneName{
+									{
+										Text: "EST",
+									},
+								},
+							},
+						},
+						Daylight: []Daylight{
+							{
+								DateTimeStart: PropDateTimeStart{
+									DateTime: &DateTime{
+										Time: time.Date(1999, 4, 4, 2, 0, 0, 0, time.Local),
+									},
+								},
+								TimezoneOffsetFrom: -5 * 3600,
+								TimezoneOffsetTo:   -4 * 3600,
+								TimezoneName: []PropTimezoneName{
+									{
+										Text: "EDT",
+									},
+								},
+							},
 						},
 					},
 				},
