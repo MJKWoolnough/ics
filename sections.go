@@ -735,6 +735,7 @@ type Todo struct {
 	RelatedTo           []PropRelatedTo
 	Resources           []PropResources
 	RecurrenceDateTimes []PropRecurrenceDateTimes
+	Alarm               []Alarm
 }
 
 func (s *Todo) decode(t tokeniser) error {
@@ -752,6 +753,12 @@ Loop:
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
 			switch n := strings.ToUpper(value); n {
+			case "VALARM":
+				var e Alarm
+				if err := e.decode(t); err != nil {
+					return err
+				}
+				s.Alarm = append(s.Alarm, e)
 			default:
 				if err := decodeDummy(t, n); err != nil {
 					return err
@@ -1084,6 +1091,9 @@ func (s *Todo) encode(w writer) {
 	for n := range s.RecurrenceDateTimes {
 		s.RecurrenceDateTimes[n].encode(w)
 	}
+	for n := range s.Alarm {
+		s.Alarm[n].encode(w)
+	}
 	w.WriteString("END:VTODO\r\n")
 }
 
@@ -1231,6 +1241,11 @@ func (s *Todo) valid() error {
 	}
 	for n := range s.RecurrenceDateTimes {
 		if err := s.RecurrenceDateTimes[n].valid(); err != nil {
+			return err
+		}
+	}
+	for n := range s.Alarm {
+		if err := s.Alarm[n].valid(); err != nil {
 			return err
 		}
 	}
