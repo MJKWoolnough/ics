@@ -106,7 +106,8 @@ func parseParamValue(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 func parseValue(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 	t.Accept(":")
 	t.Get()
-	if t.ExceptRun(nonsafeChars[:32]) == '\r' {
+	switch t.ExceptRun(nonsafeChars[:32]) {
+	case '\r':
 		data := t.Get()
 		t.Accept("\r")
 		if t.Accept("\n") {
@@ -116,6 +117,11 @@ func parseValue(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 				Data: data,
 			}, parseName
 		}
+	case -1:
+		return parser.Token{
+			Type: tokenValue,
+			Data: t.Get(),
+		}, (*parser.Tokeniser).Done
 	}
 	t.Err = ErrInvalidContentLineValue
 	return t.Error()

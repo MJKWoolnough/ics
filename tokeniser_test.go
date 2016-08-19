@@ -67,10 +67,6 @@ func TestTokeniser(t *testing.T) {
 			Error: ErrInvalidContentLineValue,
 		},
 		{
-			Input: "Name:Value",
-			Error: ErrInvalidContentLineValue,
-		},
-		{
 			Input: "Name;param=paramValue:Value\r\n",
 			Output: parser.Phrase{
 				Type: phraseContentLine,
