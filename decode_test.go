@@ -303,6 +303,98 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
+		{
+			Input: "BEGIN:VCALENDAR\r\n" +
+				"VERSION:2.0\r\n" +
+				"PRODID:-//ABC Corporation//NONSGML My Product//EN\r\n" +
+				"BEGIN:VTODO\r\n" +
+				"DTSTAMP:19980130T134500Z\r\n" +
+				"SEQUENCE:2\r\n" +
+				"UID:uid4@example.com\r\n" +
+				"ORGANIZER:mailto:unclesam@example.com\r\n" +
+				"ATTENDEE;PARTSTAT=ACCEPTED:mailto:jqpublic@example.com\r\n" +
+				"DUE:19980415T000000\r\n" +
+				"STATUS:NEEDS-ACTION\r\n" +
+				"SUMMARY:Submit Income Taxes\r\n" +
+				"BEGIN:VALARM\r\n" +
+				"ACTION:AUDIO\r\n" +
+				"TRIGGER;VALUE=DATE-TIME:19980403T120000Z\r\n" +
+				"ATTACH;FMTTYPE=audio/basic:http://example.com/pub/audio-\r\n" +
+				" files/ssbanner.aud\r\n" +
+				"REPEAT:4\r\n" +
+				"DURATION:PT1H\r\n" +
+				"END:VALARM\r\n" +
+				"END:VTODO\r\n" +
+				"END:VCALENDAR\r\n",
+			Output: &Calendar{
+				Version: "2.0",
+				ProdID:  "-//ABC Corporation//NONSGML My Product//EN",
+				Todo: []Todo{
+					{
+						DateTimeStamp: PropDateTimeStamp{
+							Time: time.Date(1998, 1, 30, 13, 45, 0, 0, time.UTC),
+						},
+						Sequence: NewSequence(2),
+						UID:      "uid4@example.com",
+						Organizer: &PropOrganizer{
+							CalendarAddress: CalendarAddress{
+								URL: url.URL{
+									Scheme: "mailto",
+									Opaque: "unclesam@example.com",
+								},
+							},
+						},
+						Attendee: []PropAttendee{
+							{
+								ParticipationStatus: ParticipationStatusAccepted.New(),
+								CalendarAddress: CalendarAddress{
+									URL: url.URL{
+										Scheme: "mailto",
+										Opaque: "jqpublic@example.com",
+									},
+								},
+							},
+						},
+						Due: &PropDue{
+							DateTime: &DateTime{
+								Time: time.Date(1998, 4, 15, 0, 0, 0, 0, time.Local),
+							},
+						},
+						Status: StatusNeedsAction.New(),
+						Summary: &PropSummary{
+							Text: "Submit Income Taxes",
+						},
+						Alarm: []Alarm{
+							{
+								AlarmType: &AlarmAudio{
+									Trigger: PropTrigger{
+										DateTime: &DateTime{
+											Time: time.Date(1998, 4, 3, 12, 0, 0, 0, time.UTC),
+										},
+									},
+									Attachment: []PropAttachment{
+										{
+											FormatType: NewFormatType("audio/basic"),
+											URI: &URI{
+												URL: url.URL{
+													Scheme: "http",
+													Host:   "example.com",
+													Path:   "/pub/audio-files/ssbanner.aud",
+												},
+											},
+										},
+									},
+									Repeat: NewRepeat(4),
+									Duration: &PropDuration{
+										Hours: 1,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for n, test := range tests {
