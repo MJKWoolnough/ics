@@ -1016,7 +1016,7 @@ Loop:
 }
 
 func init() {
-	regexFormatType = regexp.MustCompile("[A-Z0-9!#$&.+-^_]/[A-Z0-9!#$&.+-^_]")
+	regexFormatType = regexp.MustCompile("[A-Za-z0-9!#$&.+-^_]/[A-Za-z0-9!#$&.+-^_]")
 }
 
 // Errors
