@@ -395,6 +395,76 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
+		{
+			Input: "BEGIN:VCALENDAR\r\n" +
+				"VERSION:2.0\r\n" +
+				"PRODID:-//ABC Corporation//NONSGML My Product//EN\r\n" +
+				"BEGIN:VJOURNAL\r\n" +
+				"DTSTAMP:19970324T120000Z\r\n" +
+				"UID:uid5@example.com\r\n" +
+				"ORGANIZER:mailto:jsmith@example.com\r\n" +
+				"STATUS:DRAFT\r\n" +
+				"CLASS:PUBLIC\r\n" +
+				"CATEGORIES:Project Report,XYZ,Weekly Meeting\r\n" +
+				"DESCRIPTION:Project xyz Review Meeting Minutes\\n\r\n" +
+				" Agenda\\n1. Review of project version 1.0 requirements.\\n2.\r\n" +
+				"  Definition of project processes.\\n3. Review of project schedule.\\n\r\n" +
+				" Participants: John Smith\\, Jane Doe\\, Jim Dandy\\n-It was\r\n" +
+				"  decided that the requirements need to be signed off by\r\n" +
+				"  product marketing.\\n-Project processes were accepted.\\n\r\n" +
+				" -Project schedule needs to account for scheduled holidays\r\n" +
+				"  and employee vacation time. Check with HR for specific\r\n" +
+				"  dates.\\n-New schedule will be distributed by Friday.\\n-\r\n" +
+				" Next weeks meeting is cancelled. No meeting until 3/23.\r\n" +
+				"END:VJOURNAL\r\n" +
+				"END:VCALENDAR\r\n",
+			Output: &Calendar{
+				Version: "2.0",
+				ProdID:  "-//ABC Corporation//NONSGML My Product//EN",
+				Journal: []Journal{
+					{
+						DateTimeStamp: PropDateTimeStamp{
+							Time: time.Date(1997, 3, 24, 12, 0, 0, 0, time.UTC),
+						},
+						UID: "uid5@example.com",
+						Organizer: &PropOrganizer{
+							CalendarAddress: CalendarAddress{
+								URL: url.URL{
+									Scheme: "mailto",
+									Opaque: "jsmith@example.com",
+								},
+							},
+						},
+						Status: StatusDraft.New(),
+						Class:  ClassPublic.New(),
+						Categories: []PropCategories{
+							{
+								MText: MText{
+									"Project Report",
+									"XYZ",
+									"Weekly Meeting",
+								},
+							},
+						},
+						Description: []PropDescription{
+							{
+								Text: "Project xyz Review Meeting Minutes\n" +
+									"Agenda\n" +
+									"1. Review of project version 1.0 requirements.\n" +
+									"2. Definition of project processes.\n" +
+									"3. Review of project schedule.\n" +
+									"Participants: John Smith, Jane Doe, Jim Dandy\n" +
+									"-It was decided that the requirements need to be signed off by product marketing.\n" +
+									"-Project processes were accepted.\n" +
+									"-Project schedule needs to account for scheduled holidays and employee vacation time. Check with HR for specific dates.\n" +
+									"-New schedule will be distributed by Friday.\n" +
+									"-Next weeks meeting is cancelled. No meeting until 3/23.",
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for n, test := range tests {
