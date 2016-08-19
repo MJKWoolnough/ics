@@ -1076,7 +1076,7 @@ func decodeText(t parser.Tokeniser) string {
 	var ru [4]byte
 Loop:
 	for {
-		c := t.ExceptRun("\\,;:")
+		c := t.ExceptRun("\\,;")
 		d = append(d, t.Get()...)
 		switch c {
 		case '\\':
@@ -1142,10 +1142,17 @@ type MText []Text
 
 func (t *MText) decode(_ map[string]string, data string) error {
 	st := parser.NewStringTokeniser(data)
+Loop:
 	for {
 		*t = append(*t, Text(decodeText(st)))
-		if st.Peek() == -1 {
-			break
+		switch st.Peek() {
+		case -1:
+			break Loop
+		case ',':
+			st.Accept(",")
+			st.Get()
+		default:
+			return ErrInvalidText
 		}
 	}
 	return nil
