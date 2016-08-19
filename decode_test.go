@@ -11,14 +11,6 @@ import (
 	"time"
 )
 
-func parseAddress(s string) url.URL {
-	u, err := url.Parse(s)
-	if err != nil {
-		panic(err)
-	}
-	return *u
-}
-
 func (c Calendar) Error() string {
 	var buf bytes.Buffer
 	buf.WriteString("Calendar: ")
@@ -141,7 +133,10 @@ func TestDecode(t *testing.T) {
 						UID: "uid1@example.com",
 						Organizer: &PropOrganizer{
 							CalendarAddress: CalendarAddress{
-								URL: parseAddress("mailto:jsmith@example.com"),
+								URL: url.URL{
+									Scheme: "mailto",
+									Opaque: "jsmith@example.com",
+								},
 							},
 						},
 						DateTimeStart: &PropDateTimeStart{
