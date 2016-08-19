@@ -74,6 +74,11 @@ source "comments.sh";
 				fi;
 			elif $string; then
 				echo "string";
+				echo;
+				echo "// New$type returns a *$type for ease of use with optional values";
+				echo "func New$type(v $type) *$type {";
+				echo "	return &v";
+				echo "}";
 				if [ ! -z "$regex" ]; then
 					echo;
 					echo "var regex$type *regexp.Regexp";

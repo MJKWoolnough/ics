@@ -48,6 +48,11 @@ func (t AlternativeRepresentation) valid() error {
 // specified by the property
 type CommonName string
 
+// NewCommonName returns a *CommonName for ease of use with optional values
+func NewCommonName(v CommonName) *CommonName {
+	return &v
+}
+
 func (t *CommonName) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
@@ -221,6 +226,11 @@ func (t Delagatee) valid() error {
 // calendar
 type DirectoryEntry string
 
+// NewDirectoryEntry returns a *DirectoryEntry for ease of use with optional values
+func NewDirectoryEntry(v DirectoryEntry) *DirectoryEntry {
+	return &v
+}
+
 func (t *DirectoryEntry) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
@@ -300,6 +310,11 @@ func (t Encoding) valid() error {
 
 // FormatType is the content type of a referenced object
 type FormatType string
+
+// NewFormatType returns a *FormatType for ease of use with optional values
+func NewFormatType(v FormatType) *FormatType {
+	return &v
+}
 
 var regexFormatType *regexp.Regexp
 
@@ -395,6 +410,11 @@ func (t FreeBusyType) valid() error {
 // Language is the language for text values
 type Language string
 
+// NewLanguage returns a *Language for ease of use with optional values
+func NewLanguage(v Language) *Language {
+	return &v
+}
+
 func (t *Language) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
@@ -426,6 +446,11 @@ func (t Language) valid() error {
 
 // Member is used to specify the group or list membership of the calendar
 type Member []string
+
+// NewMember returns a *Member for ease of use with optional values
+func NewMember(v Member) *Member {
+	return &v
+}
 
 func (t *Member) decode(vs []parser.Token) error {
 	for _, v := range vs {
@@ -756,6 +781,11 @@ func (t RSVP) valid() error {
 // calendar user specified by the property
 type SentBy string
 
+// NewSentBy returns a *SentBy for ease of use with optional values
+func NewSentBy(v SentBy) *SentBy {
+	return &v
+}
+
 func (t *SentBy) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
@@ -787,6 +817,11 @@ func (t SentBy) valid() error {
 // TimezoneID is used to specify the identifier for the time zone definition for
 // a time component in the property value
 type TimezoneID string
+
+// NewTimezoneID returns a *TimezoneID for ease of use with optional values
+func NewTimezoneID(v TimezoneID) *TimezoneID {
+	return &v
+}
 
 func (t *TimezoneID) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
