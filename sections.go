@@ -1272,6 +1272,7 @@ type Journal struct {
 	Categories          []PropCategories
 	Comment             []PropComment
 	Contact             []PropContact
+	Description         []PropDescription
 	ExceptionDateTime   []PropExceptionDateTime
 	RequestStatus       []PropRequestStatus
 	RelatedTo           []PropRelatedTo
@@ -1433,6 +1434,12 @@ Loop:
 				return err
 			}
 			s.Contact = append(s.Contact, e)
+		case "DESCRIPTION":
+			var e PropDescription
+			if err := e.decode(params, value); err != nil {
+				return err
+			}
+			s.Description = append(s.Description, e)
 		case "EXDATE":
 			var e PropExceptionDateTime
 			if err := e.decode(params, value); err != nil {
@@ -1527,6 +1534,9 @@ func (s *Journal) encode(w writer) {
 	}
 	for n := range s.Contact {
 		s.Contact[n].encode(w)
+	}
+	for n := range s.Description {
+		s.Description[n].encode(w)
 	}
 	for n := range s.ExceptionDateTime {
 		s.ExceptionDateTime[n].encode(w)
@@ -1630,6 +1640,11 @@ func (s *Journal) valid() error {
 	}
 	for n := range s.Contact {
 		if err := s.Contact[n].valid(); err != nil {
+			return err
+		}
+	}
+	for n := range s.Description {
+		if err := s.Description[n].valid(); err != nil {
 			return err
 		}
 	}
