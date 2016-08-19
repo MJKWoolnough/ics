@@ -51,7 +51,7 @@ func (u *unfolder) Read(p []byte) (int, error) {
 				break
 			}
 			if u.buf[0] == '\n' && u.buf[1] == ' ' {
-				m -= 1
+				m--
 				if err == nil {
 					n, err = u.r.Read(q[lq-1:])
 					m += n
