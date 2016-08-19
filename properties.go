@@ -19,6 +19,12 @@ const (
 	ActionEmail
 )
 
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (p PropAction) New() *PropAction {
+	return &p
+}
+
 func (p *PropAction) decode(params []parser.Token, value string) error {
 	switch strings.ToUpper(value) {
 	case "AUDIO":
@@ -399,6 +405,12 @@ const (
 	CalendarScaleGregorian PropCalendarScale = iota
 )
 
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (p PropCalendarScale) New() *PropCalendarScale {
+	return &p
+}
+
 func (p *PropCalendarScale) decode(params []parser.Token, value string) error {
 	switch strings.ToUpper(value) {
 	case "GREGORIAN":
@@ -497,6 +509,12 @@ const (
 	ClassPrivate
 	ClassConfidential
 )
+
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (p PropClass) New() *PropClass {
+	return &p
+}
 
 func (p *PropClass) decode(params []parser.Token, value string) error {
 	switch strings.ToUpper(value) {
@@ -2321,6 +2339,12 @@ const (
 	StatusFinal
 )
 
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (p PropStatus) New() *PropStatus {
+	return &p
+}
+
 func (p *PropStatus) decode(params []parser.Token, value string) error {
 	switch strings.ToUpper(value) {
 	case "TENTATIVE":
@@ -2464,6 +2488,12 @@ const (
 	TimeTransparencyOpaque PropTimeTransparency = iota
 	TimeTransparencyTransparent
 )
+
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (p PropTimeTransparency) New() *PropTimeTransparency {
+	return &p
+}
 
 func (p *PropTimeTransparency) decode(params []parser.Token, value string) error {
 	switch strings.ToUpper(value) {

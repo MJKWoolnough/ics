@@ -65,6 +65,13 @@ source "comments.sh";
 				values="${values:1}";
 				echo "$values";
 				vType="$values";
+				if [ "$vType" = "Boolean" ]; then
+					echo;
+					echo "// New$type returns a *$type for ease of use with optional values";
+					echo "func New$type(v $type) *$type {";
+					echo "	return &v";
+					echo "}";
+				fi;
 			elif $string; then
 				echo "string";
 				if [ ! -z "$regex" ]; then
@@ -96,6 +103,12 @@ source "comments.sh";
 						echo;
 					done;
 					echo ")";
+					echo;
+					echo "// New returns a pointer to the type (used with constants for ease of use with";
+					echo "// optional values)";
+					echo "func (t $type) New() *$type {";
+					echo "	return &t";
+					echo "}";
 				esac;
 				choices=( $(echo "$values" | tr "|" " ") );
 			fi;

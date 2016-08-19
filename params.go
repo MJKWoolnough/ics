@@ -90,6 +90,12 @@ const (
 	CalendarUserTypeRoom
 )
 
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (t CalendarUserType) New() *CalendarUserType {
+	return &t
+}
+
 func (t *CalendarUserType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
@@ -252,6 +258,12 @@ const (
 	EncodingBase64
 )
 
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (t Encoding) New() *Encoding {
+	return &t
+}
+
 func (t *Encoding) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
@@ -334,6 +346,12 @@ const (
 	FreeBusyTypeBusyUnavailable
 	FreeBusyTypeBusyTentative
 )
+
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (t FreeBusyType) New() *FreeBusyType {
+	return &t
+}
 
 func (t *FreeBusyType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
@@ -459,6 +477,12 @@ const (
 	ParticipationStatusInProcess
 )
 
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (t ParticipationStatus) New() *ParticipationStatus {
+	return &t
+}
+
 func (t *ParticipationStatus) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
@@ -543,6 +567,12 @@ const (
 	RelatedEnd
 )
 
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (t Related) New() *Related {
+	return &t
+}
+
 func (t *Related) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
@@ -588,6 +618,12 @@ const (
 	RelationshipTypeChild
 	RelationshipTypeSibling
 )
+
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (t RelationshipType) New() *RelationshipType {
+	return &t
+}
 
 func (t *RelationshipType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
@@ -637,6 +673,12 @@ const (
 	ParticipationRoleNonParticipant
 )
 
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (t ParticipationRole) New() *ParticipationRole {
+	return &t
+}
+
 func (t *ParticipationRole) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return ErrInvalidParam
@@ -679,6 +721,11 @@ func (t ParticipationRole) valid() error {
 // RSVP is used to specify whether there is an expectation of a favor of a reply
 // from the calendar user specified by the property value
 type RSVP Boolean
+
+// NewRSVP returns a *RSVP for ease of use with optional values
+func NewRSVP(v RSVP) *RSVP {
+	return &v
+}
 
 func (t *RSVP) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
@@ -792,6 +839,12 @@ const (
 	ValueURI
 	ValueUTCOffset
 )
+
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (t Value) New() *Value {
+	return &t
+}
 
 func (t *Value) decode(vs []parser.Token) error {
 	if len(vs) != 1 {

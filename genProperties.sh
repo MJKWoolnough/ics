@@ -33,6 +33,12 @@ function printProperty {
 			echo;
 		done;
 		echo ")";
+		echo;
+		echo "// New returns a pointer to the type (used with constants for ease of use with";
+		echo "// optional values)";
+		echo "func (p Prop$tName) New() *Prop$tName {";
+		echo "	return &p";
+		echo "}";
 		mode=1;
 	elif [ ${#params[@]} -eq 0 ] && $valueType && [ ${#values[@]} -eq 1 ]; then
 		echo "type Prop$tName ${values[0]}";
