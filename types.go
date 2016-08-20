@@ -1349,7 +1349,6 @@ func writeTimezone(w writer, t time.Time) {
 	switch l := t.Location(); l {
 	case time.UTC, time.Local:
 	default:
-		w.WriteString(";")
 		w.WriteString(";TZID=")
 		w.WriteString(l.String())
 	}
