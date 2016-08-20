@@ -139,6 +139,7 @@ func (p *PropAttachment) encode(w writer) {
 		p.URI.aencode(w)
 	}
 	if p.Binary != nil {
+		w.WriteString(";VALUE=Binary")
 		p.Binary.aencode(w)
 	}
 	w.WriteString("\r\n")
@@ -934,6 +935,7 @@ func (p *PropDateTimeEnd) encode(w writer) {
 		p.DateTime.aencode(w)
 	}
 	if p.Date != nil {
+		w.WriteString(";VALUE=DATE")
 		p.Date.aencode(w)
 	}
 	w.WriteString("\r\n")
@@ -1067,6 +1069,7 @@ func (p *PropDateTimeStart) encode(w writer) {
 		p.DateTime.aencode(w)
 	}
 	if p.Date != nil {
+		w.WriteString(";VALUE=DATE")
 		p.Date.aencode(w)
 	}
 	w.WriteString("\r\n")
@@ -1158,6 +1161,7 @@ func (p *PropDue) encode(w writer) {
 		p.DateTime.aencode(w)
 	}
 	if p.Date != nil {
+		w.WriteString(";VALUE=DATE")
 		p.Date.aencode(w)
 	}
 	w.WriteString("\r\n")
@@ -1289,6 +1293,7 @@ func (p *PropExceptionDateTime) encode(w writer) {
 		p.DateTime.aencode(w)
 	}
 	if p.Date != nil {
+		w.WriteString(";VALUE=DATE")
 		p.Date.aencode(w)
 	}
 	w.WriteString("\r\n")
@@ -1892,9 +1897,11 @@ func (p *PropRecurrenceDateTimes) encode(w writer) {
 		p.DateTime.aencode(w)
 	}
 	if p.Date != nil {
+		w.WriteString(";VALUE=DATE")
 		p.Date.aencode(w)
 	}
 	if p.Period != nil {
+		w.WriteString(";VALUE=PERIOD")
 		p.Period.aencode(w)
 	}
 	w.WriteString("\r\n")
@@ -2005,6 +2012,7 @@ func (p *PropRecurrenceID) encode(w writer) {
 		p.DateTime.aencode(w)
 	}
 	if p.Date != nil {
+		w.WriteString(";VALUE=DATE")
 		p.Date.aencode(w)
 	}
 	w.WriteString("\r\n")
@@ -2617,6 +2625,7 @@ func (p *PropTrigger) encode(w writer) {
 		p.Duration.aencode(w)
 	}
 	if p.DateTime != nil {
+		w.WriteString(";VALUE=DATE-TIME")
 		p.DateTime.aencode(w)
 	}
 	w.WriteString("\r\n")

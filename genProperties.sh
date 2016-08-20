@@ -233,6 +233,9 @@ function printProperty {
 			for value in ${values[@]}; do
 				tValue="$(getName "$value")";
 				echo "	if p.$tValue != nil {";
+				if [ "$value" != "${values[0]}" ]; then
+					echo "		w.WriteString(\";VALUE=$value\")";
+				fi;
 				echo "		p.${tValue}.aencode(w)";
 				echo "	}";
 			done;
