@@ -77,7 +77,7 @@ func (a *Alarm) encode(w writer) {
 	case *AlarmEmail:
 		w.WriteString("ACTION:EMAIL\r\n")
 	}
-	a.encode(w)
+	a.AlarmType.encode(w)
 	w.WriteString("END:VALARM\r\n")
 }
 
