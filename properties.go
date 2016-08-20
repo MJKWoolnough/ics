@@ -66,7 +66,7 @@ func (p *PropAction) valid() error {
 type PropAttachment struct {
 	FormatType *FormatType
 	URI        *URI
-	Binary     Binary
+	Binary     *Binary
 }
 
 func (p *PropAttachment) decode(params []parser.Token, value string) error {
@@ -100,7 +100,7 @@ func (p *PropAttachment) decode(params []parser.Token, value string) error {
 			switch strings.ToUpper(pValues[0].Data) {
 			case "URI":
 				vType = 0
-			case "Binary":
+			case "BINARY":
 				vType = 1
 			default:
 				return ErrInvalidValue
@@ -123,6 +123,7 @@ func (p *PropAttachment) decode(params []parser.Token, value string) error {
 			return err
 		}
 	case 1:
+		p.Binary = new(Binary)
 		if err := p.Binary.decode(oParams, value); err != nil {
 			return err
 		}
@@ -139,7 +140,7 @@ func (p *PropAttachment) encode(w writer) {
 		p.URI.aencode(w)
 	}
 	if p.Binary != nil {
-		w.WriteString(";VALUE=Binary")
+		w.WriteString(";VALUE=BINARY")
 		p.Binary.aencode(w)
 	}
 	w.WriteString("\r\n")
