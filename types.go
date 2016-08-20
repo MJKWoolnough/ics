@@ -459,6 +459,7 @@ func (p *Period) decode(params map[string]string, data string) error {
 
 func (p Period) aencode(w writer) {
 	writeTimezone(w, p.Start.Time)
+	w.WriteString(":")
 	p.encode(w)
 }
 
