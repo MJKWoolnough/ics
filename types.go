@@ -458,7 +458,6 @@ func (p *Period) decode(params map[string]string, data string) error {
 }
 
 func (p Period) aencode(w writer) {
-	w.WriteString(";TZID=")
 	writeTimezone(w, p.Start.Time)
 	w.WriteString(":")
 	p.encode(w)
@@ -1351,6 +1350,7 @@ func writeTimezone(w writer, t time.Time) {
 	case time.UTC, time.Local:
 	default:
 		w.WriteString(";")
+		w.WriteString(";TZID=")
 		w.WriteString(l.String())
 	}
 }
