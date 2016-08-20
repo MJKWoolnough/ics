@@ -1168,8 +1168,8 @@ func (t MText) encode(w writer) {
 	for n, tx := range t {
 		if n > 0 {
 			w.WriteString(",")
-			tx.encode(w)
 		}
+		tx.encode(w)
 	}
 }
 
