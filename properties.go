@@ -1,6 +1,6 @@
 package ics
 
-// File automatically generated with ./genParams.sh
+// File automatically generated with ./genProperties.sh
 
 import (
 	"errors"

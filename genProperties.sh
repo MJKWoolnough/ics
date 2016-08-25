@@ -327,7 +327,7 @@ function printProperty {
 (
 	echo "package ics";
 	echo;
-	echo "// File automatically generated with ./genParams.sh";
+	echo "// File automatically generated with ./genProperties.sh";
 	echo;
 	echo "import (";
 	echo "	\"errors\"";
