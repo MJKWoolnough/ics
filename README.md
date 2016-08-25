@@ -2,6 +2,7 @@
 --
     import "github.com/MJKWoolnough/ics"
 
+Package ics implements an encoder and decoder for iCalendar files
 
 ## Usage
 
