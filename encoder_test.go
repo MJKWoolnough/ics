@@ -22,15 +22,15 @@ func TestEncode(t *testing.T) {
 	}{
 		{
 			Input: &Calendar{
-				ProdID:  "TestDecode",
-				Version: "2.0",
+				ProductID: "TestDecode",
+				Version:   "2.0",
 			},
 			Output: "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:TestDecode\r\nEND:VCALENDAR\r\n",
 		},
 		{
 			Input: &Calendar{
-				ProdID:  "-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN",
-				Version: "2.0",
+				ProductID: "-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN",
+				Version:   "2.0",
 				Event: []Event{
 					{
 						DateTimeStamp: PropDateTimeStamp{
@@ -89,8 +89,8 @@ func TestEncode(t *testing.T) {
 		},
 		{
 			Input: &Calendar{
-				ProdID:  "-//RDU Software//NONSGML HandCal//EN",
-				Version: "2.0",
+				ProductID: "-//RDU Software//NONSGML HandCal//EN",
+				Version:   "2.0",
 				Event: []Event{
 					{
 						DateTimeStamp: PropDateTimeStamp{
@@ -223,8 +223,8 @@ func TestEncode(t *testing.T) {
 		},
 		{
 			Input: &Calendar{
-				Version: "2.0",
-				ProdID:  "-//ABC Corporation//NONSGML My Product//EN",
+				Version:   "2.0",
+				ProductID: "-//ABC Corporation//NONSGML My Product//EN",
 				Todo: []Todo{
 					{
 						DateTimeStamp: PropDateTimeStamp{
@@ -314,8 +314,8 @@ func TestEncode(t *testing.T) {
 		},
 		{
 			Input: &Calendar{
-				Version: "2.0",
-				ProdID:  "-//ABC Corporation//NONSGML My Product//EN",
+				Version:   "2.0",
+				ProductID: "-//ABC Corporation//NONSGML My Product//EN",
 				Journal: []Journal{
 					{
 						DateTimeStamp: PropDateTimeStamp{
@@ -382,8 +382,8 @@ func TestEncode(t *testing.T) {
 		},
 		{
 			Input: &Calendar{
-				Version: "2.0",
-				ProdID:  "-//RDU Software//NONSGML HandCal//EN",
+				Version:   "2.0",
+				ProductID: "-//RDU Software//NONSGML HandCal//EN",
 				FreeBusy: []FreeBusy{
 					{
 						DateTimeStamp: PropDateTimeStamp{

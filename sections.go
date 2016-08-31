@@ -12,17 +12,17 @@ import (
 
 // Calendar represents a iCalendar object
 type Calendar struct {
-	Version  PropVersion
-	ProdID   PropProdID
-	Event    []Event
-	Todo     []Todo
-	Journal  []Journal
-	FreeBusy []FreeBusy
-	Timezone []Timezone
+	Version   PropVersion
+	ProductID PropProductID
+	Event     []Event
+	Todo      []Todo
+	Journal   []Journal
+	FreeBusy  []FreeBusy
+	Timezone  []Timezone
 }
 
 func (s *Calendar) decode(t tokeniser) error {
-	var requiredVersion, requiredProdID bool
+	var requiredVersion, requiredProductID bool
 Loop:
 	for {
 		p, err := t.GetPhrase()
@@ -80,11 +80,11 @@ Loop:
 				return err
 			}
 		case "PRODID":
-			if requiredProdID {
+			if requiredProductID {
 				return ErrMultipleSingle
 			}
-			requiredProdID = true
-			if err := s.ProdID.decode(params, value); err != nil {
+			requiredProductID = true
+			if err := s.ProductID.decode(params, value); err != nil {
 				return err
 			}
 		case "END":
@@ -94,7 +94,7 @@ Loop:
 			break Loop
 		}
 	}
-	if !requiredVersion || !requiredProdID {
+	if !requiredVersion || !requiredProductID {
 		return ErrMissingRequired
 	}
 	return nil
@@ -103,7 +103,7 @@ Loop:
 func (s *Calendar) encode(w writer) {
 	w.WriteString("BEGIN:VCALENDAR\r\n")
 	s.Version.encode(w)
-	s.ProdID.encode(w)
+	s.ProductID.encode(w)
 	for n := range s.Event {
 		s.Event[n].encode(w)
 	}
@@ -126,7 +126,7 @@ func (s *Calendar) valid() error {
 	if err := s.Version.valid(); err != nil {
 		return err
 	}
-	if err := s.ProdID.valid(); err != nil {
+	if err := s.ProductID.valid(); err != nil {
 		return err
 	}
 	for n := range s.Event {

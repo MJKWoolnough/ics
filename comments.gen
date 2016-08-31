@@ -43,7 +43,7 @@ PropMethod defines the iCalendar object method associated with the calendar obje
 PropOrganizer defines the organizer for a calendar component
 PropPercentComplete is used by an assignee or delegatee of a to-do to convey the percent completion of a to-do to the "Organizer"
 PropPriority defines the relative priority for a calendar component
-PropProdID specifies the identifier for the product that created the iCalendar object
+PropProductID specifies the identifier for the product that created the iCalendar object
 PropRecurrenceDateTimes defines the list of DATE-TIME values for recurring events, to-dos, journal entries, or time zone definitions
 PropRecurrenceID is used to identify a specific instance of a recurring Event, Todo or Journal
 PropRecurrenceRule defines a rule or repeating pattern for recurring events, to-dos, journal entries, or time zone definitions

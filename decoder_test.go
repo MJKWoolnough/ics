@@ -106,8 +106,8 @@ func TestDecode(t *testing.T) {
 		{
 			Input: "BEGIN:VCALENDAR\r\nPRODID:TestDecode\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n",
 			Output: &Calendar{
-				ProdID:  "TestDecode",
-				Version: "2.0",
+				ProductID: "TestDecode",
+				Version:   "2.0",
 			},
 		},
 		{
@@ -127,8 +127,8 @@ func TestDecode(t *testing.T) {
 				"END:VEVENT\r\n" +
 				"END:VCALENDAR\r\n",
 			Output: &Calendar{
-				ProdID:  "-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN",
-				Version: "2.0",
+				ProductID: "-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN",
+				Version:   "2.0",
 				Event: []Event{
 					{
 						DateTimeStamp: PropDateTimeStamp{
@@ -205,8 +205,8 @@ func TestDecode(t *testing.T) {
 				"END:VEVENT\r\n" +
 				"END:VCALENDAR\r\n",
 			Output: &Calendar{
-				ProdID:  "-//RDU Software//NONSGML HandCal//EN",
-				Version: "2.0",
+				ProductID: "-//RDU Software//NONSGML HandCal//EN",
+				Version:   "2.0",
 				Event: []Event{
 					{
 						DateTimeStamp: PropDateTimeStamp{
@@ -327,8 +327,8 @@ func TestDecode(t *testing.T) {
 				"END:VTODO\r\n" +
 				"END:VCALENDAR\r\n",
 			Output: &Calendar{
-				Version: "2.0",
-				ProdID:  "-//ABC Corporation//NONSGML My Product//EN",
+				Version:   "2.0",
+				ProductID: "-//ABC Corporation//NONSGML My Product//EN",
 				Todo: []Todo{
 					{
 						DateTimeStamp: PropDateTimeStamp{
@@ -419,8 +419,8 @@ func TestDecode(t *testing.T) {
 				"END:VJOURNAL\r\n" +
 				"END:VCALENDAR\r\n",
 			Output: &Calendar{
-				Version: "2.0",
-				ProdID:  "-//ABC Corporation//NONSGML My Product//EN",
+				Version:   "2.0",
+				ProductID: "-//ABC Corporation//NONSGML My Product//EN",
 				Journal: []Journal{
 					{
 						DateTimeStamp: PropDateTimeStamp{
@@ -482,8 +482,8 @@ func TestDecode(t *testing.T) {
 				"END:VFREEBUSY\r\n" +
 				"END:VCALENDAR\r\n",
 			Output: &Calendar{
-				Version: "2.0",
-				ProdID:  "-//RDU Software//NONSGML HandCal//EN",
+				Version:   "2.0",
+				ProductID: "-//RDU Software//NONSGML HandCal//EN",
 				FreeBusy: []FreeBusy{
 					{
 						DateTimeStamp: PropDateTimeStamp{

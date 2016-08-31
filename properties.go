@@ -1783,11 +1783,11 @@ func (p *PropPriority) valid() error {
 	return t.valid()
 }
 
-// PropProdID specifies the identifier for the product that created the
+// PropProductID specifies the identifier for the product that created the
 // iCalendar object
-type PropProdID Text
+type PropProductID Text
 
-func (p *PropProdID) decode(params []parser.Token, value string) error {
+func (p *PropProductID) decode(params []parser.Token, value string) error {
 	oParams := make(map[string]string)
 	var ts []string
 	for len(params) > 0 {
@@ -1807,18 +1807,18 @@ func (p *PropProdID) decode(params []parser.Token, value string) error {
 	if err := t.decode(oParams, value); err != nil {
 		return err
 	}
-	*p = PropProdID(t)
+	*p = PropProductID(t)
 	return nil
 }
 
-func (p *PropProdID) encode(w writer) {
+func (p *PropProductID) encode(w writer) {
 	w.WriteString("PRODID")
 	t := Text(*p)
 	t.aencode(w)
 	w.WriteString("\r\n")
 }
 
-func (p *PropProdID) valid() error {
+func (p *PropProductID) valid() error {
 	t := Text(*p)
 	return t.valid()
 }
