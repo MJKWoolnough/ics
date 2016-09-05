@@ -539,8 +539,8 @@ const (
 // DayRecur is used to reprent the nth day in a time period, be it 2nd Monday
 // in a Month, or 31st Friday in a year, etc.
 type DayRecur struct {
-	Day       WeekDay
-	Occurence int8
+	Day        WeekDay
+	Occurrence int8
 }
 
 // Recur contains a recurrence rule specification
@@ -729,7 +729,7 @@ func (r *Recur) decode(params map[string]string, data string) error {
 				default:
 					return ErrInvalidRecur
 				}
-				dayList[n].Occurence = num
+				dayList[n].Occurrence = num
 			}
 			r.ByDay = dayList
 		case "BYMONTHDAY":
@@ -910,8 +910,8 @@ func (r *Recur) encode(w writer) {
 			if n > 0 {
 				w.Write(comma)
 			}
-			if day.Occurence != 0 {
-				w.WriteString(strconv.FormatInt(int64(day.Occurence), 10))
+			if day.Occurrence != 0 {
+				w.WriteString(strconv.FormatInt(int64(day.Occurrence), 10))
 			}
 			switch day.Day {
 			case Sunday:
