@@ -44,7 +44,7 @@ func (f *folder) Write(q []byte) (int, error) {
 			}
 
 			pos = 0
-			f.line = uint8(s)
+			f.line = uint8(s) + 1
 		}
 	}
 	if len(q) > 0 {
