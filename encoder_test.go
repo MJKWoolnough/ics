@@ -370,13 +370,13 @@ func TestEncode(t *testing.T) {
 				"STATUS:DRAFT\r\n" +
 				"CATEGORIES:Project Report,XYZ,Weekly Meeting\r\n" +
 				"DESCRIPTION:Project xyz Review Meeting Minutes\\nAgenda\\n1. Review of projec\r\n" +
-				" t version 1.0 requirements.\\n2. Definition of project processes.\\n3. Review\r\n" +
-				"  of project schedule.\\nParticipants: John Smith\\, Jane Doe\\, Jim Dandy\\n-It\r\n" +
-				"  was decided that the requirements need to be signed off by product marketi\r\n" +
-				" ng.\\n-Project processes were accepted.\\n-Project schedule needs to account \r\n" +
-				" for scheduled holidays and employee vacation time. Check with HR for specif\r\n" +
-				" ic dates.\\n-New schedule will be distributed by Friday.\\n-Next weeks meetin\r\n" +
-				" g is cancelled. No meeting until 3/23.\r\n" +
+				" t version 1.0 requirements.\\n2. Definition of project processes.\\n3. Revie\r\n" +
+				" w of project schedule.\\nParticipants: John Smith\\, Jane Doe\\, Jim Dandy\\n-\r\n" +
+				" It was decided that the requirements need to be signed off by product mark\r\n" +
+				" eting.\\n-Project processes were accepted.\\n-Project schedule needs to acco\r\n" +
+				" unt for scheduled holidays and employee vacation time. Check with HR for s\r\n" +
+				" pecific dates.\\n-New schedule will be distributed by Friday.\\n-Next weeks \r\n" +
+				" meeting is cancelled. No meeting until 3/23.\r\n" +
 				"END:VJOURNAL\r\n" +
 				"END:VCALENDAR\r\n",
 		},
