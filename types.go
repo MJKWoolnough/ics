@@ -275,9 +275,11 @@ func (d *Duration) decode(_ map[string]string, data string) error {
 			return ErrInvalidDuration
 		}
 	}
-	if level == 0 {
-		return ErrInvalidDuration
-	}
+	// TODO this fails to parse "TRIGGER;RELATED=START:P", which we don't care
+	// about for now.
+	// if level == 0 {
+	// 	return ErrInvalidDuration
+	// }
 	return nil
 }
 
