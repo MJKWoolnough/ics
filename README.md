@@ -210,13 +210,13 @@ Boolean is true or false
 
 ```go
 type Calendar struct {
-	Version  PropVersion
-	ProdID   PropProdID
-	Event    []Event
-	Todo     []Todo
-	Journal  []Journal
-	FreeBusy []FreeBusy
-	Timezone []Timezone
+	Version   PropVersion
+	ProductID PropProductID
+	Event     []Event
+	Todo      []Todo
+	Journal   []Journal
+	FreeBusy  []FreeBusy
+	Timezone  []Timezone
 }
 ```
 
@@ -306,8 +306,8 @@ DateTime is a Calendar Date and Time
 
 ```go
 type DayRecur struct {
-	Day       WeekDay
-	Occurence int8
+	Day        WeekDay
+	Occurrence int8
 }
 ```
 
@@ -1045,14 +1045,14 @@ func NewPriority(v PropPriority) *PropPriority
 NewPriority generates a pointer to a constant value. Used when manually creating
 Calendar values
 
-#### type PropProdID
+#### type PropProductID
 
 ```go
-type PropProdID Text
+type PropProductID Text
 ```
 
-PropProdID specifies the identifier for the product that created the iCalendar
-object
+PropProductID specifies the identifier for the product that created the
+iCalendar object
 
 #### type PropRecurrenceDateTimes
 
