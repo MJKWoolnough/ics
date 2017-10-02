@@ -139,6 +139,13 @@ func TestDateTime(t *testing.T) {
 			Match:  &DateTime{time.Date(2001, 12, 25, 13, 14, 15, 0, l)},
 			Output: "20011225T131415",
 		},
+		{
+			Params: map[string]string{"TZID": "(UTC-05:00) Eastern Time (US & Canada)"},
+			Data:   "20011225T131415",
+			Input:  &DateTime{},
+			Match:  &DateTime{time.Date(2001, 12, 25, 13, 14, 15, 0, l)},
+			Output: "20011225T131415",
+		},
 	})
 }
 
@@ -727,6 +734,13 @@ func TestTime(t *testing.T) {
 		},
 		{
 			Params: map[string]string{"TZID": "America/New_York"},
+			Data:   "010203",
+			Input:  &Time{},
+			Match:  &Time{Time: time.Date(0, 1, 1, 1, 2, 3, 0, l)},
+			Output: "010203",
+		},
+		{
+			Params: map[string]string{"TZID": "(UTC-05:00) Eastern Time (US & Canada)"},
 			Data:   "010203",
 			Input:  &Time{},
 			Match:  &Time{Time: time.Date(0, 1, 1, 1, 2, 3, 0, l)},

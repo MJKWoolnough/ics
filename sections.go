@@ -206,17 +206,8 @@ Loop:
 		value := p.Data[len(p.Data)-1].Data
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
-			switch n := strings.ToUpper(value); n {
-			case "VALARM":
-				var e Alarm
-				if err := e.decode(t); err != nil {
-					return err
-				}
-				s.Alarm = append(s.Alarm, e)
-			default:
-				if err := decodeDummy(t, n); err != nil {
-					return err
-				}
+			if err := decodeDummy(t, value); err != nil {
+				return err
 			}
 		case "DTSTAMP":
 			if requiredDateTimeStamp {

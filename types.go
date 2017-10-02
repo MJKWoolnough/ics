@@ -141,7 +141,7 @@ type DateTime struct {
 
 func (d *DateTime) decode(params map[string]string, data string) error {
 	if tz, ok := params["TZID"]; ok {
-		l, err := time.LoadLocation(tz)
+		l, err := time.LoadLocation(standardizeTimezone(tz))
 		if err != nil {
 			return err
 		}
@@ -164,6 +164,15 @@ func (d *DateTime) decode(params map[string]string, data string) error {
 		d.Time = t
 	}
 	return nil
+}
+
+// standardizeTimezone translates CLDR timezone IDs to IANA ones.
+func standardizeTimezone(timezone string) string {
+	// See http://cldr.unicode.org/
+	if standardized, ok := commonLocaleDataRepositoryTranslator[timezone]; ok {
+		return standardized
+	}
+	return timezone
 }
 
 func (d DateTime) aencode(w writer) {
@@ -265,9 +274,11 @@ func (d *Duration) decode(_ map[string]string, data string) error {
 			return ErrInvalidDuration
 		}
 	}
-	if level == 0 {
-		return ErrInvalidDuration
-	}
+	// TODO this fails to parse "TRIGGER;RELATED=START:P", which we don't care
+	// about for now.
+	// if level == 0 {
+	// 	return ErrInvalidDuration
+	// }
 	return nil
 }
 
@@ -1189,7 +1200,7 @@ type Time struct {
 
 func (t *Time) decode(params map[string]string, data string) error {
 	if tz, ok := params["TZID"]; ok {
-		l, err := time.LoadLocation(tz)
+		l, err := time.LoadLocation(standardizeTimezone(tz))
 		if err != nil {
 			return err
 		}
