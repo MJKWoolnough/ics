@@ -546,8 +546,9 @@ type DayRecur struct {
 // Recur contains a recurrence rule specification
 type Recur struct {
 	Frequency  Frequency
-	Until      time.Time
+	WeekStart  WeekDay
 	UntilTime  bool
+	Until      time.Time
 	Count      uint64
 	Interval   uint64
 	BySecond   []uint8
@@ -559,7 +560,6 @@ type Recur struct {
 	ByWeekNum  []int8
 	ByMonth    []Month
 	BySetPos   []int16
-	WeekStart  WeekDay
 }
 
 func (r *Recur) decode(params map[string]string, data string) error {
