@@ -1,9 +1,9 @@
 package ics
 
 import (
-	"errors"
 	"io"
 
+	"github.com/MJKWoolnough/errors"
 	"github.com/MJKWoolnough/parser"
 )
 
@@ -105,8 +105,8 @@ func (AlarmEmail) Type() string {
 }
 
 // Errors
-var (
-	ErrInvalidStructure   = errors.New("invalid structure")
-	ErrMissingAlarmAction = errors.New("missing alarm action")
-	ErrInvalidAlarm       = errors.New("invalid alarm type")
+const (
+	ErrInvalidStructure   errors.Error = "invalid structure"
+	ErrMissingAlarmAction errors.Error = "missing alarm action"
+	ErrInvalidAlarm       errors.Error = "invalid alarm type"
 )
