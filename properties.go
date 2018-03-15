@@ -84,18 +84,18 @@ func (p *PropAttachment) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "FMTTYPE":
 			if p.FormatType != nil {
-				return errors.WithContext("error decoding Attachment: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attachment->FormatType: ", ErrDuplicateParam)
 			}
 			p.FormatType = new(FormatType)
 			if err := p.FormatType.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attachment: ", err)
+				return errors.WithContext("error decoding Attachment->FormatType: ", err)
 			}
 		case "VALUE":
 			if len(pValues) != 1 {
-				return errors.WithContext("error decoding Attachment: ", ErrInvalidValue)
+				return errors.WithContext("error decoding Attachment->Value: ", ErrInvalidValue)
 			}
 			if vType != -1 {
-				return errors.WithContext("error decoding Attachment: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attachment->Value: ", ErrDuplicateParam)
 			}
 			switch strings.ToUpper(pValues[0].Data) {
 			case "URI":
@@ -120,12 +120,12 @@ func (p *PropAttachment) decode(params []parser.Token, value string) error {
 	case 0:
 		p.URI = new(URI)
 		if err := p.URI.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding Attachment: ", err)
+			return errors.WithContext("error decoding Attachment->URI: ", err)
 		}
 	case 1:
 		p.Binary = new(Binary)
 		if err := p.Binary.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding Attachment: ", err)
+			return errors.WithContext("error decoding Attachment->Binary: ", err)
 		}
 	}
 	return nil
@@ -149,19 +149,19 @@ func (p *PropAttachment) encode(w writer) {
 func (p *PropAttachment) valid() error {
 	if p.FormatType != nil {
 		if err := p.FormatType.valid(); err != nil {
-			return errors.WithContext("error validating Attachment: ", err)
+			return errors.WithContext("error validating Attachment->FormatType: ", err)
 		}
 	}
 	c := 0
 	if p.URI != nil {
 		if err := p.URI.valid(); err != nil {
-			return errors.WithContext("error validating Attachment: ", err)
+			return errors.WithContext("error validating Attachment->URI: ", err)
 		}
 		c++
 	}
 	if p.Binary != nil {
 		if err := p.Binary.valid(); err != nil {
-			return errors.WithContext("error validating Attachment: ", err)
+			return errors.WithContext("error validating Attachment->Binary: ", err)
 		}
 		c++
 	}
@@ -201,88 +201,88 @@ func (p *PropAttendee) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "CUTYPE":
 			if p.CalendarUserType != nil {
-				return errors.WithContext("error decoding Attendee: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attendee->CalendarUserType: ", ErrDuplicateParam)
 			}
 			p.CalendarUserType = new(CalendarUserType)
 			if err := p.CalendarUserType.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attendee: ", err)
+				return errors.WithContext("error decoding Attendee->CalendarUserType: ", err)
 			}
 		case "MEMBER":
 			if p.Member != nil {
-				return errors.WithContext("error decoding Attendee: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attendee->Member: ", ErrDuplicateParam)
 			}
 			if err := p.Member.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attendee: ", err)
+				return errors.WithContext("error decoding Attendee->Member: ", err)
 			}
 		case "ROLE":
 			if p.ParticipationRole != nil {
-				return errors.WithContext("error decoding Attendee: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attendee->ParticipationRole: ", ErrDuplicateParam)
 			}
 			p.ParticipationRole = new(ParticipationRole)
 			if err := p.ParticipationRole.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attendee: ", err)
+				return errors.WithContext("error decoding Attendee->ParticipationRole: ", err)
 			}
 		case "PARTSTAT":
 			if p.ParticipationStatus != nil {
-				return errors.WithContext("error decoding Attendee: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attendee->ParticipationStatus: ", ErrDuplicateParam)
 			}
 			p.ParticipationStatus = new(ParticipationStatus)
 			if err := p.ParticipationStatus.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attendee: ", err)
+				return errors.WithContext("error decoding Attendee->ParticipationStatus: ", err)
 			}
 		case "RSVP":
 			if p.RSVP != nil {
-				return errors.WithContext("error decoding Attendee: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attendee->RSVP: ", ErrDuplicateParam)
 			}
 			p.RSVP = new(RSVP)
 			if err := p.RSVP.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attendee: ", err)
+				return errors.WithContext("error decoding Attendee->RSVP: ", err)
 			}
 		case "DELEGATED-TO":
 			if p.Delagatee != nil {
-				return errors.WithContext("error decoding Attendee: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attendee->Delagatee: ", ErrDuplicateParam)
 			}
 			if err := p.Delagatee.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attendee: ", err)
+				return errors.WithContext("error decoding Attendee->Delagatee: ", err)
 			}
 		case "DELEGATED-FROM":
 			if p.Delegator != nil {
-				return errors.WithContext("error decoding Attendee: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attendee->Delegator: ", ErrDuplicateParam)
 			}
 			if err := p.Delegator.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attendee: ", err)
+				return errors.WithContext("error decoding Attendee->Delegator: ", err)
 			}
 		case "SENT-BY":
 			if p.SentBy != nil {
-				return errors.WithContext("error decoding Attendee: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attendee->SentBy: ", ErrDuplicateParam)
 			}
 			p.SentBy = new(SentBy)
 			if err := p.SentBy.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attendee: ", err)
+				return errors.WithContext("error decoding Attendee->SentBy: ", err)
 			}
 		case "CN":
 			if p.CommonName != nil {
-				return errors.WithContext("error decoding Attendee: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attendee->CommonName: ", ErrDuplicateParam)
 			}
 			p.CommonName = new(CommonName)
 			if err := p.CommonName.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attendee: ", err)
+				return errors.WithContext("error decoding Attendee->CommonName: ", err)
 			}
 		case "DIR":
 			if p.DirectoryEntry != nil {
-				return errors.WithContext("error decoding Attendee: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attendee->DirectoryEntry: ", ErrDuplicateParam)
 			}
 			p.DirectoryEntry = new(DirectoryEntry)
 			if err := p.DirectoryEntry.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attendee: ", err)
+				return errors.WithContext("error decoding Attendee->DirectoryEntry: ", err)
 			}
 		case "LANGUAGE":
 			if p.Language != nil {
-				return errors.WithContext("error decoding Attendee: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Attendee->Language: ", ErrDuplicateParam)
 			}
 			p.Language = new(Language)
 			if err := p.Language.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Attendee: ", err)
+				return errors.WithContext("error decoding Attendee->Language: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -293,7 +293,7 @@ func (p *PropAttendee) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.CalendarAddress.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding Attendee: ", err)
+		return errors.WithContext("error decoding Attendee->CalendarAddress: ", err)
 	}
 	return nil
 }
@@ -340,61 +340,61 @@ func (p *PropAttendee) encode(w writer) {
 func (p *PropAttendee) valid() error {
 	if p.CalendarUserType != nil {
 		if err := p.CalendarUserType.valid(); err != nil {
-			return errors.WithContext("error validating Attendee: ", err)
+			return errors.WithContext("error validating Attendee->CalendarUserType: ", err)
 		}
 	}
 	if p.Member != nil {
 		if err := p.Member.valid(); err != nil {
-			return errors.WithContext("error validating Attendee: ", err)
+			return errors.WithContext("error validating Attendee->Member: ", err)
 		}
 	}
 	if p.ParticipationRole != nil {
 		if err := p.ParticipationRole.valid(); err != nil {
-			return errors.WithContext("error validating Attendee: ", err)
+			return errors.WithContext("error validating Attendee->ParticipationRole: ", err)
 		}
 	}
 	if p.ParticipationStatus != nil {
 		if err := p.ParticipationStatus.valid(); err != nil {
-			return errors.WithContext("error validating Attendee: ", err)
+			return errors.WithContext("error validating Attendee->ParticipationStatus: ", err)
 		}
 	}
 	if p.RSVP != nil {
 		if err := p.RSVP.valid(); err != nil {
-			return errors.WithContext("error validating Attendee: ", err)
+			return errors.WithContext("error validating Attendee->RSVP: ", err)
 		}
 	}
 	if p.Delagatee != nil {
 		if err := p.Delagatee.valid(); err != nil {
-			return errors.WithContext("error validating Attendee: ", err)
+			return errors.WithContext("error validating Attendee->Delagatee: ", err)
 		}
 	}
 	if p.Delegator != nil {
 		if err := p.Delegator.valid(); err != nil {
-			return errors.WithContext("error validating Attendee: ", err)
+			return errors.WithContext("error validating Attendee->Delegator: ", err)
 		}
 	}
 	if p.SentBy != nil {
 		if err := p.SentBy.valid(); err != nil {
-			return errors.WithContext("error validating Attendee: ", err)
+			return errors.WithContext("error validating Attendee->SentBy: ", err)
 		}
 	}
 	if p.CommonName != nil {
 		if err := p.CommonName.valid(); err != nil {
-			return errors.WithContext("error validating Attendee: ", err)
+			return errors.WithContext("error validating Attendee->CommonName: ", err)
 		}
 	}
 	if p.DirectoryEntry != nil {
 		if err := p.DirectoryEntry.valid(); err != nil {
-			return errors.WithContext("error validating Attendee: ", err)
+			return errors.WithContext("error validating Attendee->DirectoryEntry: ", err)
 		}
 	}
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
-			return errors.WithContext("error validating Attendee: ", err)
+			return errors.WithContext("error validating Attendee->Language: ", err)
 		}
 	}
 	if err := p.CalendarAddress.valid(); err != nil {
-		return errors.WithContext("error validating Attendee: ", err)
+		return errors.WithContext("error validating Attendee->CalendarAddress: ", err)
 	}
 	return nil
 }
@@ -461,11 +461,11 @@ func (p *PropCategories) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "LANGUAGE":
 			if p.Language != nil {
-				return errors.WithContext("error decoding Categories: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Categories->Language: ", ErrDuplicateParam)
 			}
 			p.Language = new(Language)
 			if err := p.Language.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Categories: ", err)
+				return errors.WithContext("error decoding Categories->Language: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -476,7 +476,7 @@ func (p *PropCategories) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.MText.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding Categories: ", err)
+		return errors.WithContext("error decoding Categories->MText: ", err)
 	}
 	return nil
 }
@@ -493,11 +493,11 @@ func (p *PropCategories) encode(w writer) {
 func (p *PropCategories) valid() error {
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
-			return errors.WithContext("error validating Categories: ", err)
+			return errors.WithContext("error validating Categories->Language: ", err)
 		}
 	}
 	if err := p.MText.valid(); err != nil {
-		return errors.WithContext("error validating Categories: ", err)
+		return errors.WithContext("error validating Categories->MText: ", err)
 	}
 	return nil
 }
@@ -576,19 +576,19 @@ func (p *PropComment) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "ALTREP":
 			if p.AlternativeRepresentation != nil {
-				return errors.WithContext("error decoding Comment: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Comment->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
 			p.AlternativeRepresentation = new(AlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Comment: ", err)
+				return errors.WithContext("error decoding Comment->AlternativeRepresentation: ", err)
 			}
 		case "LANGUAGE":
 			if p.Language != nil {
-				return errors.WithContext("error decoding Comment: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Comment->Language: ", ErrDuplicateParam)
 			}
 			p.Language = new(Language)
 			if err := p.Language.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Comment: ", err)
+				return errors.WithContext("error decoding Comment->Language: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -599,7 +599,7 @@ func (p *PropComment) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.Text.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding Comment: ", err)
+		return errors.WithContext("error decoding Comment->Text: ", err)
 	}
 	return nil
 }
@@ -619,16 +619,16 @@ func (p *PropComment) encode(w writer) {
 func (p *PropComment) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
-			return errors.WithContext("error validating Comment: ", err)
+			return errors.WithContext("error validating Comment->AlternativeRepresentation: ", err)
 		}
 	}
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
-			return errors.WithContext("error validating Comment: ", err)
+			return errors.WithContext("error validating Comment->Language: ", err)
 		}
 	}
 	if err := p.Text.valid(); err != nil {
-		return errors.WithContext("error validating Comment: ", err)
+		return errors.WithContext("error validating Comment->Text: ", err)
 	}
 	return nil
 }
@@ -697,19 +697,19 @@ func (p *PropContact) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "ALTREP":
 			if p.AlternativeRepresentation != nil {
-				return errors.WithContext("error decoding Contact: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Contact->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
 			p.AlternativeRepresentation = new(AlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Contact: ", err)
+				return errors.WithContext("error decoding Contact->AlternativeRepresentation: ", err)
 			}
 		case "LANGUAGE":
 			if p.Language != nil {
-				return errors.WithContext("error decoding Contact: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Contact->Language: ", ErrDuplicateParam)
 			}
 			p.Language = new(Language)
 			if err := p.Language.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Contact: ", err)
+				return errors.WithContext("error decoding Contact->Language: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -720,7 +720,7 @@ func (p *PropContact) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.Text.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding Contact: ", err)
+		return errors.WithContext("error decoding Contact->Text: ", err)
 	}
 	return nil
 }
@@ -740,16 +740,16 @@ func (p *PropContact) encode(w writer) {
 func (p *PropContact) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
-			return errors.WithContext("error validating Contact: ", err)
+			return errors.WithContext("error validating Contact->AlternativeRepresentation: ", err)
 		}
 	}
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
-			return errors.WithContext("error validating Contact: ", err)
+			return errors.WithContext("error validating Contact->Language: ", err)
 		}
 	}
 	if err := p.Text.valid(); err != nil {
-		return errors.WithContext("error validating Contact: ", err)
+		return errors.WithContext("error validating Contact->Text: ", err)
 	}
 	return nil
 }
@@ -819,19 +819,19 @@ func (p *PropDescription) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "ALTREP":
 			if p.AlternativeRepresentation != nil {
-				return errors.WithContext("error decoding Description: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Description->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
 			p.AlternativeRepresentation = new(AlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Description: ", err)
+				return errors.WithContext("error decoding Description->AlternativeRepresentation: ", err)
 			}
 		case "LANGUAGE":
 			if p.Language != nil {
-				return errors.WithContext("error decoding Description: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Description->Language: ", ErrDuplicateParam)
 			}
 			p.Language = new(Language)
 			if err := p.Language.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Description: ", err)
+				return errors.WithContext("error decoding Description->Language: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -842,7 +842,7 @@ func (p *PropDescription) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.Text.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding Description: ", err)
+		return errors.WithContext("error decoding Description->Text: ", err)
 	}
 	return nil
 }
@@ -862,16 +862,16 @@ func (p *PropDescription) encode(w writer) {
 func (p *PropDescription) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
-			return errors.WithContext("error validating Description: ", err)
+			return errors.WithContext("error validating Description->AlternativeRepresentation: ", err)
 		}
 	}
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
-			return errors.WithContext("error validating Description: ", err)
+			return errors.WithContext("error validating Description->Language: ", err)
 		}
 	}
 	if err := p.Text.valid(); err != nil {
-		return errors.WithContext("error validating Description: ", err)
+		return errors.WithContext("error validating Description->Text: ", err)
 	}
 	return nil
 }
@@ -897,10 +897,10 @@ func (p *PropDateTimeEnd) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "VALUE":
 			if len(pValues) != 1 {
-				return errors.WithContext("error decoding DateTimeEnd: ", ErrInvalidValue)
+				return errors.WithContext("error decoding DateTimeEnd->Value: ", ErrInvalidValue)
 			}
 			if vType != -1 {
-				return errors.WithContext("error decoding DateTimeEnd: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding DateTimeEnd->Value: ", ErrDuplicateParam)
 			}
 			switch strings.ToUpper(pValues[0].Data) {
 			case "DATE-TIME":
@@ -925,12 +925,12 @@ func (p *PropDateTimeEnd) decode(params []parser.Token, value string) error {
 	case 0:
 		p.DateTime = new(DateTime)
 		if err := p.DateTime.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding DateTimeEnd: ", err)
+			return errors.WithContext("error decoding DateTimeEnd->DateTime: ", err)
 		}
 	case 1:
 		p.Date = new(Date)
 		if err := p.Date.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding DateTimeEnd: ", err)
+			return errors.WithContext("error decoding DateTimeEnd->Date: ", err)
 		}
 	}
 	return nil
@@ -952,13 +952,13 @@ func (p *PropDateTimeEnd) valid() error {
 	c := 0
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
-			return errors.WithContext("error validating DateTimeEnd: ", err)
+			return errors.WithContext("error validating DateTimeEnd->DateTime: ", err)
 		}
 		c++
 	}
 	if p.Date != nil {
 		if err := p.Date.valid(); err != nil {
-			return errors.WithContext("error validating DateTimeEnd: ", err)
+			return errors.WithContext("error validating DateTimeEnd->Date: ", err)
 		}
 		c++
 	}
@@ -1034,10 +1034,10 @@ func (p *PropDateTimeStart) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "VALUE":
 			if len(pValues) != 1 {
-				return errors.WithContext("error decoding DateTimeStart: ", ErrInvalidValue)
+				return errors.WithContext("error decoding DateTimeStart->Value: ", ErrInvalidValue)
 			}
 			if vType != -1 {
-				return errors.WithContext("error decoding DateTimeStart: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding DateTimeStart->Value: ", ErrDuplicateParam)
 			}
 			switch strings.ToUpper(pValues[0].Data) {
 			case "DATE-TIME":
@@ -1062,12 +1062,12 @@ func (p *PropDateTimeStart) decode(params []parser.Token, value string) error {
 	case 0:
 		p.DateTime = new(DateTime)
 		if err := p.DateTime.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding DateTimeStart: ", err)
+			return errors.WithContext("error decoding DateTimeStart->DateTime: ", err)
 		}
 	case 1:
 		p.Date = new(Date)
 		if err := p.Date.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding DateTimeStart: ", err)
+			return errors.WithContext("error decoding DateTimeStart->Date: ", err)
 		}
 	}
 	return nil
@@ -1089,13 +1089,13 @@ func (p *PropDateTimeStart) valid() error {
 	c := 0
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
-			return errors.WithContext("error validating DateTimeStart: ", err)
+			return errors.WithContext("error validating DateTimeStart->DateTime: ", err)
 		}
 		c++
 	}
 	if p.Date != nil {
 		if err := p.Date.valid(); err != nil {
-			return errors.WithContext("error validating DateTimeStart: ", err)
+			return errors.WithContext("error validating DateTimeStart->Date: ", err)
 		}
 		c++
 	}
@@ -1126,10 +1126,10 @@ func (p *PropDue) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "VALUE":
 			if len(pValues) != 1 {
-				return errors.WithContext("error decoding Due: ", ErrInvalidValue)
+				return errors.WithContext("error decoding Due->Value: ", ErrInvalidValue)
 			}
 			if vType != -1 {
-				return errors.WithContext("error decoding Due: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Due->Value: ", ErrDuplicateParam)
 			}
 			switch strings.ToUpper(pValues[0].Data) {
 			case "DATE-TIME":
@@ -1154,12 +1154,12 @@ func (p *PropDue) decode(params []parser.Token, value string) error {
 	case 0:
 		p.DateTime = new(DateTime)
 		if err := p.DateTime.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding Due: ", err)
+			return errors.WithContext("error decoding Due->DateTime: ", err)
 		}
 	case 1:
 		p.Date = new(Date)
 		if err := p.Date.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding Due: ", err)
+			return errors.WithContext("error decoding Due->Date: ", err)
 		}
 	}
 	return nil
@@ -1181,13 +1181,13 @@ func (p *PropDue) valid() error {
 	c := 0
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
-			return errors.WithContext("error validating Due: ", err)
+			return errors.WithContext("error validating Due->DateTime: ", err)
 		}
 		c++
 	}
 	if p.Date != nil {
 		if err := p.Date.valid(); err != nil {
-			return errors.WithContext("error validating Due: ", err)
+			return errors.WithContext("error validating Due->Date: ", err)
 		}
 		c++
 	}
@@ -1261,10 +1261,10 @@ func (p *PropExceptionDateTime) decode(params []parser.Token, value string) erro
 		switch pName {
 		case "VALUE":
 			if len(pValues) != 1 {
-				return errors.WithContext("error decoding ExceptionDateTime: ", ErrInvalidValue)
+				return errors.WithContext("error decoding ExceptionDateTime->Value: ", ErrInvalidValue)
 			}
 			if vType != -1 {
-				return errors.WithContext("error decoding ExceptionDateTime: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding ExceptionDateTime->Value: ", ErrDuplicateParam)
 			}
 			switch strings.ToUpper(pValues[0].Data) {
 			case "DATE-TIME":
@@ -1289,12 +1289,12 @@ func (p *PropExceptionDateTime) decode(params []parser.Token, value string) erro
 	case 0:
 		p.DateTime = new(DateTime)
 		if err := p.DateTime.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding ExceptionDateTime: ", err)
+			return errors.WithContext("error decoding ExceptionDateTime->DateTime: ", err)
 		}
 	case 1:
 		p.Date = new(Date)
 		if err := p.Date.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding ExceptionDateTime: ", err)
+			return errors.WithContext("error decoding ExceptionDateTime->Date: ", err)
 		}
 	}
 	return nil
@@ -1316,13 +1316,13 @@ func (p *PropExceptionDateTime) valid() error {
 	c := 0
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
-			return errors.WithContext("error validating ExceptionDateTime: ", err)
+			return errors.WithContext("error validating ExceptionDateTime->DateTime: ", err)
 		}
 		c++
 	}
 	if p.Date != nil {
 		if err := p.Date.valid(); err != nil {
-			return errors.WithContext("error validating ExceptionDateTime: ", err)
+			return errors.WithContext("error validating ExceptionDateTime->Date: ", err)
 		}
 		c++
 	}
@@ -1352,11 +1352,11 @@ func (p *PropFreeBusy) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "FBTYPE":
 			if p.FreeBusyType != nil {
-				return errors.WithContext("error decoding FreeBusy: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding FreeBusy->FreeBusyType: ", ErrDuplicateParam)
 			}
 			p.FreeBusyType = new(FreeBusyType)
 			if err := p.FreeBusyType.decode(pValues); err != nil {
-				return errors.WithContext("error decoding FreeBusy: ", err)
+				return errors.WithContext("error decoding FreeBusy->FreeBusyType: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -1367,7 +1367,7 @@ func (p *PropFreeBusy) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.Period.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding FreeBusy: ", err)
+		return errors.WithContext("error decoding FreeBusy->Period: ", err)
 	}
 	return nil
 }
@@ -1384,11 +1384,11 @@ func (p *PropFreeBusy) encode(w writer) {
 func (p *PropFreeBusy) valid() error {
 	if p.FreeBusyType != nil {
 		if err := p.FreeBusyType.valid(); err != nil {
-			return errors.WithContext("error validating FreeBusy: ", err)
+			return errors.WithContext("error validating FreeBusy->FreeBusyType: ", err)
 		}
 	}
 	if err := p.Period.valid(); err != nil {
-		return errors.WithContext("error validating FreeBusy: ", err)
+		return errors.WithContext("error validating FreeBusy->Period: ", err)
 	}
 	return nil
 }
@@ -1501,19 +1501,19 @@ func (p *PropLocation) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "ALTREP":
 			if p.AlternativeRepresentation != nil {
-				return errors.WithContext("error decoding Location: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Location->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
 			p.AlternativeRepresentation = new(AlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Location: ", err)
+				return errors.WithContext("error decoding Location->AlternativeRepresentation: ", err)
 			}
 		case "LANGUAGE":
 			if p.Language != nil {
-				return errors.WithContext("error decoding Location: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Location->Language: ", ErrDuplicateParam)
 			}
 			p.Language = new(Language)
 			if err := p.Language.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Location: ", err)
+				return errors.WithContext("error decoding Location->Language: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -1524,7 +1524,7 @@ func (p *PropLocation) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.Text.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding Location: ", err)
+		return errors.WithContext("error decoding Location->Text: ", err)
 	}
 	return nil
 }
@@ -1544,16 +1544,16 @@ func (p *PropLocation) encode(w writer) {
 func (p *PropLocation) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
-			return errors.WithContext("error validating Location: ", err)
+			return errors.WithContext("error validating Location->AlternativeRepresentation: ", err)
 		}
 	}
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
-			return errors.WithContext("error validating Location: ", err)
+			return errors.WithContext("error validating Location->Language: ", err)
 		}
 	}
 	if err := p.Text.valid(); err != nil {
-		return errors.WithContext("error validating Location: ", err)
+		return errors.WithContext("error validating Location->Text: ", err)
 	}
 	return nil
 }
@@ -1624,35 +1624,35 @@ func (p *PropOrganizer) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "CN":
 			if p.CommonName != nil {
-				return errors.WithContext("error decoding Organizer: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Organizer->CommonName: ", ErrDuplicateParam)
 			}
 			p.CommonName = new(CommonName)
 			if err := p.CommonName.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Organizer: ", err)
+				return errors.WithContext("error decoding Organizer->CommonName: ", err)
 			}
 		case "DIR":
 			if p.DirectoryEntry != nil {
-				return errors.WithContext("error decoding Organizer: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Organizer->DirectoryEntry: ", ErrDuplicateParam)
 			}
 			p.DirectoryEntry = new(DirectoryEntry)
 			if err := p.DirectoryEntry.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Organizer: ", err)
+				return errors.WithContext("error decoding Organizer->DirectoryEntry: ", err)
 			}
 		case "SENT-BY":
 			if p.SentBy != nil {
-				return errors.WithContext("error decoding Organizer: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Organizer->SentBy: ", ErrDuplicateParam)
 			}
 			p.SentBy = new(SentBy)
 			if err := p.SentBy.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Organizer: ", err)
+				return errors.WithContext("error decoding Organizer->SentBy: ", err)
 			}
 		case "LANGUAGE":
 			if p.Language != nil {
-				return errors.WithContext("error decoding Organizer: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Organizer->Language: ", ErrDuplicateParam)
 			}
 			p.Language = new(Language)
 			if err := p.Language.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Organizer: ", err)
+				return errors.WithContext("error decoding Organizer->Language: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -1663,7 +1663,7 @@ func (p *PropOrganizer) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.CalendarAddress.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding Organizer: ", err)
+		return errors.WithContext("error decoding Organizer->CalendarAddress: ", err)
 	}
 	return nil
 }
@@ -1689,26 +1689,26 @@ func (p *PropOrganizer) encode(w writer) {
 func (p *PropOrganizer) valid() error {
 	if p.CommonName != nil {
 		if err := p.CommonName.valid(); err != nil {
-			return errors.WithContext("error validating Organizer: ", err)
+			return errors.WithContext("error validating Organizer->CommonName: ", err)
 		}
 	}
 	if p.DirectoryEntry != nil {
 		if err := p.DirectoryEntry.valid(); err != nil {
-			return errors.WithContext("error validating Organizer: ", err)
+			return errors.WithContext("error validating Organizer->DirectoryEntry: ", err)
 		}
 	}
 	if p.SentBy != nil {
 		if err := p.SentBy.valid(); err != nil {
-			return errors.WithContext("error validating Organizer: ", err)
+			return errors.WithContext("error validating Organizer->SentBy: ", err)
 		}
 	}
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
-			return errors.WithContext("error validating Organizer: ", err)
+			return errors.WithContext("error validating Organizer->Language: ", err)
 		}
 	}
 	if err := p.CalendarAddress.valid(); err != nil {
-		return errors.WithContext("error validating Organizer: ", err)
+		return errors.WithContext("error validating Organizer->CalendarAddress: ", err)
 	}
 	return nil
 }
@@ -1876,10 +1876,10 @@ func (p *PropRecurrenceDateTimes) decode(params []parser.Token, value string) er
 		switch pName {
 		case "VALUE":
 			if len(pValues) != 1 {
-				return errors.WithContext("error decoding RecurrenceDateTimes: ", ErrInvalidValue)
+				return errors.WithContext("error decoding RecurrenceDateTimes->Value: ", ErrInvalidValue)
 			}
 			if vType != -1 {
-				return errors.WithContext("error decoding RecurrenceDateTimes: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding RecurrenceDateTimes->Value: ", ErrDuplicateParam)
 			}
 			switch strings.ToUpper(pValues[0].Data) {
 			case "DATE-TIME":
@@ -1906,17 +1906,17 @@ func (p *PropRecurrenceDateTimes) decode(params []parser.Token, value string) er
 	case 0:
 		p.DateTime = new(DateTime)
 		if err := p.DateTime.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding RecurrenceDateTimes: ", err)
+			return errors.WithContext("error decoding RecurrenceDateTimes->DateTime: ", err)
 		}
 	case 1:
 		p.Date = new(Date)
 		if err := p.Date.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding RecurrenceDateTimes: ", err)
+			return errors.WithContext("error decoding RecurrenceDateTimes->Date: ", err)
 		}
 	case 2:
 		p.Period = new(Period)
 		if err := p.Period.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding RecurrenceDateTimes: ", err)
+			return errors.WithContext("error decoding RecurrenceDateTimes->Period: ", err)
 		}
 	}
 	return nil
@@ -1942,19 +1942,19 @@ func (p *PropRecurrenceDateTimes) valid() error {
 	c := 0
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
-			return errors.WithContext("error validating RecurrenceDateTimes: ", err)
+			return errors.WithContext("error validating RecurrenceDateTimes->DateTime: ", err)
 		}
 		c++
 	}
 	if p.Date != nil {
 		if err := p.Date.valid(); err != nil {
-			return errors.WithContext("error validating RecurrenceDateTimes: ", err)
+			return errors.WithContext("error validating RecurrenceDateTimes->Date: ", err)
 		}
 		c++
 	}
 	if p.Period != nil {
 		if err := p.Period.valid(); err != nil {
-			return errors.WithContext("error validating RecurrenceDateTimes: ", err)
+			return errors.WithContext("error validating RecurrenceDateTimes->Period: ", err)
 		}
 		c++
 	}
@@ -1987,18 +1987,18 @@ func (p *PropRecurrenceID) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "RANGE":
 			if p.Range != nil {
-				return errors.WithContext("error decoding RecurrenceID: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding RecurrenceID->Range: ", ErrDuplicateParam)
 			}
 			p.Range = new(Range)
 			if err := p.Range.decode(pValues); err != nil {
-				return errors.WithContext("error decoding RecurrenceID: ", err)
+				return errors.WithContext("error decoding RecurrenceID->Range: ", err)
 			}
 		case "VALUE":
 			if len(pValues) != 1 {
-				return errors.WithContext("error decoding RecurrenceID: ", ErrInvalidValue)
+				return errors.WithContext("error decoding RecurrenceID->Value: ", ErrInvalidValue)
 			}
 			if vType != -1 {
-				return errors.WithContext("error decoding RecurrenceID: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding RecurrenceID->Value: ", ErrDuplicateParam)
 			}
 			switch strings.ToUpper(pValues[0].Data) {
 			case "DATE-TIME":
@@ -2023,12 +2023,12 @@ func (p *PropRecurrenceID) decode(params []parser.Token, value string) error {
 	case 0:
 		p.DateTime = new(DateTime)
 		if err := p.DateTime.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding RecurrenceID: ", err)
+			return errors.WithContext("error decoding RecurrenceID->DateTime: ", err)
 		}
 	case 1:
 		p.Date = new(Date)
 		if err := p.Date.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding RecurrenceID: ", err)
+			return errors.WithContext("error decoding RecurrenceID->Date: ", err)
 		}
 	}
 	return nil
@@ -2052,19 +2052,19 @@ func (p *PropRecurrenceID) encode(w writer) {
 func (p *PropRecurrenceID) valid() error {
 	if p.Range != nil {
 		if err := p.Range.valid(); err != nil {
-			return errors.WithContext("error validating RecurrenceID: ", err)
+			return errors.WithContext("error validating RecurrenceID->Range: ", err)
 		}
 	}
 	c := 0
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
-			return errors.WithContext("error validating RecurrenceID: ", err)
+			return errors.WithContext("error validating RecurrenceID->DateTime: ", err)
 		}
 		c++
 	}
 	if p.Date != nil {
 		if err := p.Date.valid(); err != nil {
-			return errors.WithContext("error validating RecurrenceID: ", err)
+			return errors.WithContext("error validating RecurrenceID->Date: ", err)
 		}
 		c++
 	}
@@ -2095,11 +2095,11 @@ func (p *PropRelatedTo) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "RELTYPE":
 			if p.RelationshipType != nil {
-				return errors.WithContext("error decoding RelatedTo: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding RelatedTo->RelationshipType: ", ErrDuplicateParam)
 			}
 			p.RelationshipType = new(RelationshipType)
 			if err := p.RelationshipType.decode(pValues); err != nil {
-				return errors.WithContext("error decoding RelatedTo: ", err)
+				return errors.WithContext("error decoding RelatedTo->RelationshipType: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -2110,7 +2110,7 @@ func (p *PropRelatedTo) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.Text.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding RelatedTo: ", err)
+		return errors.WithContext("error decoding RelatedTo->Text: ", err)
 	}
 	return nil
 }
@@ -2127,11 +2127,11 @@ func (p *PropRelatedTo) encode(w writer) {
 func (p *PropRelatedTo) valid() error {
 	if p.RelationshipType != nil {
 		if err := p.RelationshipType.valid(); err != nil {
-			return errors.WithContext("error validating RelatedTo: ", err)
+			return errors.WithContext("error validating RelatedTo->RelationshipType: ", err)
 		}
 	}
 	if err := p.Text.valid(); err != nil {
-		return errors.WithContext("error validating RelatedTo: ", err)
+		return errors.WithContext("error validating RelatedTo->Text: ", err)
 	}
 	return nil
 }
@@ -2249,19 +2249,19 @@ func (p *PropResources) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "ALTREP":
 			if p.AlternativeRepresentation != nil {
-				return errors.WithContext("error decoding Resources: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Resources->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
 			p.AlternativeRepresentation = new(AlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Resources: ", err)
+				return errors.WithContext("error decoding Resources->AlternativeRepresentation: ", err)
 			}
 		case "LANGUAGE":
 			if p.Language != nil {
-				return errors.WithContext("error decoding Resources: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Resources->Language: ", ErrDuplicateParam)
 			}
 			p.Language = new(Language)
 			if err := p.Language.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Resources: ", err)
+				return errors.WithContext("error decoding Resources->Language: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -2272,7 +2272,7 @@ func (p *PropResources) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.MText.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding Resources: ", err)
+		return errors.WithContext("error decoding Resources->MText: ", err)
 	}
 	return nil
 }
@@ -2292,16 +2292,16 @@ func (p *PropResources) encode(w writer) {
 func (p *PropResources) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
-			return errors.WithContext("error validating Resources: ", err)
+			return errors.WithContext("error validating Resources->AlternativeRepresentation: ", err)
 		}
 	}
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
-			return errors.WithContext("error validating Resources: ", err)
+			return errors.WithContext("error validating Resources->Language: ", err)
 		}
 	}
 	if err := p.MText.valid(); err != nil {
-		return errors.WithContext("error validating Resources: ", err)
+		return errors.WithContext("error validating Resources->MText: ", err)
 	}
 	return nil
 }
@@ -2497,19 +2497,19 @@ func (p *PropSummary) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "ALTREP":
 			if p.AlternativeRepresentation != nil {
-				return errors.WithContext("error decoding Summary: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Summary->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
 			p.AlternativeRepresentation = new(AlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Summary: ", err)
+				return errors.WithContext("error decoding Summary->AlternativeRepresentation: ", err)
 			}
 		case "LANGUAGE":
 			if p.Language != nil {
-				return errors.WithContext("error decoding Summary: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Summary->Language: ", ErrDuplicateParam)
 			}
 			p.Language = new(Language)
 			if err := p.Language.decode(pValues); err != nil {
-				return errors.WithContext("error decoding Summary: ", err)
+				return errors.WithContext("error decoding Summary->Language: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -2520,7 +2520,7 @@ func (p *PropSummary) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.Text.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding Summary: ", err)
+		return errors.WithContext("error decoding Summary->Text: ", err)
 	}
 	return nil
 }
@@ -2540,16 +2540,16 @@ func (p *PropSummary) encode(w writer) {
 func (p *PropSummary) valid() error {
 	if p.AlternativeRepresentation != nil {
 		if err := p.AlternativeRepresentation.valid(); err != nil {
-			return errors.WithContext("error validating Summary: ", err)
+			return errors.WithContext("error validating Summary->AlternativeRepresentation: ", err)
 		}
 	}
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
-			return errors.WithContext("error validating Summary: ", err)
+			return errors.WithContext("error validating Summary->Language: ", err)
 		}
 	}
 	if err := p.Text.valid(); err != nil {
-		return errors.WithContext("error validating Summary: ", err)
+		return errors.WithContext("error validating Summary->Text: ", err)
 	}
 	return nil
 }
@@ -2623,10 +2623,10 @@ func (p *PropTrigger) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "VALUE":
 			if len(pValues) != 1 {
-				return errors.WithContext("error decoding Trigger: ", ErrInvalidValue)
+				return errors.WithContext("error decoding Trigger->Value: ", ErrInvalidValue)
 			}
 			if vType != -1 {
-				return errors.WithContext("error decoding Trigger: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding Trigger->Value: ", ErrDuplicateParam)
 			}
 			switch strings.ToUpper(pValues[0].Data) {
 			case "DURATION":
@@ -2651,12 +2651,12 @@ func (p *PropTrigger) decode(params []parser.Token, value string) error {
 	case 0:
 		p.Duration = new(Duration)
 		if err := p.Duration.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding Trigger: ", err)
+			return errors.WithContext("error decoding Trigger->Duration: ", err)
 		}
 	case 1:
 		p.DateTime = new(DateTime)
 		if err := p.DateTime.decode(oParams, value); err != nil {
-			return errors.WithContext("error decoding Trigger: ", err)
+			return errors.WithContext("error decoding Trigger->DateTime: ", err)
 		}
 	}
 	return nil
@@ -2678,13 +2678,13 @@ func (p *PropTrigger) valid() error {
 	c := 0
 	if p.Duration != nil {
 		if err := p.Duration.valid(); err != nil {
-			return errors.WithContext("error validating Trigger: ", err)
+			return errors.WithContext("error validating Trigger->Duration: ", err)
 		}
 		c++
 	}
 	if p.DateTime != nil {
 		if err := p.DateTime.valid(); err != nil {
-			return errors.WithContext("error validating Trigger: ", err)
+			return errors.WithContext("error validating Trigger->DateTime: ", err)
 		}
 		c++
 	}
@@ -2758,11 +2758,11 @@ func (p *PropTimezoneName) decode(params []parser.Token, value string) error {
 		switch pName {
 		case "LANGUAGE":
 			if p.Language != nil {
-				return errors.WithContext("error decoding TimezoneName: ", ErrDuplicateParam)
+				return errors.WithContext("error decoding TimezoneName->Language: ", ErrDuplicateParam)
 			}
 			p.Language = new(Language)
 			if err := p.Language.decode(pValues); err != nil {
-				return errors.WithContext("error decoding TimezoneName: ", err)
+				return errors.WithContext("error decoding TimezoneName->Language: ", err)
 			}
 		default:
 			for _, v := range pValues {
@@ -2773,7 +2773,7 @@ func (p *PropTimezoneName) decode(params []parser.Token, value string) error {
 		}
 	}
 	if err := p.Text.decode(oParams, value); err != nil {
-		return errors.WithContext("error decoding TimezoneName: ", err)
+		return errors.WithContext("error decoding TimezoneName->Text: ", err)
 	}
 	return nil
 }
@@ -2790,11 +2790,11 @@ func (p *PropTimezoneName) encode(w writer) {
 func (p *PropTimezoneName) valid() error {
 	if p.Language != nil {
 		if err := p.Language.valid(); err != nil {
-			return errors.WithContext("error validating TimezoneName: ", err)
+			return errors.WithContext("error validating TimezoneName->Language: ", err)
 		}
 	}
 	if err := p.Text.valid(); err != nil {
-		return errors.WithContext("error validating TimezoneName: ", err)
+		return errors.WithContext("error validating TimezoneName->Text: ", err)
 	}
 	return nil
 }

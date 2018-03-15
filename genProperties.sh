@@ -123,22 +123,22 @@ function printProperty {
 			local tParam="$(getName "$param")";
 			echo "		case \"$param\":";
 			echo "			if p.$tParam != nil {";
-			echo "				return errors.WithContext(\"error decoding $tName: \", ErrDuplicateParam)";
+			echo "				return errors.WithContext(\"error decoding $tName->$tParam: \", ErrDuplicateParam)";
 			echo "			}";
 			if [ "$param" != "DELEGATED-FROM" -a "$param" != "DELEGATED-TO" -a "$param" != "MEMBER" ]; then
 				echo "			p.$tParam = new($tParam)";
 			fi;
 			echo "			if err := p.${tParam}.decode(pValues); err != nil {";
-			echo "				return errors.WithContext(\"error decoding $tName: \", err)";
+			echo "				return errors.WithContext(\"error decoding $tName->$tParam: \", err)";
 			echo "			}";
 		done;
 		if [ ${#values[@]} -gt 1 ]; then
 			echo "		case \"VALUE\":";
 			echo "			if len(pValues) != 1 {";
-			echo "				return errors.WithContext(\"error decoding $tName: \", ErrInvalidValue)";
+			echo "				return errors.WithContext(\"error decoding $tName->Value: \", ErrInvalidValue)";
 			echo "			}";
 			echo "			if vType != -1 {";
-			echo "				return errors.WithContext(\"error decoding $tName: \", ErrDuplicateParam)";
+			echo "				return errors.WithContext(\"error decoding $tName->Value: \", ErrDuplicateParam)";
 			echo "			}";
 			echo "			switch strings.ToUpper(pValues[0].Data) {";
 			local i=0;
@@ -172,14 +172,14 @@ function printProperty {
 					echo "		p.$tValue = new($tValue)";
 				fi;
 				echo "		if err := p.${tValue}.decode(oParams, value); err != nil {";
-				echo "			return errors.WithContext(\"error decoding $tName: \", err)";
+				echo "			return errors.WithContext(\"error decoding $tName->$tValue: \", err)";
 				echo "		}";
 				let "i++";
 			done;
 			echo "	}";
 		else
 			echo "	if err := p.$(getName "${values[0]}").decode(oParams, value); err != nil {";
-			echo "		return errors.WithContext(\"error decoding $tName: \", err)";
+			echo "		return errors.WithContext(\"error decoding $tName->$(getName "${values[0]}"): \", err)";
 			echo "	}";
 		fi;;
 	1)
@@ -269,7 +269,7 @@ function printProperty {
 			tParam="$(getName "$param")";
 			echo "	if p.$tParam != nil {";
 			echo "		if err := p.${tParam}.valid(); err != nil {";
-			echo "			return errors.WithContext(\"error validating $tName: \", err)";
+			echo "			return errors.WithContext(\"error validating $tName->$tParam: \", err)";
 			echo "		}";
 			echo "	}";
 		done;
@@ -279,7 +279,7 @@ function printProperty {
 				tValue="$(getName "$value")";
 				echo "	if p.$tValue != nil {";
 				echo "		if err := p.${tValue}.valid(); err != nil {";
-				echo "			return errors.WithContext(\"error validating $tName: \", err)";
+				echo "			return errors.WithContext(\"error validating $tName->$tValue: \", err)";
 				echo "		}";
 				echo "		c++";
 				echo "	}";
@@ -289,7 +289,7 @@ function printProperty {
 			echo "	}";
 		else
 			echo "	if err := p.$(getName "${values[0]}").valid(); err != nil {";
-			echo "		return errors.WithContext(\"error validating $tName: \", err)";
+			echo "		return errors.WithContext(\"error validating $tName->$(getName "${values[0]}"): \", err)";
 			echo "	}";
 		fi;
 		echo "	return nil";;
