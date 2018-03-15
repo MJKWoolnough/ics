@@ -353,10 +353,10 @@ OFS="$IFS";
 	echo "// File automatically generated with ./genSections.sh";
 	echo;
 	echo "import (";
-	echo "	\"errors\"";
 	echo "	\"io\"";
 	echo "	\"strings\"";
 	echo;
+	echo "	\"github.com/MJKWoolnough/errors\"";
 	echo "	\"github.com/MJKWoolnough/parser\"";
 	echo ")";
 	echo;
@@ -434,11 +434,11 @@ func decodeDummy(t tokeniser, n string) error {
 }
 
 // Errors
-var (
-	ErrMultipleSingle    = errors.New("unique property found multiple times")
-	ErrInvalidEnd        = errors.New("invalid end of section")
-	ErrMissingRequired   = errors.New("required property missing")
-	ErrRequirementNotMet = errors.New("requirement not met")
+const (
+	ErrMultipleSingle    errors.Error = "unique property found multiple times"
+	ErrInvalidEnd        errors.Error = "invalid end of section"
+	ErrMissingRequired   errors.Error = "required property missing"
+	ErrRequirementNotMet errors.Error = "requirement not met"
 )
 HEREDOC
 ) > sections.go

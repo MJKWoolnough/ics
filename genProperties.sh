@@ -330,9 +330,9 @@ function printProperty {
 	echo "// File automatically generated with ./genProperties.sh";
 	echo;
 	echo "import (";
-	echo "	\"errors\"";
 	echo "	\"strings\"";
 	echo;
+	echo "	\"github.com/MJKWoolnough/errors\"";
 	echo "	\"github.com/MJKWoolnough/parser\"";
 	echo ")";
 	echo;
@@ -356,7 +356,7 @@ function printProperty {
 	} < "properties.gen";
 	printProperty;
 	echo "// Errors";
-	echo "var (";
-	echo "	ErrDuplicateParam = errors.New(\"duplicate param\")";
+	echo "const (";
+	echo "	ErrDuplicateParam errors.Error = \"duplicate param\"";
 	echo ")";
 ) > "properties.go";

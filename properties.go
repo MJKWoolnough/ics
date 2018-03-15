@@ -3,9 +3,9 @@ package ics
 // File automatically generated with ./genProperties.sh
 
 import (
-	"errors"
 	"strings"
 
+	"github.com/MJKWoolnough/errors"
 	"github.com/MJKWoolnough/parser"
 )
 
@@ -2997,6 +2997,6 @@ func (p *PropVersion) valid() error {
 }
 
 // Errors
-var (
-	ErrDuplicateParam = errors.New("duplicate param")
+const (
+	ErrDuplicateParam errors.Error = "duplicate param"
 )

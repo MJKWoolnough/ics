@@ -10,11 +10,11 @@ source "comments.sh";
 	echo "// File automatically generated with ./genParams.sh";
 	echo;
 	echo "import (";
-	echo "	\"errors\"";
 	echo "	\"regexp\"";
 	echo "	\"strings\"";
 	echo "	\"unicode/utf8\"";
 	echo;
+	echo "	\"github.com/MJKWoolnough/errors\"";
 	echo "	\"github.com/MJKWoolnough/parser\"";
 	echo ")";
 	echo;
@@ -380,8 +380,8 @@ HEREDOC
 	echo "}";
 	echo;
 	echo "// Errors";
-	echo "var (";
-	echo "	ErrInvalidParam = errors.New(\"invalid param value\")";
-	echo "	ErrInvalidValue = errors.New(\"invalid value\")";
+	echo "const (";
+	echo "	ErrInvalidParam errors.Error = \"invalid param value\"";
+	echo "	ErrInvalidValue errors.Error = \"invalid value\"";
 	echo ")";
 ) > params.go

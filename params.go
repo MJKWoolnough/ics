@@ -3,11 +3,11 @@ package ics
 // File automatically generated with ./genParams.sh
 
 import (
-	"errors"
 	"regexp"
 	"strings"
 	"unicode/utf8"
 
+	"github.com/MJKWoolnough/errors"
 	"github.com/MJKWoolnough/parser"
 )
 
@@ -1020,7 +1020,7 @@ func init() {
 }
 
 // Errors
-var (
-	ErrInvalidParam = errors.New("invalid param value")
-	ErrInvalidValue = errors.New("invalid value")
+const (
+	ErrInvalidParam errors.Error = "invalid param value"
+	ErrInvalidValue errors.Error = "invalid value"
 )
