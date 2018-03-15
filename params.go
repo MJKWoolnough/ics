@@ -17,14 +17,14 @@ type AlternativeRepresentation URI
 
 func (t *AlternativeRepresentation) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding AlternativeRepresentation: ", ErrInvalidParam)
 	}
 	if vs[0].Type != tokenParamQuotedValue {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding AlternativeRepresentation: ", ErrInvalidParam)
 	}
 	var q URI
 	if err := q.decode(nil, vs[0].Data); err != nil {
-		return err
+		return errors.WithContext("error decoding AlternativeRepresentation: ", err)
 	}
 	*t = AlternativeRepresentation(q)
 	return nil
@@ -41,7 +41,10 @@ func (t AlternativeRepresentation) encode(w writer) {
 
 func (t AlternativeRepresentation) valid() error {
 	q := URI(t)
-	return q.valid()
+	if err := q.valid(); err != nil {
+		return errors.WithContext("error validating AlternativeRepresentation: ", err)
+	}
+	return nil
 }
 
 // CommonName is the common name to be associated with the calendar user
@@ -55,7 +58,7 @@ func NewCommonName(v CommonName) *CommonName {
 
 func (t *CommonName) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding CommonName: ", ErrInvalidParam)
 	}
 	*t = CommonName(decode6868(vs[0].Data))
 	return nil
@@ -77,7 +80,7 @@ func (t CommonName) encode(w writer) {
 
 func (t CommonName) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
-		return ErrInvalidText
+		return errors.WithContext("error validating CommonName: ", ErrInvalidText)
 	}
 	return nil
 }
@@ -103,7 +106,7 @@ func (t CalendarUserType) New() *CalendarUserType {
 
 func (t *CalendarUserType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding CalendarUserType: ", ErrInvalidParam)
 	}
 	switch strings.ToUpper(vs[0].Data) {
 	case "INDIVIDUAL":
@@ -147,11 +150,11 @@ type Delegator []CalendarAddress
 func (t *Delegator) decode(vs []parser.Token) error {
 	for _, v := range vs {
 		if v.Type != tokenParamQuotedValue {
-			return ErrInvalidParam
+			return errors.WithContext("error decoding Delegator: ", ErrInvalidParam)
 		}
 		var q CalendarAddress
 		if err := q.decode(nil, v.Data); err != nil {
-			return err
+			return errors.WithContext("error decoding Delegator: ", err)
 		}
 		*t = append(*t, q)
 	}
@@ -175,7 +178,7 @@ func (t Delegator) encode(w writer) {
 func (t Delegator) valid() error {
 	for _, v := range t {
 		if err := v.valid(); err != nil {
-			return err
+			return errors.WithContext("error validation Delegator: ", err)
 		}
 	}
 	return nil
@@ -188,11 +191,11 @@ type Delagatee []CalendarAddress
 func (t *Delagatee) decode(vs []parser.Token) error {
 	for _, v := range vs {
 		if v.Type != tokenParamQuotedValue {
-			return ErrInvalidParam
+			return errors.WithContext("error decoding Delagatee: ", ErrInvalidParam)
 		}
 		var q CalendarAddress
 		if err := q.decode(nil, v.Data); err != nil {
-			return err
+			return errors.WithContext("error decoding Delagatee: ", err)
 		}
 		*t = append(*t, q)
 	}
@@ -216,7 +219,7 @@ func (t Delagatee) encode(w writer) {
 func (t Delagatee) valid() error {
 	for _, v := range t {
 		if err := v.valid(); err != nil {
-			return err
+			return errors.WithContext("error validation Delagatee: ", err)
 		}
 	}
 	return nil
@@ -233,10 +236,10 @@ func NewDirectoryEntry(v DirectoryEntry) *DirectoryEntry {
 
 func (t *DirectoryEntry) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding DirectoryEntry: ", ErrInvalidParam)
 	}
 	if vs[0].Type != tokenParamQuotedValue {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding DirectoryEntry: ", ErrInvalidParam)
 	}
 	*t = DirectoryEntry(decode6868(vs[0].Data))
 	return nil
@@ -254,7 +257,7 @@ func (t DirectoryEntry) encode(w writer) {
 
 func (t DirectoryEntry) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
-		return ErrInvalidText
+		return errors.WithContext("error validating DirectoryEntry: ", ErrInvalidText)
 	}
 	return nil
 }
@@ -276,7 +279,7 @@ func (t Encoding) New() *Encoding {
 
 func (t *Encoding) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding Encoding: ", ErrInvalidParam)
 	}
 	switch strings.ToUpper(vs[0].Data) {
 	case "8BIT":
@@ -284,7 +287,7 @@ func (t *Encoding) decode(vs []parser.Token) error {
 	case "BASE64":
 		*t = EncodingBase64
 	default:
-		return ErrInvalidParam
+		return errors.WithContext("error decoding Encoding: ", ErrInvalidParam)
 	}
 	return nil
 }
@@ -303,7 +306,7 @@ func (t Encoding) valid() error {
 	switch t {
 	case Encoding8bit, EncodingBase64:
 	default:
-		return ErrInvalidValue
+		return errors.WithContext("error validating Encoding: ", ErrInvalidValue)
 	}
 	return nil
 }
@@ -320,10 +323,10 @@ var regexFormatType *regexp.Regexp
 
 func (t *FormatType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding FormatType: ", ErrInvalidParam)
 	}
 	if !regexFormatType.MatchString(vs[0].Data) {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding FormatType: ", ErrInvalidParam)
 	}
 	*t = FormatType(vs[0].Data)
 	return nil
@@ -345,7 +348,7 @@ func (t FormatType) encode(w writer) {
 
 func (t FormatType) valid() error {
 	if !regexFormatType.Match([]byte(t)) {
-		return ErrInvalidValue
+		return errors.WithContext("error validating FormatType: ", ErrInvalidValue)
 	}
 	return nil
 }
@@ -370,7 +373,7 @@ func (t FreeBusyType) New() *FreeBusyType {
 
 func (t *FreeBusyType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding FreeBusyType: ", ErrInvalidParam)
 	}
 	switch strings.ToUpper(vs[0].Data) {
 	case "FREE":
@@ -417,7 +420,7 @@ func NewLanguage(v Language) *Language {
 
 func (t *Language) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding Language: ", ErrInvalidParam)
 	}
 	*t = Language(decode6868(vs[0].Data))
 	return nil
@@ -439,7 +442,7 @@ func (t Language) encode(w writer) {
 
 func (t Language) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
-		return ErrInvalidText
+		return errors.WithContext("error validating Language: ", ErrInvalidText)
 	}
 	return nil
 }
@@ -455,7 +458,7 @@ func NewMember(v Member) *Member {
 func (t *Member) decode(vs []parser.Token) error {
 	for _, v := range vs {
 		if v.Type != tokenParamQuotedValue {
-			return ErrInvalidParam
+			return errors.WithContext("error decoding Member: ", ErrInvalidParam)
 		}
 		*t = append(*t, decode6868(v.Data))
 	}
@@ -480,7 +483,7 @@ func (t Member) encode(w writer) {
 func (t Member) valid() error {
 	for _, v := range t {
 		if strings.ContainsAny(string(v), nonsafeChars[:31]) {
-			return ErrInvalidText
+			return errors.WithContext("error validating Member: ", ErrInvalidText)
 		}
 	}
 	return nil
@@ -510,7 +513,7 @@ func (t ParticipationStatus) New() *ParticipationStatus {
 
 func (t *ParticipationStatus) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding ParticipationStatus: ", ErrInvalidParam)
 	}
 	switch strings.ToUpper(vs[0].Data) {
 	case "NEEDS-ACTION":
@@ -565,10 +568,10 @@ type Range struct{}
 
 func (t *Range) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding Range: ", ErrInvalidParam)
 	}
 	if strings.ToUpper(vs[0].Data) != "THISANDFUTURE" {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding Range", ErrInvalidParam)
 	}
 	return nil
 }
@@ -600,7 +603,7 @@ func (t Related) New() *Related {
 
 func (t *Related) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding Related: ", ErrInvalidParam)
 	}
 	switch strings.ToUpper(vs[0].Data) {
 	case "START":
@@ -608,7 +611,7 @@ func (t *Related) decode(vs []parser.Token) error {
 	case "END":
 		*t = RelatedEnd
 	default:
-		return ErrInvalidParam
+		return errors.WithContext("error decoding Related: ", ErrInvalidParam)
 	}
 	return nil
 }
@@ -627,7 +630,7 @@ func (t Related) valid() error {
 	switch t {
 	case RelatedStart, RelatedEnd:
 	default:
-		return ErrInvalidValue
+		return errors.WithContext("error validating Related: ", ErrInvalidValue)
 	}
 	return nil
 }
@@ -652,7 +655,7 @@ func (t RelationshipType) New() *RelationshipType {
 
 func (t *RelationshipType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding RelationshipType: ", ErrInvalidParam)
 	}
 	switch strings.ToUpper(vs[0].Data) {
 	case "PARENT":
@@ -706,7 +709,7 @@ func (t ParticipationRole) New() *ParticipationRole {
 
 func (t *ParticipationRole) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding ParticipationRole: ", ErrInvalidParam)
 	}
 	switch strings.ToUpper(vs[0].Data) {
 	case "REQ-PARTICIPANT":
@@ -754,11 +757,11 @@ func NewRSVP(v RSVP) *RSVP {
 
 func (t *RSVP) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding RSVP: ", ErrInvalidParam)
 	}
 	var q Boolean
 	if err := q.decode(nil, vs[0].Data); err != nil {
-		return err
+		return errors.WithContext("error decoding RSVP: ", err)
 	}
 	*t = RSVP(q)
 	return nil
@@ -788,10 +791,10 @@ func NewSentBy(v SentBy) *SentBy {
 
 func (t *SentBy) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding SentBy: ", ErrInvalidParam)
 	}
 	if vs[0].Type != tokenParamQuotedValue {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding SentBy: ", ErrInvalidParam)
 	}
 	*t = SentBy(decode6868(vs[0].Data))
 	return nil
@@ -809,7 +812,7 @@ func (t SentBy) encode(w writer) {
 
 func (t SentBy) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
-		return ErrInvalidText
+		return errors.WithContext("error validating SentBy: ", ErrInvalidText)
 	}
 	return nil
 }
@@ -825,7 +828,7 @@ func NewTimezoneID(v TimezoneID) *TimezoneID {
 
 func (t *TimezoneID) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding TimezoneID: ", ErrInvalidParam)
 	}
 	*t = TimezoneID(decode6868(vs[0].Data))
 	return nil
@@ -847,7 +850,7 @@ func (t TimezoneID) encode(w writer) {
 
 func (t TimezoneID) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
-		return ErrInvalidText
+		return errors.WithContext("error validating TimezoneID: ", ErrInvalidText)
 	}
 	return nil
 }
@@ -883,7 +886,7 @@ func (t Value) New() *Value {
 
 func (t *Value) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
-		return ErrInvalidParam
+		return errors.WithContext("error decoding Value: ", ErrInvalidParam)
 	}
 	switch strings.ToUpper(vs[0].Data) {
 	case "BINARY":

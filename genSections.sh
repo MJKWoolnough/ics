@@ -81,9 +81,9 @@ function printSection {
 	echo "	for {"
 	echo "		p, err := t.GetPhrase()";
 	echo "		if err != nil {";
-	echo "			return err";
+	echo "			return errors.WithContext(\"error decoding $sName: \", err)";
 	echo "		} else if p.Type == parser.PhraseDone {";
-	echo "			return io.ErrUnexpectedEOF";
+	echo "			return errors.WithContext(\"error decoding $sName: \", io.ErrUnexpectedEOF)";
 	echo "		}";
 	echo "		params := p.Data[1 : len(p.Data)-1]";
 	echo "		value := p.Data[len(p.Data)-1].Data";
@@ -106,31 +106,31 @@ function printSection {
 		echo "			case \"$keyword\":";
 		if $required && ! $multiple; then
 			echo "				if required$name {";
-			echo "					return ErrMultipleSingle";
+			echo "					return errors.Error(\"error decoding $sName: multiple $name\")";
 			echo "				}";
 			echo "				required$name = true";
 			echo "				if err := s.${name}.decode(t); err != nil {";
-			echo "					return err";
+			echo "					return errors.WithContext(\"error decoding $sName->$name: \", err)";
 			echo "				}";
 		elif $multiple; then
 			echo "				var e $name";
 			echo "				if err := e.decode(t); err != nil {";
-			echo "					return err";
+			echo "					return errors.WithContext(\"error decoding $sName->$name: \", err)";
 			echo "				}";
 			echo "				s.$name = append(s.$name, e)";
 		else
 			echo "				if s.$name != nil {";
-			echo "					return ErrMultipleSingle";
+			echo "					return errors.Error(\"error decoding $sName: multiple $name\")";
 			echo "				}";
 			echo "				s.$name = new($name)";
 			echo "				if err := s.${name}.decode(t); err != nil {";
-			echo "					return err";
+			echo "					return errors.WithContext(\"error decoding $sName->$name: \", err)";
 			echo "				}";
 		fi;
 	done;
 	echo "			default:";
 	echo "				if err := decodeDummy(t, n); err != nil {";
-	echo "					return err";
+	echo "					return errors.WithContext(\"error decoding $sName: \", err)";
 	echo "				}";
 	echo "			}";
 
@@ -149,25 +149,25 @@ function printSection {
 		echo "		case \"$keyword\":";
 		if $required && ! $multiple; then
 			echo "			if required$name {";
-			echo "				return ErrMultipleSingle";
+			echo "				return errors.Error(\"error decoding $sName: multiple $name\")";
 			echo "			}";
 			echo "			required$name = true";
 			echo "			if err := s.${name}.decode(params, value); err != nil {";
-			echo "				return err";
+			echo "				return errors.WithContext(\"error decoding $sName->$name: \", err)";
 			echo "			}";
 		elif $multiple; then
 			echo "			var e Prop$name";
 			echo "			if err := e.decode(params, value); err != nil {";
-			echo "				return err";
+			echo "				return errors.WithContext(\"error decoding $sName->$name: \", err)";
 			echo "			}";
 			echo "			s.$name = append(s.$name, e)";
 		else
 			echo "			if s.$name != nil {";
-			echo "				return ErrMultipleSingle";
+			echo "				return errors.Error(\"error decoding $sName: multiple $name\")";
 			echo "			}";
 			echo "			s.$name = new(Prop$name)";
 			echo "			if err := s.${name}.decode(params, value); err != nil {";
-			echo "				return err";
+			echo "				return errors.WithContext(\"error decoding $sName->$name: \", err)";
 			echo "			}";
 		fi;
 	done;
@@ -177,7 +177,7 @@ function printSection {
 	else
 		echo "			if value != \"$sectionName\" {";
 	fi;
-	echo "				return ErrInvalidEnd"
+	echo "				return errors.WithContext(\"error decoding $sName: \", ErrInvalidEnd)"
 	echo "			}";
 	echo "			break Loop";
 	echo "		}";
@@ -206,7 +206,7 @@ function printSection {
 			fi;
 		done;
 		echo " {";
-		echo "		return ErrMissingRequired";
+		echo "		return errors.WithContext(\"error decoding $sName: \", ErrMissingRequired)";
 		echo "	}";
 	fi;
 
@@ -265,7 +265,7 @@ function printSection {
 			echo -n ")";
 		fi;
 		echo " {";
-		echo "		return ErrRequirementNotMet";
+		echo "		return errors.WithContext(\"error decoding $sName: \", ErrRequirementNotMet)";
 		echo "	}";
 	done;
 
@@ -315,23 +315,23 @@ function printSection {
 		if $multiple; then
 			if $required; then
 				echo "	if len(s.$name) == 0 {";
-				echo "		return ErrMissingRequired";
+				echo "		return errors.Error(\"error validating $sName: missing $name\")";
 				echo "	}";
 			fi;
 			echo "	for n := range s.$name {";
 			echo "		if err := s.$name[n].valid(); err != nil {";
-			echo "			return err";
+			echo "			return errors.WithContext(\"error validating $sName->$name: \", err)";
 			echo "		}";
 			echo "	}";
 		else
 			if $required; then
 				echo "	if err := s.${name}.valid(); err != nil {";
-				echo "		return err";
+				echo "		return errors.WithContext(\"error validating $sName->$name: \", err)";
 				echo "	}";
 			else
 				echo "	if s.$name != nil {";
 				echo "		if err := s.${name}.valid(); err != nil {";
-				echo "			return err";
+				echo "			return errors.WithContext(\"error validating $sName->$name: \", err)";
 				echo "		}";
 				echo "	}";
 			fi;

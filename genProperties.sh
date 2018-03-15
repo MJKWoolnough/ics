@@ -123,22 +123,22 @@ function printProperty {
 			local tParam="$(getName "$param")";
 			echo "		case \"$param\":";
 			echo "			if p.$tParam != nil {";
-			echo "				return ErrDuplicateParam";
+			echo "				return errors.WithContext(\"error decoding $tName: \", ErrDuplicateParam)";
 			echo "			}";
 			if [ "$param" != "DELEGATED-FROM" -a "$param" != "DELEGATED-TO" -a "$param" != "MEMBER" ]; then
 				echo "			p.$tParam = new($tParam)";
 			fi;
 			echo "			if err := p.${tParam}.decode(pValues); err != nil {";
-			echo "				return err";
+			echo "				return errors.WithContext(\"error decoding $tName: \", err)";
 			echo "			}";
 		done;
 		if [ ${#values[@]} -gt 1 ]; then
 			echo "		case \"VALUE\":";
 			echo "			if len(pValues) != 1 {";
-			echo "				return ErrInvalidValue";
+			echo "				return errors.WithContext(\"error decoding $tName: \", ErrInvalidValue)";
 			echo "			}";
 			echo "			if vType != -1 {";
-			echo "				return ErrDuplicateParam";
+			echo "				return errors.WithContext(\"error decoding $tName: \", ErrDuplicateParam)";
 			echo "			}";
 			echo "			switch strings.ToUpper(pValues[0].Data) {";
 			local i=0;
@@ -148,7 +148,7 @@ function printProperty {
 				let "i++";
 			done;
 			echo "			default:";
-			echo "				return ErrInvalidValue";
+			echo "				return errors.WithContext(\"error decoding $tName: \", ErrInvalidValue)";
 			echo "			}";
 		fi;
 		echo "		default:";
@@ -172,14 +172,14 @@ function printProperty {
 					echo "		p.$tValue = new($tValue)";
 				fi;
 				echo "		if err := p.${tValue}.decode(oParams, value); err != nil {";
-				echo "			return err";
+				echo "			return errors.WithContext(\"error decoding $tName: \", err)";
 				echo "		}";
 				let "i++";
 			done;
 			echo "	}";
 		else
 			echo "	if err := p.$(getName "${values[0]}").decode(oParams, value); err != nil {";
-			echo "		return err";
+			echo "		return errors.WithContext(\"error decoding $tName: \", err)";
 			echo "	}";
 		fi;;
 	1)
@@ -189,7 +189,7 @@ function printProperty {
 			echo "		*p = $tName$(getName "$value")";
 		done;
 		echo "	default:";
-		echo "		return ErrInvalidValue";
+		echo "		return errors.WithContext(\"error decoding $tName: \", ErrInvalidValue)";
 		echo "	}";;
 	2)
 		echo "	oParams := make(map[string]string)";
@@ -209,7 +209,7 @@ function printProperty {
 		echo "	}";
 		echo "	var t ${values[0]}";
 		echo "	if err := t.decode(oParams, value); err != nil {";
-		echo "		return err";
+		echo "		return errors.WithContext(\"error decoding $tName: \", err)";
 		echo "	}";
 		echo "	*p = Prop$tName(t)";
 	esac;
@@ -269,7 +269,7 @@ function printProperty {
 			tParam="$(getName "$param")";
 			echo "	if p.$tParam != nil {";
 			echo "		if err := p.${tParam}.valid(); err != nil {";
-			echo "			return err";
+			echo "			return errors.WithContext(\"error validating $tName: \", err)";
 			echo "		}";
 			echo "	}";
 		done;
@@ -279,17 +279,17 @@ function printProperty {
 				tValue="$(getName "$value")";
 				echo "	if p.$tValue != nil {";
 				echo "		if err := p.${tValue}.valid(); err != nil {";
-				echo "			return err";
+				echo "			return errors.WithContext(\"error validating $tName: \", err)";
 				echo "		}";
 				echo "		c++";
 				echo "	}";
 			done;
 			echo "	if c != 1 {";
-			echo "		return ErrInvalidValue";
+			echo "		return errors.WithContext(\"error validating $tName: \", ErrInvalidValue)";
 			echo "	}";
 		else
 			echo "	if err := p.$(getName "${values[0]}").valid(); err != nil {";
-			echo "		return err";
+			echo "		return errors.WithContext(\"error validating $tName: \", err)";
 			echo "	}";
 		fi;
 		echo "	return nil";;
@@ -306,12 +306,15 @@ function printProperty {
 		done;
 		echo ":";
 		echo "	default:";
-		echo "		return ErrInvalidValue";
+		echo "		return errors.WithContext(\"error validating $tName: \", ErrInvalidValue)";
 		echo "	}";
 		echo "	return nil";;
 	2)
 		echo "	t := ${values[0]}(*p)";
-		echo "	return t.valid()";
+		echo "	if err := t.valid(); err != nil {";
+		echo "		return errors.WithContext(\"error validating $tName: \", err)";
+		echo "	}";
+		echo "	return nil";
 	esac;
 	echo "}";
 	echo;
