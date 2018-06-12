@@ -356,8 +356,8 @@ OFS="$IFS";
 	echo "	\"io\"";
 	echo "	\"strings\"";
 	echo;
-	echo "	\"github.com/MJKWoolnough/errors\"";
-	echo "	\"github.com/MJKWoolnough/parser\"";
+	echo "	\"vimagination.zapto.org/errors\"";
+	echo "	\"vimagination.zapto.org/parser\"";
 	echo ")";
 	echo;
 
@@ -435,7 +435,6 @@ func decodeDummy(t tokeniser, n string) error {
 
 // Errors
 const (
-	ErrMultipleSingle    errors.Error = "unique property found multiple times"
 	ErrInvalidEnd        errors.Error = "invalid end of section"
 	ErrMissingRequired   errors.Error = "required property missing"
 	ErrRequirementNotMet errors.Error = "requirement not met"

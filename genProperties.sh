@@ -335,8 +335,8 @@ function printProperty {
 	echo "import (";
 	echo "	\"strings\"";
 	echo;
-	echo "	\"github.com/MJKWoolnough/errors\"";
-	echo "	\"github.com/MJKWoolnough/parser\"";
+	echo "	\"vimagination.zapto.org/errors\"";
+	echo "	\"vimagination.zapto.org/parser\"";
 	echo ")";
 	echo;
 	{

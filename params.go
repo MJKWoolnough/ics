@@ -7,8 +7,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/MJKWoolnough/errors"
-	"github.com/MJKWoolnough/parser"
+	"vimagination.zapto.org/errors"
+	"vimagination.zapto.org/parser"
 )
 
 // AlternativeRepresentation is an alternate text representation for the

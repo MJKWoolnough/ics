@@ -14,8 +14,8 @@ source "comments.sh";
 	echo "	\"strings\"";
 	echo "	\"unicode/utf8\"";
 	echo;
-	echo "	\"github.com/MJKWoolnough/errors\"";
-	echo "	\"github.com/MJKWoolnough/parser\"";
+	echo "	\"vimagination.zapto.org/errors\"";
+	echo "	\"vimagination.zapto.org/parser\"";
 	echo ")";
 	echo;
 	{
