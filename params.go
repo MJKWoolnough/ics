@@ -1034,6 +1034,42 @@ func (t ParamID) valid() error {
 	return nil
 }
 
+// AgentID
+type ParamAgentID string
+
+// NewAgentID returns a *ParamAgentID for ease of use with optional values
+func NewAgentID(v ParamAgentID) *ParamAgentID {
+	return &v
+}
+
+func (t *ParamAgentID) decode(vs []parser.Token) error {
+	if len(vs) != 1 {
+		return errors.WithContext("error decoding AgentID: ", ErrInvalidParam)
+	}
+	if vs[0].Type != tokenParamQuotedValue {
+		return errors.WithContext("error decoding AgentID: ", ErrInvalidParam)
+	}
+	*t = ParamAgentID(decode6868(vs[0].Data))
+	return nil
+}
+
+func (t ParamAgentID) encode(w writer) {
+	if len(t) == 0 {
+		return
+	}
+	w.WriteString(";AGENT-ID=")
+	w.WriteString("\"")
+	w.Write(encode6868(string(t)))
+	w.WriteString("\"")
+}
+
+func (t ParamAgentID) valid() error {
+	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
+		return errors.WithContext("error validating AgentID: ", ErrInvalidText)
+	}
+	return nil
+}
+
 func decode6868(s string) string {
 	t := parser.NewStringTokeniser(s)
 	d := make([]byte, 0, len(s))

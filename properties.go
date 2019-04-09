@@ -3103,8 +3103,9 @@ func (p *PropVersion) valid() error {
 
 // PropAlarmAgent
 type PropAlarmAgent struct {
-	URI *ParamURI
-	ID  *ParamID
+	URI     *ParamURI
+	ID      *ParamID
+	AgentID *ParamAgentID
 	Text
 }
 
@@ -3136,6 +3137,14 @@ func (p *PropAlarmAgent) decode(params []parser.Token, value string) error {
 			if err := p.ID.decode(pValues); err != nil {
 				return errors.WithContext("error decoding AlarmAgent->ID: ", err)
 			}
+		case "AGENT-ID":
+			if p.AgentID != nil {
+				return errors.WithContext("error decoding AlarmAgent->AgentID: ", ErrDuplicateParam)
+			}
+			p.AgentID = new(ParamAgentID)
+			if err := p.AgentID.decode(pValues); err != nil {
+				return errors.WithContext("error decoding AlarmAgent->AgentID: ", err)
+			}
 		default:
 			for _, v := range pValues {
 				ts = append(ts, v.Data)
@@ -3158,6 +3167,9 @@ func (p *PropAlarmAgent) encode(w writer) {
 	if p.ID != nil {
 		p.ID.encode(w)
 	}
+	if p.AgentID != nil {
+		p.AgentID.encode(w)
+	}
 	p.Text.aencode(w)
 	w.WriteString("\r\n")
 }
@@ -3171,6 +3183,11 @@ func (p *PropAlarmAgent) valid() error {
 	if p.ID != nil {
 		if err := p.ID.valid(); err != nil {
 			return errors.WithContext("error validating AlarmAgent->ID: ", err)
+		}
+	}
+	if p.AgentID != nil {
+		if err := p.AgentID.valid(); err != nil {
+			return errors.WithContext("error validating AlarmAgent->AgentID: ", err)
 		}
 	}
 	if err := p.Text.valid(); err != nil {
