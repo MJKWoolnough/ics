@@ -3315,6 +3315,90 @@ func (p *PropAcknowledged) valid() error {
 	return nil
 }
 
+// PropProximity
+type PropProximity Text
+
+func (p *PropProximity) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
+	var t Text
+	if err := t.decode(oParams, value); err != nil {
+		return errors.WithContext("error decoding Proximity: ", err)
+	}
+	*p = PropProximity(t)
+	return nil
+}
+
+func (p *PropProximity) encode(w writer) {
+	w.WriteString("PROXIMITY")
+	t := Text(*p)
+	t.aencode(w)
+	w.WriteString("\r\n")
+}
+
+func (p *PropProximity) valid() error {
+	t := Text(*p)
+	if err := t.valid(); err != nil {
+		return errors.WithContext("error validating Proximity: ", err)
+	}
+	return nil
+}
+
+// PropGeoLocation
+type PropGeoLocation URI
+
+func (p *PropGeoLocation) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
+	var t URI
+	if err := t.decode(oParams, value); err != nil {
+		return errors.WithContext("error decoding GeoLocation: ", err)
+	}
+	*p = PropGeoLocation(t)
+	return nil
+}
+
+func (p *PropGeoLocation) encode(w writer) {
+	w.WriteString("GEO-LOCATION")
+	t := URI(*p)
+	t.aencode(w)
+	w.WriteString("\r\n")
+}
+
+func (p *PropGeoLocation) valid() error {
+	t := URI(*p)
+	if err := t.valid(); err != nil {
+		return errors.WithContext("error validating GeoLocation: ", err)
+	}
+	return nil
+}
+
 // Errors
 const (
 	ErrDuplicateParam errors.Error = "duplicate param"

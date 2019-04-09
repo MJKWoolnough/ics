@@ -2326,6 +2326,8 @@ type AlarmAudio struct {
 	AlarmStatus   *PropAlarmStatus
 	LastTriggered *PropLastTriggered
 	Acknowledged  *PropAcknowledged
+	Proximity     *PropProximity
+	GeoLocation   *PropGeoLocation
 }
 
 func (s *AlarmAudio) decode(t tokeniser) error {
@@ -2418,6 +2420,22 @@ Loop:
 			if err := s.Acknowledged.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmAudio->Acknowledged: ", err)
 			}
+		case "PROXIMITY":
+			if s.Proximity != nil {
+				return errors.Error("error decoding AlarmAudio: multiple Proximity")
+			}
+			s.Proximity = new(PropProximity)
+			if err := s.Proximity.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmAudio->Proximity: ", err)
+			}
+		case "GEO-LOCATION":
+			if s.GeoLocation != nil {
+				return errors.Error("error decoding AlarmAudio: multiple GeoLocation")
+			}
+			s.GeoLocation = new(PropGeoLocation)
+			if err := s.GeoLocation.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmAudio->GeoLocation: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmAudio: ", ErrInvalidEnd)
@@ -2427,6 +2445,9 @@ Loop:
 	}
 	if !requiredTrigger {
 		return errors.WithContext("error decoding AlarmAudio: ", ErrMissingRequired)
+	}
+	if s.GeoLocation != nil && (s.Proximity == nil) {
+		return errors.WithContext("error decoding AlarmAudio: ", ErrRequirementNotMet)
 	}
 	return nil
 }
@@ -2456,6 +2477,12 @@ func (s *AlarmAudio) encode(w writer) {
 	}
 	if s.Acknowledged != nil {
 		s.Acknowledged.encode(w)
+	}
+	if s.Proximity != nil {
+		s.Proximity.encode(w)
+	}
+	if s.GeoLocation != nil {
+		s.GeoLocation.encode(w)
 	}
 }
 
@@ -2503,6 +2530,16 @@ func (s *AlarmAudio) valid() error {
 			return errors.WithContext("error validating AlarmAudio->Acknowledged: ", err)
 		}
 	}
+	if s.Proximity != nil {
+		if err := s.Proximity.valid(); err != nil {
+			return errors.WithContext("error validating AlarmAudio->Proximity: ", err)
+		}
+	}
+	if s.GeoLocation != nil {
+		if err := s.GeoLocation.valid(); err != nil {
+			return errors.WithContext("error validating AlarmAudio->GeoLocation: ", err)
+		}
+	}
 	return nil
 }
 
@@ -2517,6 +2554,8 @@ type AlarmDisplay struct {
 	AlarmStatus   *PropAlarmStatus
 	LastTriggered *PropLastTriggered
 	Acknowledged  *PropAcknowledged
+	Proximity     *PropProximity
+	GeoLocation   *PropGeoLocation
 }
 
 func (s *AlarmDisplay) decode(t tokeniser) error {
@@ -2611,6 +2650,22 @@ Loop:
 			if err := s.Acknowledged.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmDisplay->Acknowledged: ", err)
 			}
+		case "PROXIMITY":
+			if s.Proximity != nil {
+				return errors.Error("error decoding AlarmDisplay: multiple Proximity")
+			}
+			s.Proximity = new(PropProximity)
+			if err := s.Proximity.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmDisplay->Proximity: ", err)
+			}
+		case "GEO-LOCATION":
+			if s.GeoLocation != nil {
+				return errors.Error("error decoding AlarmDisplay: multiple GeoLocation")
+			}
+			s.GeoLocation = new(PropGeoLocation)
+			if err := s.GeoLocation.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmDisplay->GeoLocation: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmDisplay: ", ErrInvalidEnd)
@@ -2620,6 +2675,9 @@ Loop:
 	}
 	if !requiredDescription || !requiredTrigger {
 		return errors.WithContext("error decoding AlarmDisplay: ", ErrMissingRequired)
+	}
+	if s.GeoLocation != nil && (s.Proximity == nil) {
+		return errors.WithContext("error decoding AlarmDisplay: ", ErrRequirementNotMet)
 	}
 	return nil
 }
@@ -2647,6 +2705,12 @@ func (s *AlarmDisplay) encode(w writer) {
 	}
 	if s.Acknowledged != nil {
 		s.Acknowledged.encode(w)
+	}
+	if s.Proximity != nil {
+		s.Proximity.encode(w)
+	}
+	if s.GeoLocation != nil {
+		s.GeoLocation.encode(w)
 	}
 }
 
@@ -2692,6 +2756,16 @@ func (s *AlarmDisplay) valid() error {
 			return errors.WithContext("error validating AlarmDisplay->Acknowledged: ", err)
 		}
 	}
+	if s.Proximity != nil {
+		if err := s.Proximity.valid(); err != nil {
+			return errors.WithContext("error validating AlarmDisplay->Proximity: ", err)
+		}
+	}
+	if s.GeoLocation != nil {
+		if err := s.GeoLocation.valid(); err != nil {
+			return errors.WithContext("error validating AlarmDisplay->GeoLocation: ", err)
+		}
+	}
 	return nil
 }
 
@@ -2708,6 +2782,8 @@ type AlarmEmail struct {
 	AlarmStatus   *PropAlarmStatus
 	LastTriggered *PropLastTriggered
 	Acknowledged  *PropAcknowledged
+	Proximity     *PropProximity
+	GeoLocation   *PropGeoLocation
 }
 
 func (s *AlarmEmail) decode(t tokeniser) error {
@@ -2818,6 +2894,22 @@ Loop:
 			if err := s.Acknowledged.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmEmail->Acknowledged: ", err)
 			}
+		case "PROXIMITY":
+			if s.Proximity != nil {
+				return errors.Error("error decoding AlarmEmail: multiple Proximity")
+			}
+			s.Proximity = new(PropProximity)
+			if err := s.Proximity.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmEmail->Proximity: ", err)
+			}
+		case "GEO-LOCATION":
+			if s.GeoLocation != nil {
+				return errors.Error("error decoding AlarmEmail: multiple GeoLocation")
+			}
+			s.GeoLocation = new(PropGeoLocation)
+			if err := s.GeoLocation.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmEmail->GeoLocation: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmEmail: ", ErrInvalidEnd)
@@ -2827,6 +2919,9 @@ Loop:
 	}
 	if !requiredDescription || !requiredTrigger || !requiredSummary {
 		return errors.WithContext("error decoding AlarmEmail: ", ErrMissingRequired)
+	}
+	if s.GeoLocation != nil && (s.Proximity == nil) {
+		return errors.WithContext("error decoding AlarmEmail: ", ErrRequirementNotMet)
 	}
 	if t := s.Duration == nil; t == (s.Repeat == nil) {
 		return errors.WithContext("error decoding AlarmEmail: ", ErrRequirementNotMet)
@@ -2861,6 +2956,12 @@ func (s *AlarmEmail) encode(w writer) {
 	}
 	if s.Acknowledged != nil {
 		s.Acknowledged.encode(w)
+	}
+	if s.Proximity != nil {
+		s.Proximity.encode(w)
+	}
+	if s.GeoLocation != nil {
+		s.GeoLocation.encode(w)
 	}
 }
 
@@ -2914,6 +3015,16 @@ func (s *AlarmEmail) valid() error {
 			return errors.WithContext("error validating AlarmEmail->Acknowledged: ", err)
 		}
 	}
+	if s.Proximity != nil {
+		if err := s.Proximity.valid(); err != nil {
+			return errors.WithContext("error validating AlarmEmail->Proximity: ", err)
+		}
+	}
+	if s.GeoLocation != nil {
+		if err := s.GeoLocation.valid(); err != nil {
+			return errors.WithContext("error validating AlarmEmail->GeoLocation: ", err)
+		}
+	}
 	return nil
 }
 
@@ -2927,6 +3038,8 @@ type AlarmURI struct {
 	AlarmStatus   *PropAlarmStatus
 	LastTriggered *PropLastTriggered
 	Acknowledged  *PropAcknowledged
+	Proximity     *PropProximity
+	GeoLocation   *PropGeoLocation
 }
 
 func (s *AlarmURI) decode(t tokeniser) error {
@@ -3013,6 +3126,22 @@ Loop:
 			if err := s.Acknowledged.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmURI->Acknowledged: ", err)
 			}
+		case "PROXIMITY":
+			if s.Proximity != nil {
+				return errors.Error("error decoding AlarmURI: multiple Proximity")
+			}
+			s.Proximity = new(PropProximity)
+			if err := s.Proximity.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmURI->Proximity: ", err)
+			}
+		case "GEO-LOCATION":
+			if s.GeoLocation != nil {
+				return errors.Error("error decoding AlarmURI: multiple GeoLocation")
+			}
+			s.GeoLocation = new(PropGeoLocation)
+			if err := s.GeoLocation.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmURI->GeoLocation: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmURI: ", ErrInvalidEnd)
@@ -3022,6 +3151,9 @@ Loop:
 	}
 	if !requiredURI {
 		return errors.WithContext("error decoding AlarmURI: ", ErrMissingRequired)
+	}
+	if s.GeoLocation != nil && (s.Proximity == nil) {
+		return errors.WithContext("error decoding AlarmURI: ", ErrRequirementNotMet)
 	}
 	if t := s.Duration == nil; t == (s.Repeat == nil) {
 		return errors.WithContext("error decoding AlarmURI: ", ErrRequirementNotMet)
@@ -3051,6 +3183,12 @@ func (s *AlarmURI) encode(w writer) {
 	}
 	if s.Acknowledged != nil {
 		s.Acknowledged.encode(w)
+	}
+	if s.Proximity != nil {
+		s.Proximity.encode(w)
+	}
+	if s.GeoLocation != nil {
+		s.GeoLocation.encode(w)
 	}
 }
 
@@ -3091,6 +3229,16 @@ func (s *AlarmURI) valid() error {
 	if s.Acknowledged != nil {
 		if err := s.Acknowledged.valid(); err != nil {
 			return errors.WithContext("error validating AlarmURI->Acknowledged: ", err)
+		}
+	}
+	if s.Proximity != nil {
+		if err := s.Proximity.valid(); err != nil {
+			return errors.WithContext("error validating AlarmURI->Proximity: ", err)
+		}
+	}
+	if s.GeoLocation != nil {
+		if err := s.GeoLocation.valid(); err != nil {
+			return errors.WithContext("error validating AlarmURI->GeoLocation: ", err)
 		}
 	}
 	return nil
