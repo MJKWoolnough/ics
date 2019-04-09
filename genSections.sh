@@ -9,8 +9,8 @@ declare sectionName;
 declare longest=0;
 
 function addToSection {
-	declare name="$(getName "$1")";
-	currSection[${#currSection[@]}]="$name $1 $2 $3 $4";
+	declare name="$(getName "${1%#*}")";
+	currSection[${#currSection[@]}]="$name ${1##*#} $2 $3 $4";
 	local l=${#name};
 	if [ $l -gt $longest ]; then
 		longest=$l;

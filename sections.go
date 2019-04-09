@@ -2317,12 +2317,13 @@ func (s *Daylight) valid() error {
 
 // AlarmAudio provides a group of components that define an Audio Alarm
 type AlarmAudio struct {
-	Trigger    PropTrigger
-	Duration   *PropDuration
-	Repeat     *PropRepeat
-	Attachment []PropAttachment
-	AlarmAgent *PropAlarmAgent
-	UID        *PropUID
+	Trigger     PropTrigger
+	Duration    *PropDuration
+	Repeat      *PropRepeat
+	Attachment  []PropAttachment
+	UID         *PropUID
+	AlarmAgent  *PropAlarmAgent
+	AlarmStatus *PropAlarmStatus
 }
 
 func (s *AlarmAudio) decode(t tokeniser) error {
@@ -2375,6 +2376,14 @@ Loop:
 				return errors.WithContext("error decoding AlarmAudio->Attachment: ", err)
 			}
 			s.Attachment = append(s.Attachment, e)
+		case "UID":
+			if s.UID != nil {
+				return errors.Error("error decoding AlarmAudio: multiple UID")
+			}
+			s.UID = new(PropUID)
+			if err := s.UID.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmAudio->UID: ", err)
+			}
 		case "ALARM-AGENT":
 			if s.AlarmAgent != nil {
 				return errors.Error("error decoding AlarmAudio: multiple AlarmAgent")
@@ -2383,13 +2392,13 @@ Loop:
 			if err := s.AlarmAgent.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmAudio->AlarmAgent: ", err)
 			}
-		case "UID":
-			if s.UID != nil {
-				return errors.Error("error decoding AlarmAudio: multiple UID")
+		case "STATUS":
+			if s.AlarmStatus != nil {
+				return errors.Error("error decoding AlarmAudio: multiple AlarmStatus")
 			}
-			s.UID = new(PropUID)
-			if err := s.UID.decode(params, value); err != nil {
-				return errors.WithContext("error decoding AlarmAudio->UID: ", err)
+			s.AlarmStatus = new(PropAlarmStatus)
+			if err := s.AlarmStatus.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmAudio->AlarmStatus: ", err)
 			}
 		case "END":
 			if value != "VALARM" {
@@ -2415,11 +2424,14 @@ func (s *AlarmAudio) encode(w writer) {
 	for n := range s.Attachment {
 		s.Attachment[n].encode(w)
 	}
+	if s.UID != nil {
+		s.UID.encode(w)
+	}
 	if s.AlarmAgent != nil {
 		s.AlarmAgent.encode(w)
 	}
-	if s.UID != nil {
-		s.UID.encode(w)
+	if s.AlarmStatus != nil {
+		s.AlarmStatus.encode(w)
 	}
 }
 
@@ -2442,14 +2454,19 @@ func (s *AlarmAudio) valid() error {
 			return errors.WithContext("error validating AlarmAudio->Attachment: ", err)
 		}
 	}
+	if s.UID != nil {
+		if err := s.UID.valid(); err != nil {
+			return errors.WithContext("error validating AlarmAudio->UID: ", err)
+		}
+	}
 	if s.AlarmAgent != nil {
 		if err := s.AlarmAgent.valid(); err != nil {
 			return errors.WithContext("error validating AlarmAudio->AlarmAgent: ", err)
 		}
 	}
-	if s.UID != nil {
-		if err := s.UID.valid(); err != nil {
-			return errors.WithContext("error validating AlarmAudio->UID: ", err)
+	if s.AlarmStatus != nil {
+		if err := s.AlarmStatus.valid(); err != nil {
+			return errors.WithContext("error validating AlarmAudio->AlarmStatus: ", err)
 		}
 	}
 	return nil
@@ -2461,8 +2478,9 @@ type AlarmDisplay struct {
 	Trigger     PropTrigger
 	Duration    *PropDuration
 	Repeat      *PropRepeat
-	AlarmAgent  *PropAlarmAgent
 	UID         *PropUID
+	AlarmAgent  *PropAlarmAgent
+	AlarmStatus *PropAlarmStatus
 }
 
 func (s *AlarmDisplay) decode(t tokeniser) error {
@@ -2517,6 +2535,14 @@ Loop:
 			if err := s.Repeat.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmDisplay->Repeat: ", err)
 			}
+		case "UID":
+			if s.UID != nil {
+				return errors.Error("error decoding AlarmDisplay: multiple UID")
+			}
+			s.UID = new(PropUID)
+			if err := s.UID.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmDisplay->UID: ", err)
+			}
 		case "ALARM-AGENT":
 			if s.AlarmAgent != nil {
 				return errors.Error("error decoding AlarmDisplay: multiple AlarmAgent")
@@ -2525,13 +2551,13 @@ Loop:
 			if err := s.AlarmAgent.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmDisplay->AlarmAgent: ", err)
 			}
-		case "UID":
-			if s.UID != nil {
-				return errors.Error("error decoding AlarmDisplay: multiple UID")
+		case "STATUS":
+			if s.AlarmStatus != nil {
+				return errors.Error("error decoding AlarmDisplay: multiple AlarmStatus")
 			}
-			s.UID = new(PropUID)
-			if err := s.UID.decode(params, value); err != nil {
-				return errors.WithContext("error decoding AlarmDisplay->UID: ", err)
+			s.AlarmStatus = new(PropAlarmStatus)
+			if err := s.AlarmStatus.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmDisplay->AlarmStatus: ", err)
 			}
 		case "END":
 			if value != "VALARM" {
@@ -2555,11 +2581,14 @@ func (s *AlarmDisplay) encode(w writer) {
 	if s.Repeat != nil {
 		s.Repeat.encode(w)
 	}
+	if s.UID != nil {
+		s.UID.encode(w)
+	}
 	if s.AlarmAgent != nil {
 		s.AlarmAgent.encode(w)
 	}
-	if s.UID != nil {
-		s.UID.encode(w)
+	if s.AlarmStatus != nil {
+		s.AlarmStatus.encode(w)
 	}
 }
 
@@ -2580,14 +2609,19 @@ func (s *AlarmDisplay) valid() error {
 			return errors.WithContext("error validating AlarmDisplay->Repeat: ", err)
 		}
 	}
+	if s.UID != nil {
+		if err := s.UID.valid(); err != nil {
+			return errors.WithContext("error validating AlarmDisplay->UID: ", err)
+		}
+	}
 	if s.AlarmAgent != nil {
 		if err := s.AlarmAgent.valid(); err != nil {
 			return errors.WithContext("error validating AlarmDisplay->AlarmAgent: ", err)
 		}
 	}
-	if s.UID != nil {
-		if err := s.UID.valid(); err != nil {
-			return errors.WithContext("error validating AlarmDisplay->UID: ", err)
+	if s.AlarmStatus != nil {
+		if err := s.AlarmStatus.valid(); err != nil {
+			return errors.WithContext("error validating AlarmDisplay->AlarmStatus: ", err)
 		}
 	}
 	return nil
@@ -2603,6 +2637,7 @@ type AlarmEmail struct {
 	Repeat      *PropRepeat
 	UID         *PropUID
 	AlarmAgent  *PropAlarmAgent
+	AlarmStatus *PropAlarmStatus
 }
 
 func (s *AlarmEmail) decode(t tokeniser) error {
@@ -2689,6 +2724,14 @@ Loop:
 			if err := s.AlarmAgent.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmEmail->AlarmAgent: ", err)
 			}
+		case "STATUS":
+			if s.AlarmStatus != nil {
+				return errors.Error("error decoding AlarmEmail: multiple AlarmStatus")
+			}
+			s.AlarmStatus = new(PropAlarmStatus)
+			if err := s.AlarmStatus.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmEmail->AlarmStatus: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmEmail: ", ErrInvalidEnd)
@@ -2723,6 +2766,9 @@ func (s *AlarmEmail) encode(w writer) {
 	}
 	if s.AlarmAgent != nil {
 		s.AlarmAgent.encode(w)
+	}
+	if s.AlarmStatus != nil {
+		s.AlarmStatus.encode(w)
 	}
 }
 
@@ -2761,16 +2807,22 @@ func (s *AlarmEmail) valid() error {
 			return errors.WithContext("error validating AlarmEmail->AlarmAgent: ", err)
 		}
 	}
+	if s.AlarmStatus != nil {
+		if err := s.AlarmStatus.valid(); err != nil {
+			return errors.WithContext("error validating AlarmEmail->AlarmStatus: ", err)
+		}
+	}
 	return nil
 }
 
 // AlarmURI provies a group of components that define a URI Alarm
 type AlarmURI struct {
-	URI        PropURI
-	Duration   *PropDuration
-	Repeat     *PropRepeat
-	UID        *PropUID
-	AlarmAgent *PropAlarmAgent
+	URI         PropURI
+	Duration    *PropDuration
+	Repeat      *PropRepeat
+	UID         *PropUID
+	AlarmAgent  *PropAlarmAgent
+	AlarmStatus *PropAlarmStatus
 }
 
 func (s *AlarmURI) decode(t tokeniser) error {
@@ -2833,6 +2885,14 @@ Loop:
 			if err := s.AlarmAgent.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmURI->AlarmAgent: ", err)
 			}
+		case "STATUS":
+			if s.AlarmStatus != nil {
+				return errors.Error("error decoding AlarmURI: multiple AlarmStatus")
+			}
+			s.AlarmStatus = new(PropAlarmStatus)
+			if err := s.AlarmStatus.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmURI->AlarmStatus: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmURI: ", ErrInvalidEnd)
@@ -2863,6 +2923,9 @@ func (s *AlarmURI) encode(w writer) {
 	if s.AlarmAgent != nil {
 		s.AlarmAgent.encode(w)
 	}
+	if s.AlarmStatus != nil {
+		s.AlarmStatus.encode(w)
+	}
 }
 
 func (s *AlarmURI) valid() error {
@@ -2887,6 +2950,11 @@ func (s *AlarmURI) valid() error {
 	if s.AlarmAgent != nil {
 		if err := s.AlarmAgent.valid(); err != nil {
 			return errors.WithContext("error validating AlarmURI->AlarmAgent: ", err)
+		}
+	}
+	if s.AlarmStatus != nil {
+		if err := s.AlarmStatus.valid(); err != nil {
+			return errors.WithContext("error validating AlarmURI->AlarmStatus: ", err)
 		}
 	}
 	return nil
