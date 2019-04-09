@@ -2317,13 +2317,14 @@ func (s *Daylight) valid() error {
 
 // AlarmAudio provides a group of components that define an Audio Alarm
 type AlarmAudio struct {
-	Trigger     PropTrigger
-	Duration    *PropDuration
-	Repeat      *PropRepeat
-	Attachment  []PropAttachment
-	UID         *PropUID
-	AlarmAgent  *PropAlarmAgent
-	AlarmStatus *PropAlarmStatus
+	Trigger       PropTrigger
+	Duration      *PropDuration
+	Repeat        *PropRepeat
+	Attachment    []PropAttachment
+	UID           *PropUID
+	AlarmAgent    *PropAlarmAgent
+	AlarmStatus   *PropAlarmStatus
+	LastTriggered *PropLastTriggered
 }
 
 func (s *AlarmAudio) decode(t tokeniser) error {
@@ -2400,6 +2401,14 @@ Loop:
 			if err := s.AlarmStatus.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmAudio->AlarmStatus: ", err)
 			}
+		case "LAST-TRIGGERED":
+			if s.LastTriggered != nil {
+				return errors.Error("error decoding AlarmAudio: multiple LastTriggered")
+			}
+			s.LastTriggered = new(PropLastTriggered)
+			if err := s.LastTriggered.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmAudio->LastTriggered: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmAudio: ", ErrInvalidEnd)
@@ -2432,6 +2441,9 @@ func (s *AlarmAudio) encode(w writer) {
 	}
 	if s.AlarmStatus != nil {
 		s.AlarmStatus.encode(w)
+	}
+	if s.LastTriggered != nil {
+		s.LastTriggered.encode(w)
 	}
 }
 
@@ -2469,18 +2481,24 @@ func (s *AlarmAudio) valid() error {
 			return errors.WithContext("error validating AlarmAudio->AlarmStatus: ", err)
 		}
 	}
+	if s.LastTriggered != nil {
+		if err := s.LastTriggered.valid(); err != nil {
+			return errors.WithContext("error validating AlarmAudio->LastTriggered: ", err)
+		}
+	}
 	return nil
 }
 
 // AlarmDisplay provides a group of components that define a Display Alarm
 type AlarmDisplay struct {
-	Description PropDescription
-	Trigger     PropTrigger
-	Duration    *PropDuration
-	Repeat      *PropRepeat
-	UID         *PropUID
-	AlarmAgent  *PropAlarmAgent
-	AlarmStatus *PropAlarmStatus
+	Description   PropDescription
+	Trigger       PropTrigger
+	Duration      *PropDuration
+	Repeat        *PropRepeat
+	UID           *PropUID
+	AlarmAgent    *PropAlarmAgent
+	AlarmStatus   *PropAlarmStatus
+	LastTriggered *PropLastTriggered
 }
 
 func (s *AlarmDisplay) decode(t tokeniser) error {
@@ -2559,6 +2577,14 @@ Loop:
 			if err := s.AlarmStatus.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmDisplay->AlarmStatus: ", err)
 			}
+		case "LAST-TRIGGERED":
+			if s.LastTriggered != nil {
+				return errors.Error("error decoding AlarmDisplay: multiple LastTriggered")
+			}
+			s.LastTriggered = new(PropLastTriggered)
+			if err := s.LastTriggered.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmDisplay->LastTriggered: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmDisplay: ", ErrInvalidEnd)
@@ -2589,6 +2615,9 @@ func (s *AlarmDisplay) encode(w writer) {
 	}
 	if s.AlarmStatus != nil {
 		s.AlarmStatus.encode(w)
+	}
+	if s.LastTriggered != nil {
+		s.LastTriggered.encode(w)
 	}
 }
 
@@ -2624,20 +2653,26 @@ func (s *AlarmDisplay) valid() error {
 			return errors.WithContext("error validating AlarmDisplay->AlarmStatus: ", err)
 		}
 	}
+	if s.LastTriggered != nil {
+		if err := s.LastTriggered.valid(); err != nil {
+			return errors.WithContext("error validating AlarmDisplay->LastTriggered: ", err)
+		}
+	}
 	return nil
 }
 
 // AlarmEmail provides a group of components that define an Email Alarm
 type AlarmEmail struct {
-	Description PropDescription
-	Trigger     PropTrigger
-	Summary     PropSummary
-	Attendee    *PropAttendee
-	Duration    *PropDuration
-	Repeat      *PropRepeat
-	UID         *PropUID
-	AlarmAgent  *PropAlarmAgent
-	AlarmStatus *PropAlarmStatus
+	Description   PropDescription
+	Trigger       PropTrigger
+	Summary       PropSummary
+	Attendee      *PropAttendee
+	Duration      *PropDuration
+	Repeat        *PropRepeat
+	UID           *PropUID
+	AlarmAgent    *PropAlarmAgent
+	AlarmStatus   *PropAlarmStatus
+	LastTriggered *PropLastTriggered
 }
 
 func (s *AlarmEmail) decode(t tokeniser) error {
@@ -2732,6 +2767,14 @@ Loop:
 			if err := s.AlarmStatus.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmEmail->AlarmStatus: ", err)
 			}
+		case "LAST-TRIGGERED":
+			if s.LastTriggered != nil {
+				return errors.Error("error decoding AlarmEmail: multiple LastTriggered")
+			}
+			s.LastTriggered = new(PropLastTriggered)
+			if err := s.LastTriggered.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmEmail->LastTriggered: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmEmail: ", ErrInvalidEnd)
@@ -2769,6 +2812,9 @@ func (s *AlarmEmail) encode(w writer) {
 	}
 	if s.AlarmStatus != nil {
 		s.AlarmStatus.encode(w)
+	}
+	if s.LastTriggered != nil {
+		s.LastTriggered.encode(w)
 	}
 }
 
@@ -2812,17 +2858,23 @@ func (s *AlarmEmail) valid() error {
 			return errors.WithContext("error validating AlarmEmail->AlarmStatus: ", err)
 		}
 	}
+	if s.LastTriggered != nil {
+		if err := s.LastTriggered.valid(); err != nil {
+			return errors.WithContext("error validating AlarmEmail->LastTriggered: ", err)
+		}
+	}
 	return nil
 }
 
 // AlarmURI provies a group of components that define a URI Alarm
 type AlarmURI struct {
-	URI         PropURI
-	Duration    *PropDuration
-	Repeat      *PropRepeat
-	UID         *PropUID
-	AlarmAgent  *PropAlarmAgent
-	AlarmStatus *PropAlarmStatus
+	URI           PropURI
+	Duration      *PropDuration
+	Repeat        *PropRepeat
+	UID           *PropUID
+	AlarmAgent    *PropAlarmAgent
+	AlarmStatus   *PropAlarmStatus
+	LastTriggered *PropLastTriggered
 }
 
 func (s *AlarmURI) decode(t tokeniser) error {
@@ -2893,6 +2945,14 @@ Loop:
 			if err := s.AlarmStatus.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmURI->AlarmStatus: ", err)
 			}
+		case "LAST-TRIGGERED":
+			if s.LastTriggered != nil {
+				return errors.Error("error decoding AlarmURI: multiple LastTriggered")
+			}
+			s.LastTriggered = new(PropLastTriggered)
+			if err := s.LastTriggered.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmURI->LastTriggered: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmURI: ", ErrInvalidEnd)
@@ -2926,6 +2986,9 @@ func (s *AlarmURI) encode(w writer) {
 	if s.AlarmStatus != nil {
 		s.AlarmStatus.encode(w)
 	}
+	if s.LastTriggered != nil {
+		s.LastTriggered.encode(w)
+	}
 }
 
 func (s *AlarmURI) valid() error {
@@ -2955,6 +3018,11 @@ func (s *AlarmURI) valid() error {
 	if s.AlarmStatus != nil {
 		if err := s.AlarmStatus.valid(); err != nil {
 			return errors.WithContext("error validating AlarmURI->AlarmStatus: ", err)
+		}
+	}
+	if s.LastTriggered != nil {
+		if err := s.LastTriggered.valid(); err != nil {
+			return errors.WithContext("error validating AlarmURI->LastTriggered: ", err)
 		}
 	}
 	return nil
