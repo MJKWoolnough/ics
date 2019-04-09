@@ -56,6 +56,8 @@ Loop:
 				a.AlarmType = new(AlarmDisplay)
 			case "EMAIL":
 				a.AlarmType = new(AlarmEmail)
+			case "URI":
+				a.AlarmType = new(AlarmURI)
 			}
 		case "END":
 			break Loop
@@ -76,6 +78,8 @@ func (a *Alarm) encode(w writer) {
 		w.WriteString("ACTION:DISPLAY\r\n")
 	case *AlarmEmail:
 		w.WriteString("ACTION:EMAIL\r\n")
+	case *AlarmURI:
+		w.WriteString("ACTION:URI\r\n")
 	}
 	a.AlarmType.encode(w)
 	w.WriteString("END:VALARM\r\n")
@@ -102,6 +106,11 @@ func (AlarmDisplay) Type() string {
 // Type returns the type of the alarm "EMAIL"
 func (AlarmEmail) Type() string {
 	return "EMAIL"
+}
+
+// Type returns the type of the alarm "URI"
+func (AlarmURI) Type() string {
+	return "URI"
 }
 
 // Errors

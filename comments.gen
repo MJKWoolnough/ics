@@ -75,3 +75,4 @@ Journal provides a group of components that describe a journal entry
 Standard represents standard timezone rules
 Timezone provide a group of components that defines a time zone
 Todo provides a group of components that describe a to-do
+AlarmURI provies a group of components that define a URI Alarm

@@ -2713,6 +2713,117 @@ func (s *AlarmEmail) valid() error {
 	return nil
 }
 
+// AlarmURI provies a group of components that define a URI Alarm
+type AlarmURI struct {
+	URI      PropURI
+	Duration *PropDuration
+	Repeat   *PropRepeat
+	UID      *PropUID
+}
+
+func (s *AlarmURI) decode(t tokeniser) error {
+	var requiredURI bool
+Loop:
+	for {
+		p, err := t.GetPhrase()
+		if err != nil {
+			return errors.WithContext("error decoding AlarmURI: ", err)
+		} else if p.Type == parser.PhraseDone {
+			return errors.WithContext("error decoding AlarmURI: ", io.ErrUnexpectedEOF)
+		}
+		params := p.Data[1 : len(p.Data)-1]
+		value := p.Data[len(p.Data)-1].Data
+		switch strings.ToUpper(p.Data[0].Data) {
+		case "BEGIN":
+			switch n := strings.ToUpper(value); n {
+			default:
+				if err := decodeDummy(t, n); err != nil {
+					return errors.WithContext("error decoding AlarmURI: ", err)
+				}
+			}
+		case "URI":
+			if requiredURI {
+				return errors.Error("error decoding AlarmURI: multiple URI")
+			}
+			requiredURI = true
+			if err := s.URI.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmURI->URI: ", err)
+			}
+		case "DURATION":
+			if s.Duration != nil {
+				return errors.Error("error decoding AlarmURI: multiple Duration")
+			}
+			s.Duration = new(PropDuration)
+			if err := s.Duration.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmURI->Duration: ", err)
+			}
+		case "REPEAT":
+			if s.Repeat != nil {
+				return errors.Error("error decoding AlarmURI: multiple Repeat")
+			}
+			s.Repeat = new(PropRepeat)
+			if err := s.Repeat.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmURI->Repeat: ", err)
+			}
+		case "UID":
+			if s.UID != nil {
+				return errors.Error("error decoding AlarmURI: multiple UID")
+			}
+			s.UID = new(PropUID)
+			if err := s.UID.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmURI->UID: ", err)
+			}
+		case "END":
+			if value != "VALARM" {
+				return errors.WithContext("error decoding AlarmURI: ", ErrInvalidEnd)
+			}
+			break Loop
+		}
+	}
+	if !requiredURI {
+		return errors.WithContext("error decoding AlarmURI: ", ErrMissingRequired)
+	}
+	if t := s.Duration == nil; t == (s.Repeat == nil) {
+		return errors.WithContext("error decoding AlarmURI: ", ErrRequirementNotMet)
+	}
+	return nil
+}
+
+func (s *AlarmURI) encode(w writer) {
+	s.URI.encode(w)
+	if s.Duration != nil {
+		s.Duration.encode(w)
+	}
+	if s.Repeat != nil {
+		s.Repeat.encode(w)
+	}
+	if s.UID != nil {
+		s.UID.encode(w)
+	}
+}
+
+func (s *AlarmURI) valid() error {
+	if err := s.URI.valid(); err != nil {
+		return errors.WithContext("error validating AlarmURI->URI: ", err)
+	}
+	if s.Duration != nil {
+		if err := s.Duration.valid(); err != nil {
+			return errors.WithContext("error validating AlarmURI->Duration: ", err)
+		}
+	}
+	if s.Repeat != nil {
+		if err := s.Repeat.valid(); err != nil {
+			return errors.WithContext("error validating AlarmURI->Repeat: ", err)
+		}
+	}
+	if s.UID != nil {
+		if err := s.UID.valid(); err != nil {
+			return errors.WithContext("error validating AlarmURI->UID: ", err)
+		}
+	}
+	return nil
+}
+
 // decodeDummy reads unknown sections, discarding the data
 func decodeDummy(t tokeniser, n string) error {
 	for {
