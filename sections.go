@@ -2322,12 +2322,12 @@ type AlarmAudio struct {
 	Repeat        *PropRepeat
 	Attachment    []PropAttachment
 	UID           *PropUID
-	AlarmAgent    *PropAlarmAgent
+	AlarmAgent    []PropAlarmAgent
 	AlarmStatus   *PropAlarmStatus
-	LastTriggered *PropLastTriggered
+	LastTriggered []PropLastTriggered
 	Acknowledged  *PropAcknowledged
 	Proximity     *PropProximity
-	GeoLocation   *PropGeoLocation
+	GeoLocation   []PropGeoLocation
 	RelatedTo     *PropRelatedTo
 }
 
@@ -2390,13 +2390,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmAudio->UID: ", err)
 			}
 		case "ALARM-AGENT":
-			if s.AlarmAgent != nil {
-				return errors.Error("error decoding AlarmAudio: multiple AlarmAgent")
-			}
-			s.AlarmAgent = new(PropAlarmAgent)
-			if err := s.AlarmAgent.decode(params, value); err != nil {
+			var e PropAlarmAgent
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmAudio->AlarmAgent: ", err)
 			}
+			s.AlarmAgent = append(s.AlarmAgent, e)
 		case "STATUS":
 			if s.AlarmStatus != nil {
 				return errors.Error("error decoding AlarmAudio: multiple AlarmStatus")
@@ -2406,13 +2404,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmAudio->AlarmStatus: ", err)
 			}
 		case "LAST-TRIGGERED":
-			if s.LastTriggered != nil {
-				return errors.Error("error decoding AlarmAudio: multiple LastTriggered")
-			}
-			s.LastTriggered = new(PropLastTriggered)
-			if err := s.LastTriggered.decode(params, value); err != nil {
+			var e PropLastTriggered
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmAudio->LastTriggered: ", err)
 			}
+			s.LastTriggered = append(s.LastTriggered, e)
 		case "ACKNOWLEDGED":
 			if s.Acknowledged != nil {
 				return errors.Error("error decoding AlarmAudio: multiple Acknowledged")
@@ -2430,13 +2426,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmAudio->Proximity: ", err)
 			}
 		case "GEO-LOCATION":
-			if s.GeoLocation != nil {
-				return errors.Error("error decoding AlarmAudio: multiple GeoLocation")
-			}
-			s.GeoLocation = new(PropGeoLocation)
-			if err := s.GeoLocation.decode(params, value); err != nil {
+			var e PropGeoLocation
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmAudio->GeoLocation: ", err)
 			}
+			s.GeoLocation = append(s.GeoLocation, e)
 		case "RELATED-TO":
 			if s.RelatedTo != nil {
 				return errors.Error("error decoding AlarmAudio: multiple RelatedTo")
@@ -2475,14 +2469,14 @@ func (s *AlarmAudio) encode(w writer) {
 	if s.UID != nil {
 		s.UID.encode(w)
 	}
-	if s.AlarmAgent != nil {
-		s.AlarmAgent.encode(w)
+	for n := range s.AlarmAgent {
+		s.AlarmAgent[n].encode(w)
 	}
 	if s.AlarmStatus != nil {
 		s.AlarmStatus.encode(w)
 	}
-	if s.LastTriggered != nil {
-		s.LastTriggered.encode(w)
+	for n := range s.LastTriggered {
+		s.LastTriggered[n].encode(w)
 	}
 	if s.Acknowledged != nil {
 		s.Acknowledged.encode(w)
@@ -2490,8 +2484,8 @@ func (s *AlarmAudio) encode(w writer) {
 	if s.Proximity != nil {
 		s.Proximity.encode(w)
 	}
-	if s.GeoLocation != nil {
-		s.GeoLocation.encode(w)
+	for n := range s.GeoLocation {
+		s.GeoLocation[n].encode(w)
 	}
 	if s.RelatedTo != nil {
 		s.RelatedTo.encode(w)
@@ -2522,8 +2516,8 @@ func (s *AlarmAudio) valid() error {
 			return errors.WithContext("error validating AlarmAudio->UID: ", err)
 		}
 	}
-	if s.AlarmAgent != nil {
-		if err := s.AlarmAgent.valid(); err != nil {
+	for n := range s.AlarmAgent {
+		if err := s.AlarmAgent[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmAudio->AlarmAgent: ", err)
 		}
 	}
@@ -2532,8 +2526,8 @@ func (s *AlarmAudio) valid() error {
 			return errors.WithContext("error validating AlarmAudio->AlarmStatus: ", err)
 		}
 	}
-	if s.LastTriggered != nil {
-		if err := s.LastTriggered.valid(); err != nil {
+	for n := range s.LastTriggered {
+		if err := s.LastTriggered[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmAudio->LastTriggered: ", err)
 		}
 	}
@@ -2547,8 +2541,8 @@ func (s *AlarmAudio) valid() error {
 			return errors.WithContext("error validating AlarmAudio->Proximity: ", err)
 		}
 	}
-	if s.GeoLocation != nil {
-		if err := s.GeoLocation.valid(); err != nil {
+	for n := range s.GeoLocation {
+		if err := s.GeoLocation[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmAudio->GeoLocation: ", err)
 		}
 	}
@@ -2567,12 +2561,12 @@ type AlarmDisplay struct {
 	Duration      *PropDuration
 	Repeat        *PropRepeat
 	UID           *PropUID
-	AlarmAgent    *PropAlarmAgent
+	AlarmAgent    []PropAlarmAgent
 	AlarmStatus   *PropAlarmStatus
-	LastTriggered *PropLastTriggered
+	LastTriggered []PropLastTriggered
 	Acknowledged  *PropAcknowledged
 	Proximity     *PropProximity
-	GeoLocation   *PropGeoLocation
+	GeoLocation   []PropGeoLocation
 	RelatedTo     *PropRelatedTo
 }
 
@@ -2637,13 +2631,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmDisplay->UID: ", err)
 			}
 		case "ALARM-AGENT":
-			if s.AlarmAgent != nil {
-				return errors.Error("error decoding AlarmDisplay: multiple AlarmAgent")
-			}
-			s.AlarmAgent = new(PropAlarmAgent)
-			if err := s.AlarmAgent.decode(params, value); err != nil {
+			var e PropAlarmAgent
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmDisplay->AlarmAgent: ", err)
 			}
+			s.AlarmAgent = append(s.AlarmAgent, e)
 		case "STATUS":
 			if s.AlarmStatus != nil {
 				return errors.Error("error decoding AlarmDisplay: multiple AlarmStatus")
@@ -2653,13 +2645,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmDisplay->AlarmStatus: ", err)
 			}
 		case "LAST-TRIGGERED":
-			if s.LastTriggered != nil {
-				return errors.Error("error decoding AlarmDisplay: multiple LastTriggered")
-			}
-			s.LastTriggered = new(PropLastTriggered)
-			if err := s.LastTriggered.decode(params, value); err != nil {
+			var e PropLastTriggered
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmDisplay->LastTriggered: ", err)
 			}
+			s.LastTriggered = append(s.LastTriggered, e)
 		case "ACKNOWLEDGED":
 			if s.Acknowledged != nil {
 				return errors.Error("error decoding AlarmDisplay: multiple Acknowledged")
@@ -2677,13 +2667,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmDisplay->Proximity: ", err)
 			}
 		case "GEO-LOCATION":
-			if s.GeoLocation != nil {
-				return errors.Error("error decoding AlarmDisplay: multiple GeoLocation")
-			}
-			s.GeoLocation = new(PropGeoLocation)
-			if err := s.GeoLocation.decode(params, value); err != nil {
+			var e PropGeoLocation
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmDisplay->GeoLocation: ", err)
 			}
+			s.GeoLocation = append(s.GeoLocation, e)
 		case "RELATED-TO":
 			if s.RelatedTo != nil {
 				return errors.Error("error decoding AlarmDisplay: multiple RelatedTo")
@@ -2720,14 +2708,14 @@ func (s *AlarmDisplay) encode(w writer) {
 	if s.UID != nil {
 		s.UID.encode(w)
 	}
-	if s.AlarmAgent != nil {
-		s.AlarmAgent.encode(w)
+	for n := range s.AlarmAgent {
+		s.AlarmAgent[n].encode(w)
 	}
 	if s.AlarmStatus != nil {
 		s.AlarmStatus.encode(w)
 	}
-	if s.LastTriggered != nil {
-		s.LastTriggered.encode(w)
+	for n := range s.LastTriggered {
+		s.LastTriggered[n].encode(w)
 	}
 	if s.Acknowledged != nil {
 		s.Acknowledged.encode(w)
@@ -2735,8 +2723,8 @@ func (s *AlarmDisplay) encode(w writer) {
 	if s.Proximity != nil {
 		s.Proximity.encode(w)
 	}
-	if s.GeoLocation != nil {
-		s.GeoLocation.encode(w)
+	for n := range s.GeoLocation {
+		s.GeoLocation[n].encode(w)
 	}
 	if s.RelatedTo != nil {
 		s.RelatedTo.encode(w)
@@ -2765,8 +2753,8 @@ func (s *AlarmDisplay) valid() error {
 			return errors.WithContext("error validating AlarmDisplay->UID: ", err)
 		}
 	}
-	if s.AlarmAgent != nil {
-		if err := s.AlarmAgent.valid(); err != nil {
+	for n := range s.AlarmAgent {
+		if err := s.AlarmAgent[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmDisplay->AlarmAgent: ", err)
 		}
 	}
@@ -2775,8 +2763,8 @@ func (s *AlarmDisplay) valid() error {
 			return errors.WithContext("error validating AlarmDisplay->AlarmStatus: ", err)
 		}
 	}
-	if s.LastTriggered != nil {
-		if err := s.LastTriggered.valid(); err != nil {
+	for n := range s.LastTriggered {
+		if err := s.LastTriggered[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmDisplay->LastTriggered: ", err)
 		}
 	}
@@ -2790,8 +2778,8 @@ func (s *AlarmDisplay) valid() error {
 			return errors.WithContext("error validating AlarmDisplay->Proximity: ", err)
 		}
 	}
-	if s.GeoLocation != nil {
-		if err := s.GeoLocation.valid(); err != nil {
+	for n := range s.GeoLocation {
+		if err := s.GeoLocation[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmDisplay->GeoLocation: ", err)
 		}
 	}
@@ -2812,12 +2800,12 @@ type AlarmEmail struct {
 	Duration      *PropDuration
 	Repeat        *PropRepeat
 	UID           *PropUID
-	AlarmAgent    *PropAlarmAgent
+	AlarmAgent    []PropAlarmAgent
 	AlarmStatus   *PropAlarmStatus
-	LastTriggered *PropLastTriggered
+	LastTriggered []PropLastTriggered
 	Acknowledged  *PropAcknowledged
 	Proximity     *PropProximity
-	GeoLocation   *PropGeoLocation
+	GeoLocation   []PropGeoLocation
 	RelatedTo     *PropRelatedTo
 }
 
@@ -2898,13 +2886,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmEmail->UID: ", err)
 			}
 		case "ALARM-AGENT":
-			if s.AlarmAgent != nil {
-				return errors.Error("error decoding AlarmEmail: multiple AlarmAgent")
-			}
-			s.AlarmAgent = new(PropAlarmAgent)
-			if err := s.AlarmAgent.decode(params, value); err != nil {
+			var e PropAlarmAgent
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmEmail->AlarmAgent: ", err)
 			}
+			s.AlarmAgent = append(s.AlarmAgent, e)
 		case "STATUS":
 			if s.AlarmStatus != nil {
 				return errors.Error("error decoding AlarmEmail: multiple AlarmStatus")
@@ -2914,13 +2900,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmEmail->AlarmStatus: ", err)
 			}
 		case "LAST-TRIGGERED":
-			if s.LastTriggered != nil {
-				return errors.Error("error decoding AlarmEmail: multiple LastTriggered")
-			}
-			s.LastTriggered = new(PropLastTriggered)
-			if err := s.LastTriggered.decode(params, value); err != nil {
+			var e PropLastTriggered
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmEmail->LastTriggered: ", err)
 			}
+			s.LastTriggered = append(s.LastTriggered, e)
 		case "ACKNOWLEDGED":
 			if s.Acknowledged != nil {
 				return errors.Error("error decoding AlarmEmail: multiple Acknowledged")
@@ -2938,13 +2922,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmEmail->Proximity: ", err)
 			}
 		case "GEO-LOCATION":
-			if s.GeoLocation != nil {
-				return errors.Error("error decoding AlarmEmail: multiple GeoLocation")
-			}
-			s.GeoLocation = new(PropGeoLocation)
-			if err := s.GeoLocation.decode(params, value); err != nil {
+			var e PropGeoLocation
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmEmail->GeoLocation: ", err)
 			}
+			s.GeoLocation = append(s.GeoLocation, e)
 		case "RELATED-TO":
 			if s.RelatedTo != nil {
 				return errors.Error("error decoding AlarmEmail: multiple RelatedTo")
@@ -2988,14 +2970,14 @@ func (s *AlarmEmail) encode(w writer) {
 	if s.UID != nil {
 		s.UID.encode(w)
 	}
-	if s.AlarmAgent != nil {
-		s.AlarmAgent.encode(w)
+	for n := range s.AlarmAgent {
+		s.AlarmAgent[n].encode(w)
 	}
 	if s.AlarmStatus != nil {
 		s.AlarmStatus.encode(w)
 	}
-	if s.LastTriggered != nil {
-		s.LastTriggered.encode(w)
+	for n := range s.LastTriggered {
+		s.LastTriggered[n].encode(w)
 	}
 	if s.Acknowledged != nil {
 		s.Acknowledged.encode(w)
@@ -3003,8 +2985,8 @@ func (s *AlarmEmail) encode(w writer) {
 	if s.Proximity != nil {
 		s.Proximity.encode(w)
 	}
-	if s.GeoLocation != nil {
-		s.GeoLocation.encode(w)
+	for n := range s.GeoLocation {
+		s.GeoLocation[n].encode(w)
 	}
 	if s.RelatedTo != nil {
 		s.RelatedTo.encode(w)
@@ -3041,8 +3023,8 @@ func (s *AlarmEmail) valid() error {
 			return errors.WithContext("error validating AlarmEmail->UID: ", err)
 		}
 	}
-	if s.AlarmAgent != nil {
-		if err := s.AlarmAgent.valid(); err != nil {
+	for n := range s.AlarmAgent {
+		if err := s.AlarmAgent[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmEmail->AlarmAgent: ", err)
 		}
 	}
@@ -3051,8 +3033,8 @@ func (s *AlarmEmail) valid() error {
 			return errors.WithContext("error validating AlarmEmail->AlarmStatus: ", err)
 		}
 	}
-	if s.LastTriggered != nil {
-		if err := s.LastTriggered.valid(); err != nil {
+	for n := range s.LastTriggered {
+		if err := s.LastTriggered[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmEmail->LastTriggered: ", err)
 		}
 	}
@@ -3066,8 +3048,8 @@ func (s *AlarmEmail) valid() error {
 			return errors.WithContext("error validating AlarmEmail->Proximity: ", err)
 		}
 	}
-	if s.GeoLocation != nil {
-		if err := s.GeoLocation.valid(); err != nil {
+	for n := range s.GeoLocation {
+		if err := s.GeoLocation[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmEmail->GeoLocation: ", err)
 		}
 	}
@@ -3085,12 +3067,12 @@ type AlarmURI struct {
 	Duration      *PropDuration
 	Repeat        *PropRepeat
 	UID           *PropUID
-	AlarmAgent    *PropAlarmAgent
+	AlarmAgent    []PropAlarmAgent
 	AlarmStatus   *PropAlarmStatus
-	LastTriggered *PropLastTriggered
+	LastTriggered []PropLastTriggered
 	Acknowledged  *PropAcknowledged
 	Proximity     *PropProximity
-	GeoLocation   *PropGeoLocation
+	GeoLocation   []PropGeoLocation
 	RelatedTo     *PropRelatedTo
 }
 
@@ -3147,13 +3129,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmURI->UID: ", err)
 			}
 		case "ALARM-AGENT":
-			if s.AlarmAgent != nil {
-				return errors.Error("error decoding AlarmURI: multiple AlarmAgent")
-			}
-			s.AlarmAgent = new(PropAlarmAgent)
-			if err := s.AlarmAgent.decode(params, value); err != nil {
+			var e PropAlarmAgent
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmURI->AlarmAgent: ", err)
 			}
+			s.AlarmAgent = append(s.AlarmAgent, e)
 		case "STATUS":
 			if s.AlarmStatus != nil {
 				return errors.Error("error decoding AlarmURI: multiple AlarmStatus")
@@ -3163,13 +3143,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmURI->AlarmStatus: ", err)
 			}
 		case "LAST-TRIGGERED":
-			if s.LastTriggered != nil {
-				return errors.Error("error decoding AlarmURI: multiple LastTriggered")
-			}
-			s.LastTriggered = new(PropLastTriggered)
-			if err := s.LastTriggered.decode(params, value); err != nil {
+			var e PropLastTriggered
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmURI->LastTriggered: ", err)
 			}
+			s.LastTriggered = append(s.LastTriggered, e)
 		case "ACKNOWLEDGED":
 			if s.Acknowledged != nil {
 				return errors.Error("error decoding AlarmURI: multiple Acknowledged")
@@ -3187,13 +3165,11 @@ Loop:
 				return errors.WithContext("error decoding AlarmURI->Proximity: ", err)
 			}
 		case "GEO-LOCATION":
-			if s.GeoLocation != nil {
-				return errors.Error("error decoding AlarmURI: multiple GeoLocation")
-			}
-			s.GeoLocation = new(PropGeoLocation)
-			if err := s.GeoLocation.decode(params, value); err != nil {
+			var e PropGeoLocation
+			if err := e.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmURI->GeoLocation: ", err)
 			}
+			s.GeoLocation = append(s.GeoLocation, e)
 		case "RELATED-TO":
 			if s.RelatedTo != nil {
 				return errors.Error("error decoding AlarmURI: multiple RelatedTo")
@@ -3232,14 +3208,14 @@ func (s *AlarmURI) encode(w writer) {
 	if s.UID != nil {
 		s.UID.encode(w)
 	}
-	if s.AlarmAgent != nil {
-		s.AlarmAgent.encode(w)
+	for n := range s.AlarmAgent {
+		s.AlarmAgent[n].encode(w)
 	}
 	if s.AlarmStatus != nil {
 		s.AlarmStatus.encode(w)
 	}
-	if s.LastTriggered != nil {
-		s.LastTriggered.encode(w)
+	for n := range s.LastTriggered {
+		s.LastTriggered[n].encode(w)
 	}
 	if s.Acknowledged != nil {
 		s.Acknowledged.encode(w)
@@ -3247,8 +3223,8 @@ func (s *AlarmURI) encode(w writer) {
 	if s.Proximity != nil {
 		s.Proximity.encode(w)
 	}
-	if s.GeoLocation != nil {
-		s.GeoLocation.encode(w)
+	for n := range s.GeoLocation {
+		s.GeoLocation[n].encode(w)
 	}
 	if s.RelatedTo != nil {
 		s.RelatedTo.encode(w)
@@ -3274,8 +3250,8 @@ func (s *AlarmURI) valid() error {
 			return errors.WithContext("error validating AlarmURI->UID: ", err)
 		}
 	}
-	if s.AlarmAgent != nil {
-		if err := s.AlarmAgent.valid(); err != nil {
+	for n := range s.AlarmAgent {
+		if err := s.AlarmAgent[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmURI->AlarmAgent: ", err)
 		}
 	}
@@ -3284,8 +3260,8 @@ func (s *AlarmURI) valid() error {
 			return errors.WithContext("error validating AlarmURI->AlarmStatus: ", err)
 		}
 	}
-	if s.LastTriggered != nil {
-		if err := s.LastTriggered.valid(); err != nil {
+	for n := range s.LastTriggered {
+		if err := s.LastTriggered[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmURI->LastTriggered: ", err)
 		}
 	}
@@ -3299,8 +3275,8 @@ func (s *AlarmURI) valid() error {
 			return errors.WithContext("error validating AlarmURI->Proximity: ", err)
 		}
 	}
-	if s.GeoLocation != nil {
-		if err := s.GeoLocation.valid(); err != nil {
+	for n := range s.GeoLocation {
+		if err := s.GeoLocation[n].valid(); err != nil {
 			return errors.WithContext("error validating AlarmURI->GeoLocation: ", err)
 		}
 	}
