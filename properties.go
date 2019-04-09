@@ -3273,6 +3273,48 @@ func (p *PropLastTriggered) valid() error {
 	return nil
 }
 
+// PropAcknowledged
+type PropAcknowledged DateTime
+
+func (p *PropAcknowledged) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
+	var t DateTime
+	if err := t.decode(oParams, value); err != nil {
+		return errors.WithContext("error decoding Acknowledged: ", err)
+	}
+	*p = PropAcknowledged(t)
+	return nil
+}
+
+func (p *PropAcknowledged) encode(w writer) {
+	w.WriteString("ACKNOWLEDGED")
+	t := DateTime(*p)
+	t.aencode(w)
+	w.WriteString("\r\n")
+}
+
+func (p *PropAcknowledged) valid() error {
+	t := DateTime(*p)
+	if err := t.valid(); err != nil {
+		return errors.WithContext("error validating Acknowledged: ", err)
+	}
+	return nil
+}
+
 // Errors
 const (
 	ErrDuplicateParam errors.Error = "duplicate param"

@@ -2325,6 +2325,7 @@ type AlarmAudio struct {
 	AlarmAgent    *PropAlarmAgent
 	AlarmStatus   *PropAlarmStatus
 	LastTriggered *PropLastTriggered
+	Acknowledged  *PropAcknowledged
 }
 
 func (s *AlarmAudio) decode(t tokeniser) error {
@@ -2409,6 +2410,14 @@ Loop:
 			if err := s.LastTriggered.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmAudio->LastTriggered: ", err)
 			}
+		case "ACKNOWLEDGED":
+			if s.Acknowledged != nil {
+				return errors.Error("error decoding AlarmAudio: multiple Acknowledged")
+			}
+			s.Acknowledged = new(PropAcknowledged)
+			if err := s.Acknowledged.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmAudio->Acknowledged: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmAudio: ", ErrInvalidEnd)
@@ -2444,6 +2453,9 @@ func (s *AlarmAudio) encode(w writer) {
 	}
 	if s.LastTriggered != nil {
 		s.LastTriggered.encode(w)
+	}
+	if s.Acknowledged != nil {
+		s.Acknowledged.encode(w)
 	}
 }
 
@@ -2486,6 +2498,11 @@ func (s *AlarmAudio) valid() error {
 			return errors.WithContext("error validating AlarmAudio->LastTriggered: ", err)
 		}
 	}
+	if s.Acknowledged != nil {
+		if err := s.Acknowledged.valid(); err != nil {
+			return errors.WithContext("error validating AlarmAudio->Acknowledged: ", err)
+		}
+	}
 	return nil
 }
 
@@ -2499,6 +2516,7 @@ type AlarmDisplay struct {
 	AlarmAgent    *PropAlarmAgent
 	AlarmStatus   *PropAlarmStatus
 	LastTriggered *PropLastTriggered
+	Acknowledged  *PropAcknowledged
 }
 
 func (s *AlarmDisplay) decode(t tokeniser) error {
@@ -2585,6 +2603,14 @@ Loop:
 			if err := s.LastTriggered.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmDisplay->LastTriggered: ", err)
 			}
+		case "ACKNOWLEDGED":
+			if s.Acknowledged != nil {
+				return errors.Error("error decoding AlarmDisplay: multiple Acknowledged")
+			}
+			s.Acknowledged = new(PropAcknowledged)
+			if err := s.Acknowledged.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmDisplay->Acknowledged: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmDisplay: ", ErrInvalidEnd)
@@ -2618,6 +2644,9 @@ func (s *AlarmDisplay) encode(w writer) {
 	}
 	if s.LastTriggered != nil {
 		s.LastTriggered.encode(w)
+	}
+	if s.Acknowledged != nil {
+		s.Acknowledged.encode(w)
 	}
 }
 
@@ -2658,6 +2687,11 @@ func (s *AlarmDisplay) valid() error {
 			return errors.WithContext("error validating AlarmDisplay->LastTriggered: ", err)
 		}
 	}
+	if s.Acknowledged != nil {
+		if err := s.Acknowledged.valid(); err != nil {
+			return errors.WithContext("error validating AlarmDisplay->Acknowledged: ", err)
+		}
+	}
 	return nil
 }
 
@@ -2673,6 +2707,7 @@ type AlarmEmail struct {
 	AlarmAgent    *PropAlarmAgent
 	AlarmStatus   *PropAlarmStatus
 	LastTriggered *PropLastTriggered
+	Acknowledged  *PropAcknowledged
 }
 
 func (s *AlarmEmail) decode(t tokeniser) error {
@@ -2775,6 +2810,14 @@ Loop:
 			if err := s.LastTriggered.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmEmail->LastTriggered: ", err)
 			}
+		case "ACKNOWLEDGED":
+			if s.Acknowledged != nil {
+				return errors.Error("error decoding AlarmEmail: multiple Acknowledged")
+			}
+			s.Acknowledged = new(PropAcknowledged)
+			if err := s.Acknowledged.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmEmail->Acknowledged: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmEmail: ", ErrInvalidEnd)
@@ -2815,6 +2858,9 @@ func (s *AlarmEmail) encode(w writer) {
 	}
 	if s.LastTriggered != nil {
 		s.LastTriggered.encode(w)
+	}
+	if s.Acknowledged != nil {
+		s.Acknowledged.encode(w)
 	}
 }
 
@@ -2863,6 +2909,11 @@ func (s *AlarmEmail) valid() error {
 			return errors.WithContext("error validating AlarmEmail->LastTriggered: ", err)
 		}
 	}
+	if s.Acknowledged != nil {
+		if err := s.Acknowledged.valid(); err != nil {
+			return errors.WithContext("error validating AlarmEmail->Acknowledged: ", err)
+		}
+	}
 	return nil
 }
 
@@ -2875,6 +2926,7 @@ type AlarmURI struct {
 	AlarmAgent    *PropAlarmAgent
 	AlarmStatus   *PropAlarmStatus
 	LastTriggered *PropLastTriggered
+	Acknowledged  *PropAcknowledged
 }
 
 func (s *AlarmURI) decode(t tokeniser) error {
@@ -2953,6 +3005,14 @@ Loop:
 			if err := s.LastTriggered.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmURI->LastTriggered: ", err)
 			}
+		case "ACKNOWLEDGED":
+			if s.Acknowledged != nil {
+				return errors.Error("error decoding AlarmURI: multiple Acknowledged")
+			}
+			s.Acknowledged = new(PropAcknowledged)
+			if err := s.Acknowledged.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmURI->Acknowledged: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmURI: ", ErrInvalidEnd)
@@ -2989,6 +3049,9 @@ func (s *AlarmURI) encode(w writer) {
 	if s.LastTriggered != nil {
 		s.LastTriggered.encode(w)
 	}
+	if s.Acknowledged != nil {
+		s.Acknowledged.encode(w)
+	}
 }
 
 func (s *AlarmURI) valid() error {
@@ -3023,6 +3086,11 @@ func (s *AlarmURI) valid() error {
 	if s.LastTriggered != nil {
 		if err := s.LastTriggered.valid(); err != nil {
 			return errors.WithContext("error validating AlarmURI->LastTriggered: ", err)
+		}
+	}
+	if s.Acknowledged != nil {
+		if err := s.Acknowledged.valid(); err != nil {
+			return errors.WithContext("error validating AlarmURI->Acknowledged: ", err)
 		}
 	}
 	return nil
