@@ -2328,6 +2328,7 @@ type AlarmAudio struct {
 	Acknowledged  *PropAcknowledged
 	Proximity     *PropProximity
 	GeoLocation   *PropGeoLocation
+	RelatedTo     *PropRelatedTo
 }
 
 func (s *AlarmAudio) decode(t tokeniser) error {
@@ -2436,6 +2437,14 @@ Loop:
 			if err := s.GeoLocation.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmAudio->GeoLocation: ", err)
 			}
+		case "RELATED-TO":
+			if s.RelatedTo != nil {
+				return errors.Error("error decoding AlarmAudio: multiple RelatedTo")
+			}
+			s.RelatedTo = new(PropRelatedTo)
+			if err := s.RelatedTo.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmAudio->RelatedTo: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmAudio: ", ErrInvalidEnd)
@@ -2483,6 +2492,9 @@ func (s *AlarmAudio) encode(w writer) {
 	}
 	if s.GeoLocation != nil {
 		s.GeoLocation.encode(w)
+	}
+	if s.RelatedTo != nil {
+		s.RelatedTo.encode(w)
 	}
 }
 
@@ -2540,6 +2552,11 @@ func (s *AlarmAudio) valid() error {
 			return errors.WithContext("error validating AlarmAudio->GeoLocation: ", err)
 		}
 	}
+	if s.RelatedTo != nil {
+		if err := s.RelatedTo.valid(); err != nil {
+			return errors.WithContext("error validating AlarmAudio->RelatedTo: ", err)
+		}
+	}
 	return nil
 }
 
@@ -2556,6 +2573,7 @@ type AlarmDisplay struct {
 	Acknowledged  *PropAcknowledged
 	Proximity     *PropProximity
 	GeoLocation   *PropGeoLocation
+	RelatedTo     *PropRelatedTo
 }
 
 func (s *AlarmDisplay) decode(t tokeniser) error {
@@ -2666,6 +2684,14 @@ Loop:
 			if err := s.GeoLocation.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmDisplay->GeoLocation: ", err)
 			}
+		case "RELATED-TO":
+			if s.RelatedTo != nil {
+				return errors.Error("error decoding AlarmDisplay: multiple RelatedTo")
+			}
+			s.RelatedTo = new(PropRelatedTo)
+			if err := s.RelatedTo.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmDisplay->RelatedTo: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmDisplay: ", ErrInvalidEnd)
@@ -2711,6 +2737,9 @@ func (s *AlarmDisplay) encode(w writer) {
 	}
 	if s.GeoLocation != nil {
 		s.GeoLocation.encode(w)
+	}
+	if s.RelatedTo != nil {
+		s.RelatedTo.encode(w)
 	}
 }
 
@@ -2766,6 +2795,11 @@ func (s *AlarmDisplay) valid() error {
 			return errors.WithContext("error validating AlarmDisplay->GeoLocation: ", err)
 		}
 	}
+	if s.RelatedTo != nil {
+		if err := s.RelatedTo.valid(); err != nil {
+			return errors.WithContext("error validating AlarmDisplay->RelatedTo: ", err)
+		}
+	}
 	return nil
 }
 
@@ -2784,6 +2818,7 @@ type AlarmEmail struct {
 	Acknowledged  *PropAcknowledged
 	Proximity     *PropProximity
 	GeoLocation   *PropGeoLocation
+	RelatedTo     *PropRelatedTo
 }
 
 func (s *AlarmEmail) decode(t tokeniser) error {
@@ -2910,6 +2945,14 @@ Loop:
 			if err := s.GeoLocation.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmEmail->GeoLocation: ", err)
 			}
+		case "RELATED-TO":
+			if s.RelatedTo != nil {
+				return errors.Error("error decoding AlarmEmail: multiple RelatedTo")
+			}
+			s.RelatedTo = new(PropRelatedTo)
+			if err := s.RelatedTo.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmEmail->RelatedTo: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmEmail: ", ErrInvalidEnd)
@@ -2962,6 +3005,9 @@ func (s *AlarmEmail) encode(w writer) {
 	}
 	if s.GeoLocation != nil {
 		s.GeoLocation.encode(w)
+	}
+	if s.RelatedTo != nil {
+		s.RelatedTo.encode(w)
 	}
 }
 
@@ -3025,6 +3071,11 @@ func (s *AlarmEmail) valid() error {
 			return errors.WithContext("error validating AlarmEmail->GeoLocation: ", err)
 		}
 	}
+	if s.RelatedTo != nil {
+		if err := s.RelatedTo.valid(); err != nil {
+			return errors.WithContext("error validating AlarmEmail->RelatedTo: ", err)
+		}
+	}
 	return nil
 }
 
@@ -3040,6 +3091,7 @@ type AlarmURI struct {
 	Acknowledged  *PropAcknowledged
 	Proximity     *PropProximity
 	GeoLocation   *PropGeoLocation
+	RelatedTo     *PropRelatedTo
 }
 
 func (s *AlarmURI) decode(t tokeniser) error {
@@ -3142,6 +3194,14 @@ Loop:
 			if err := s.GeoLocation.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmURI->GeoLocation: ", err)
 			}
+		case "RELATED-TO":
+			if s.RelatedTo != nil {
+				return errors.Error("error decoding AlarmURI: multiple RelatedTo")
+			}
+			s.RelatedTo = new(PropRelatedTo)
+			if err := s.RelatedTo.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmURI->RelatedTo: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmURI: ", ErrInvalidEnd)
@@ -3189,6 +3249,9 @@ func (s *AlarmURI) encode(w writer) {
 	}
 	if s.GeoLocation != nil {
 		s.GeoLocation.encode(w)
+	}
+	if s.RelatedTo != nil {
+		s.RelatedTo.encode(w)
 	}
 }
 
@@ -3239,6 +3302,11 @@ func (s *AlarmURI) valid() error {
 	if s.GeoLocation != nil {
 		if err := s.GeoLocation.valid(); err != nil {
 			return errors.WithContext("error validating AlarmURI->GeoLocation: ", err)
+		}
+	}
+	if s.RelatedTo != nil {
+		if err := s.RelatedTo.valid(); err != nil {
+			return errors.WithContext("error validating AlarmURI->RelatedTo: ", err)
 		}
 	}
 	return nil
