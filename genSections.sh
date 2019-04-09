@@ -23,33 +23,37 @@ function printSection {
 	# type declaration
 
 	getComment "$sName";
-	echo "type $sName struct {";
-	IFS="$OFS";
 	declare checkRequired=false;
-	for tline in "${currSection[@]}"; do
-		aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
-		name="${aline[0]}";
-		required=${aline[2]};
-		multiple=${aline[3]};
-		section=${aline[4]};
-		if $required; then
-			checkRequired=true;
-		fi;
-		echo -n "	$name ";
-		for i in $(seq $(( $longest - ${#name} ))); do
-			echo -n " ";
+	if [ ${#currSection[@]} -eq 0 ]; then
+		echo "type $sName struct{}";
+	else
+		echo "type $sName struct {";
+		IFS="$OFS";
+		for tline in "${currSection[@]}"; do
+			aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
+			name="${aline[0]}";
+			required=${aline[2]};
+			multiple=${aline[3]};
+			section=${aline[4]};
+			if $required; then
+				checkRequired=true;
+			fi;
+			echo -n "	$name ";
+			for i in $(seq $(( $longest - ${#name} ))); do
+				echo -n " ";
+			done;
+			if $multiple; then
+				echo -n "[]";
+			elif ! $required; then
+				echo -n "*";
+			fi;
+			if ! $section; then
+				echo -n "Prop";
+			fi;
+			echo "$name";
 		done;
-		if $multiple; then
-			echo -n "[]";
-		elif ! $required; then
-			echo -n "*";
-		fi;
-		if ! $section; then
-			echo -n "Prop";
-		fi;
-		echo "$name";
-	done;
-	echo "}";
+		echo "}";
+	fi;
 	echo;
 
 	# decoder
@@ -57,23 +61,24 @@ function printSection {
 	echo "func (s *$sName) decode(t tokeniser) error {";
 
 	# required bools
-
-	echo -n "	var";
-	declare first=false;
-	for tline in "${currSection[@]}"; do
-		aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
-		name="${aline[0]}";
-		required=${aline[2]};
-		multiple=${aline[3]};
-		if $required && ! $multiple; then
-			if $first; then
-				echo -n ",";
+	if [ ${#currSection[@]} -gt 0 ]; then
+		echo -n "	var";
+		declare first=false;
+		for tline in "${currSection[@]}"; do
+			aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
+			name="${aline[0]}";
+			required=${aline[2]};
+			multiple=${aline[3]};
+			if $required && ! $multiple; then
+				if $first; then
+					echo -n ",";
+				fi;
+				first=true;
+				echo -n " required$name";
 			fi;
-			first=true;
-			echo -n " required$name";
-		fi;
-	done;
-	echo " bool";
+		done;
+		echo " bool";
+	fi;
 
 	# type switch
 
@@ -85,7 +90,9 @@ function printSection {
 	echo "		} else if p.Type == parser.PhraseDone {";
 	echo "			return errors.WithContext(\"error decoding $sName: \", io.ErrUnexpectedEOF)";
 	echo "		}";
-	echo "		params := p.Data[1 : len(p.Data)-1]";
+	if [ ${#currSection[@]} -gt 0 ]; then
+		echo "		params := p.Data[1 : len(p.Data)-1]";
+	fi;
 	echo "		value := p.Data[len(p.Data)-1].Data";
 	echo "		switch strings.ToUpper(p.Data[0].Data) {";
 	echo "		case \"BEGIN\":";

@@ -2329,6 +2329,7 @@ type AlarmAudio struct {
 	Proximity     *PropProximity
 	GeoLocation   []PropGeoLocation
 	RelatedTo     *PropRelatedTo
+	DefaultAlarm  *PropDefaultAlarm
 }
 
 func (s *AlarmAudio) decode(t tokeniser) error {
@@ -2439,6 +2440,14 @@ Loop:
 			if err := s.RelatedTo.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmAudio->RelatedTo: ", err)
 			}
+		case "DEFAULT-ALARM":
+			if s.DefaultAlarm != nil {
+				return errors.Error("error decoding AlarmAudio: multiple DefaultAlarm")
+			}
+			s.DefaultAlarm = new(PropDefaultAlarm)
+			if err := s.DefaultAlarm.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmAudio->DefaultAlarm: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmAudio: ", ErrInvalidEnd)
@@ -2489,6 +2498,9 @@ func (s *AlarmAudio) encode(w writer) {
 	}
 	if s.RelatedTo != nil {
 		s.RelatedTo.encode(w)
+	}
+	if s.DefaultAlarm != nil {
+		s.DefaultAlarm.encode(w)
 	}
 }
 
@@ -2551,6 +2563,11 @@ func (s *AlarmAudio) valid() error {
 			return errors.WithContext("error validating AlarmAudio->RelatedTo: ", err)
 		}
 	}
+	if s.DefaultAlarm != nil {
+		if err := s.DefaultAlarm.valid(); err != nil {
+			return errors.WithContext("error validating AlarmAudio->DefaultAlarm: ", err)
+		}
+	}
 	return nil
 }
 
@@ -2568,6 +2585,7 @@ type AlarmDisplay struct {
 	Proximity     *PropProximity
 	GeoLocation   []PropGeoLocation
 	RelatedTo     *PropRelatedTo
+	DefaultAlarm  *PropDefaultAlarm
 }
 
 func (s *AlarmDisplay) decode(t tokeniser) error {
@@ -2680,6 +2698,14 @@ Loop:
 			if err := s.RelatedTo.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmDisplay->RelatedTo: ", err)
 			}
+		case "DEFAULT-ALARM":
+			if s.DefaultAlarm != nil {
+				return errors.Error("error decoding AlarmDisplay: multiple DefaultAlarm")
+			}
+			s.DefaultAlarm = new(PropDefaultAlarm)
+			if err := s.DefaultAlarm.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmDisplay->DefaultAlarm: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmDisplay: ", ErrInvalidEnd)
@@ -2728,6 +2754,9 @@ func (s *AlarmDisplay) encode(w writer) {
 	}
 	if s.RelatedTo != nil {
 		s.RelatedTo.encode(w)
+	}
+	if s.DefaultAlarm != nil {
+		s.DefaultAlarm.encode(w)
 	}
 }
 
@@ -2788,6 +2817,11 @@ func (s *AlarmDisplay) valid() error {
 			return errors.WithContext("error validating AlarmDisplay->RelatedTo: ", err)
 		}
 	}
+	if s.DefaultAlarm != nil {
+		if err := s.DefaultAlarm.valid(); err != nil {
+			return errors.WithContext("error validating AlarmDisplay->DefaultAlarm: ", err)
+		}
+	}
 	return nil
 }
 
@@ -2807,6 +2841,7 @@ type AlarmEmail struct {
 	Proximity     *PropProximity
 	GeoLocation   []PropGeoLocation
 	RelatedTo     *PropRelatedTo
+	DefaultAlarm  *PropDefaultAlarm
 }
 
 func (s *AlarmEmail) decode(t tokeniser) error {
@@ -2935,6 +2970,14 @@ Loop:
 			if err := s.RelatedTo.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmEmail->RelatedTo: ", err)
 			}
+		case "DEFAULT-ALARM":
+			if s.DefaultAlarm != nil {
+				return errors.Error("error decoding AlarmEmail: multiple DefaultAlarm")
+			}
+			s.DefaultAlarm = new(PropDefaultAlarm)
+			if err := s.DefaultAlarm.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmEmail->DefaultAlarm: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmEmail: ", ErrInvalidEnd)
@@ -2990,6 +3033,9 @@ func (s *AlarmEmail) encode(w writer) {
 	}
 	if s.RelatedTo != nil {
 		s.RelatedTo.encode(w)
+	}
+	if s.DefaultAlarm != nil {
+		s.DefaultAlarm.encode(w)
 	}
 }
 
@@ -3058,6 +3104,11 @@ func (s *AlarmEmail) valid() error {
 			return errors.WithContext("error validating AlarmEmail->RelatedTo: ", err)
 		}
 	}
+	if s.DefaultAlarm != nil {
+		if err := s.DefaultAlarm.valid(); err != nil {
+			return errors.WithContext("error validating AlarmEmail->DefaultAlarm: ", err)
+		}
+	}
 	return nil
 }
 
@@ -3074,6 +3125,7 @@ type AlarmURI struct {
 	Proximity     *PropProximity
 	GeoLocation   []PropGeoLocation
 	RelatedTo     *PropRelatedTo
+	DefaultAlarm  *PropDefaultAlarm
 }
 
 func (s *AlarmURI) decode(t tokeniser) error {
@@ -3178,6 +3230,14 @@ Loop:
 			if err := s.RelatedTo.decode(params, value); err != nil {
 				return errors.WithContext("error decoding AlarmURI->RelatedTo: ", err)
 			}
+		case "DEFAULT-ALARM":
+			if s.DefaultAlarm != nil {
+				return errors.Error("error decoding AlarmURI: multiple DefaultAlarm")
+			}
+			s.DefaultAlarm = new(PropDefaultAlarm)
+			if err := s.DefaultAlarm.decode(params, value); err != nil {
+				return errors.WithContext("error decoding AlarmURI->DefaultAlarm: ", err)
+			}
 		case "END":
 			if value != "VALARM" {
 				return errors.WithContext("error decoding AlarmURI: ", ErrInvalidEnd)
@@ -3228,6 +3288,9 @@ func (s *AlarmURI) encode(w writer) {
 	}
 	if s.RelatedTo != nil {
 		s.RelatedTo.encode(w)
+	}
+	if s.DefaultAlarm != nil {
+		s.DefaultAlarm.encode(w)
 	}
 }
 
@@ -3285,6 +3348,49 @@ func (s *AlarmURI) valid() error {
 			return errors.WithContext("error validating AlarmURI->RelatedTo: ", err)
 		}
 	}
+	if s.DefaultAlarm != nil {
+		if err := s.DefaultAlarm.valid(); err != nil {
+			return errors.WithContext("error validating AlarmURI->DefaultAlarm: ", err)
+		}
+	}
+	return nil
+}
+
+// AlarmNone
+type AlarmNone struct{}
+
+func (s *AlarmNone) decode(t tokeniser) error {
+Loop:
+	for {
+		p, err := t.GetPhrase()
+		if err != nil {
+			return errors.WithContext("error decoding AlarmNone: ", err)
+		} else if p.Type == parser.PhraseDone {
+			return errors.WithContext("error decoding AlarmNone: ", io.ErrUnexpectedEOF)
+		}
+		value := p.Data[len(p.Data)-1].Data
+		switch strings.ToUpper(p.Data[0].Data) {
+		case "BEGIN":
+			switch n := strings.ToUpper(value); n {
+			default:
+				if err := decodeDummy(t, n); err != nil {
+					return errors.WithContext("error decoding AlarmNone: ", err)
+				}
+			}
+		case "END":
+			if value != "VALARM" {
+				return errors.WithContext("error decoding AlarmNone: ", ErrInvalidEnd)
+			}
+			break Loop
+		}
+	}
+	return nil
+}
+
+func (s *AlarmNone) encode(w writer) {
+}
+
+func (s *AlarmNone) valid() error {
 	return nil
 }
 

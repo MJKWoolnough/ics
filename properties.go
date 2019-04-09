@@ -3416,6 +3416,48 @@ func (p *PropGeoLocation) valid() error {
 	return nil
 }
 
+// PropDefaultAlarm
+type PropDefaultAlarm Boolean
+
+func (p *PropDefaultAlarm) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
+	var t Boolean
+	if err := t.decode(oParams, value); err != nil {
+		return errors.WithContext("error decoding DefaultAlarm: ", err)
+	}
+	*p = PropDefaultAlarm(t)
+	return nil
+}
+
+func (p *PropDefaultAlarm) encode(w writer) {
+	w.WriteString("DEFAULT-ALARM")
+	t := Boolean(*p)
+	t.aencode(w)
+	w.WriteString("\r\n")
+}
+
+func (p *PropDefaultAlarm) valid() error {
+	t := Boolean(*p)
+	if err := t.valid(); err != nil {
+		return errors.WithContext("error validating DefaultAlarm: ", err)
+	}
+	return nil
+}
+
 // Errors
 const (
 	ErrDuplicateParam errors.Error = "duplicate param"

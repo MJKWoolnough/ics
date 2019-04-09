@@ -9,6 +9,7 @@ VALARMAUDIO=AlarmAudio
 VALARMDISPLAY=AlarmDisplay
 VALARMEMAIL=AlarmEmail
 VALARMURI=AlarmURI
+VALARMNONE=AlarmNone
 ALTREP=AlternativeRepresentation
 CN=CommonName
 CUTYPE=CalendarUserType
