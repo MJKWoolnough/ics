@@ -12,8 +12,8 @@ function printProperty {
 		return;
 	fi;
 
-	local tName="$(getName "$currProperty")";
-
+	local tName="$(getName "${currProperty%#*}")";
+	currProperty="${currProperty##*#}";
 	# typedef
 
 	local mode=0;

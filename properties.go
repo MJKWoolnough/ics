@@ -3162,6 +3162,100 @@ func (p *PropAlarmAgent) valid() error {
 	return nil
 }
 
+// PropAlarmStatus
+type PropAlarmStatus uint8
+
+// PropAlarmStatus constant values
+const (
+	AlarmStatusActive PropAlarmStatus = iota
+	AlarmStatusCancelled
+	AlarmStatusCompleted
+)
+
+// New returns a pointer to the type (used with constants for ease of use with
+// optional values)
+func (p PropAlarmStatus) New() *PropAlarmStatus {
+	return &p
+}
+
+func (p *PropAlarmStatus) decode(params []parser.Token, value string) error {
+	switch strings.ToUpper(value) {
+	case "ACTIVE":
+		*p = AlarmStatusActive
+	case "CANCELLED":
+		*p = AlarmStatusCancelled
+	case "COMPLETED":
+		*p = AlarmStatusCompleted
+	default:
+		return errors.WithContext("error decoding AlarmStatus: ", ErrInvalidValue)
+	}
+	return nil
+}
+
+func (p *PropAlarmStatus) encode(w writer) {
+	w.WriteString("STATUS:")
+	switch *p {
+	case AlarmStatusActive:
+		w.WriteString("ACTIVE")
+	case AlarmStatusCancelled:
+		w.WriteString("CANCELLED")
+	case AlarmStatusCompleted:
+		w.WriteString("COMPLETED")
+	}
+	w.WriteString("\r\n")
+}
+
+func (p *PropAlarmStatus) valid() error {
+	switch *p {
+	case AlarmStatusActive, AlarmStatusCancelled, AlarmStatusCompleted:
+	default:
+		return errors.WithContext("error validating AlarmStatus: ", ErrInvalidValue)
+	}
+	return nil
+}
+
+// PropLastTriggered
+type PropLastTriggered DateTime
+
+func (p *PropLastTriggered) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		for _, v := range pValues {
+			ts = append(ts, v.Data)
+		}
+		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, ",")
+		params = params[i:]
+		ts = ts[:0]
+	}
+	var t DateTime
+	if err := t.decode(oParams, value); err != nil {
+		return errors.WithContext("error decoding LastTriggered: ", err)
+	}
+	*p = PropLastTriggered(t)
+	return nil
+}
+
+func (p *PropLastTriggered) encode(w writer) {
+	w.WriteString("LAST-TRIGGERED")
+	t := DateTime(*p)
+	t.aencode(w)
+	w.WriteString("\r\n")
+}
+
+func (p *PropLastTriggered) valid() error {
+	t := DateTime(*p)
+	if err := t.valid(); err != nil {
+		return errors.WithContext("error validating LastTriggered: ", err)
+	}
+	return nil
+}
+
 // Errors
 const (
 	ErrDuplicateParam errors.Error = "duplicate param"
