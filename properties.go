@@ -3104,6 +3104,7 @@ func (p *PropVersion) valid() error {
 // PropAlarmAgent
 type PropAlarmAgent struct {
 	URI *ParamURI
+	ID  *ParamID
 	Text
 }
 
@@ -3127,6 +3128,14 @@ func (p *PropAlarmAgent) decode(params []parser.Token, value string) error {
 			if err := p.URI.decode(pValues); err != nil {
 				return errors.WithContext("error decoding AlarmAgent->URI: ", err)
 			}
+		case "ID":
+			if p.ID != nil {
+				return errors.WithContext("error decoding AlarmAgent->ID: ", ErrDuplicateParam)
+			}
+			p.ID = new(ParamID)
+			if err := p.ID.decode(pValues); err != nil {
+				return errors.WithContext("error decoding AlarmAgent->ID: ", err)
+			}
 		default:
 			for _, v := range pValues {
 				ts = append(ts, v.Data)
@@ -3146,6 +3155,9 @@ func (p *PropAlarmAgent) encode(w writer) {
 	if p.URI != nil {
 		p.URI.encode(w)
 	}
+	if p.ID != nil {
+		p.ID.encode(w)
+	}
 	p.Text.aencode(w)
 	w.WriteString("\r\n")
 }
@@ -3154,6 +3166,11 @@ func (p *PropAlarmAgent) valid() error {
 	if p.URI != nil {
 		if err := p.URI.valid(); err != nil {
 			return errors.WithContext("error validating AlarmAgent->URI: ", err)
+		}
+	}
+	if p.ID != nil {
+		if err := p.ID.valid(); err != nil {
+			return errors.WithContext("error validating AlarmAgent->ID: ", err)
 		}
 	}
 	if err := p.Text.valid(); err != nil {

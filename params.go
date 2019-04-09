@@ -998,6 +998,42 @@ func (t ParamURI) valid() error {
 	return nil
 }
 
+// ID
+type ParamID string
+
+// NewID returns a *ParamID for ease of use with optional values
+func NewID(v ParamID) *ParamID {
+	return &v
+}
+
+func (t *ParamID) decode(vs []parser.Token) error {
+	if len(vs) != 1 {
+		return errors.WithContext("error decoding ID: ", ErrInvalidParam)
+	}
+	if vs[0].Type != tokenParamQuotedValue {
+		return errors.WithContext("error decoding ID: ", ErrInvalidParam)
+	}
+	*t = ParamID(decode6868(vs[0].Data))
+	return nil
+}
+
+func (t ParamID) encode(w writer) {
+	if len(t) == 0 {
+		return
+	}
+	w.WriteString(";ID=")
+	w.WriteString("\"")
+	w.Write(encode6868(string(t)))
+	w.WriteString("\"")
+}
+
+func (t ParamID) valid() error {
+	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
+		return errors.WithContext("error validating ID: ", ErrInvalidText)
+	}
+	return nil
+}
+
 func decode6868(s string) string {
 	t := parser.NewStringTokeniser(s)
 	d := make([]byte, 0, len(s))
