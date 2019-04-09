@@ -64,7 +64,7 @@ func (p *PropAction) valid() error {
 // PropAttachment provides the capability to associate a document object with a
 // calendar component
 type PropAttachment struct {
-	FormatType *FormatType
+	FormatType *ParamFormatType
 	URI        *URI
 	Binary     *Binary
 }
@@ -86,7 +86,7 @@ func (p *PropAttachment) decode(params []parser.Token, value string) error {
 			if p.FormatType != nil {
 				return errors.WithContext("error decoding Attachment->FormatType: ", ErrDuplicateParam)
 			}
-			p.FormatType = new(FormatType)
+			p.FormatType = new(ParamFormatType)
 			if err := p.FormatType.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Attachment->FormatType: ", err)
 			}
@@ -173,17 +173,17 @@ func (p *PropAttachment) valid() error {
 
 // PropAttendee defines an "Attendee" within a calendar component
 type PropAttendee struct {
-	CalendarUserType    *CalendarUserType
-	Member              Member
-	ParticipationRole   *ParticipationRole
-	ParticipationStatus *ParticipationStatus
-	RSVP                *RSVP
-	Delagatee           Delagatee
-	Delegator           Delegator
-	SentBy              *SentBy
-	CommonName          *CommonName
-	DirectoryEntry      *DirectoryEntry
-	Language            *Language
+	CalendarUserType    *ParamCalendarUserType
+	Member              ParamMember
+	ParticipationRole   *ParamParticipationRole
+	ParticipationStatus *ParamParticipationStatus
+	RSVP                *ParamRSVP
+	Delagatee           ParamDelagatee
+	Delegator           ParamDelegator
+	SentBy              *ParamSentBy
+	CommonName          *ParamCommonName
+	DirectoryEntry      *ParamDirectoryEntry
+	Language            *ParamLanguage
 	CalendarAddress
 }
 
@@ -203,7 +203,7 @@ func (p *PropAttendee) decode(params []parser.Token, value string) error {
 			if p.CalendarUserType != nil {
 				return errors.WithContext("error decoding Attendee->CalendarUserType: ", ErrDuplicateParam)
 			}
-			p.CalendarUserType = new(CalendarUserType)
+			p.CalendarUserType = new(ParamCalendarUserType)
 			if err := p.CalendarUserType.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Attendee->CalendarUserType: ", err)
 			}
@@ -218,7 +218,7 @@ func (p *PropAttendee) decode(params []parser.Token, value string) error {
 			if p.ParticipationRole != nil {
 				return errors.WithContext("error decoding Attendee->ParticipationRole: ", ErrDuplicateParam)
 			}
-			p.ParticipationRole = new(ParticipationRole)
+			p.ParticipationRole = new(ParamParticipationRole)
 			if err := p.ParticipationRole.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Attendee->ParticipationRole: ", err)
 			}
@@ -226,7 +226,7 @@ func (p *PropAttendee) decode(params []parser.Token, value string) error {
 			if p.ParticipationStatus != nil {
 				return errors.WithContext("error decoding Attendee->ParticipationStatus: ", ErrDuplicateParam)
 			}
-			p.ParticipationStatus = new(ParticipationStatus)
+			p.ParticipationStatus = new(ParamParticipationStatus)
 			if err := p.ParticipationStatus.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Attendee->ParticipationStatus: ", err)
 			}
@@ -234,7 +234,7 @@ func (p *PropAttendee) decode(params []parser.Token, value string) error {
 			if p.RSVP != nil {
 				return errors.WithContext("error decoding Attendee->RSVP: ", ErrDuplicateParam)
 			}
-			p.RSVP = new(RSVP)
+			p.RSVP = new(ParamRSVP)
 			if err := p.RSVP.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Attendee->RSVP: ", err)
 			}
@@ -256,7 +256,7 @@ func (p *PropAttendee) decode(params []parser.Token, value string) error {
 			if p.SentBy != nil {
 				return errors.WithContext("error decoding Attendee->SentBy: ", ErrDuplicateParam)
 			}
-			p.SentBy = new(SentBy)
+			p.SentBy = new(ParamSentBy)
 			if err := p.SentBy.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Attendee->SentBy: ", err)
 			}
@@ -264,7 +264,7 @@ func (p *PropAttendee) decode(params []parser.Token, value string) error {
 			if p.CommonName != nil {
 				return errors.WithContext("error decoding Attendee->CommonName: ", ErrDuplicateParam)
 			}
-			p.CommonName = new(CommonName)
+			p.CommonName = new(ParamCommonName)
 			if err := p.CommonName.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Attendee->CommonName: ", err)
 			}
@@ -272,7 +272,7 @@ func (p *PropAttendee) decode(params []parser.Token, value string) error {
 			if p.DirectoryEntry != nil {
 				return errors.WithContext("error decoding Attendee->DirectoryEntry: ", ErrDuplicateParam)
 			}
-			p.DirectoryEntry = new(DirectoryEntry)
+			p.DirectoryEntry = new(ParamDirectoryEntry)
 			if err := p.DirectoryEntry.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Attendee->DirectoryEntry: ", err)
 			}
@@ -280,7 +280,7 @@ func (p *PropAttendee) decode(params []parser.Token, value string) error {
 			if p.Language != nil {
 				return errors.WithContext("error decoding Attendee->Language: ", ErrDuplicateParam)
 			}
-			p.Language = new(Language)
+			p.Language = new(ParamLanguage)
 			if err := p.Language.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Attendee->Language: ", err)
 			}
@@ -443,7 +443,7 @@ func (p *PropCalendarScale) valid() error {
 
 // PropCategories defines the categories for a calendar component
 type PropCategories struct {
-	Language *Language
+	Language *ParamLanguage
 	MText
 }
 
@@ -463,7 +463,7 @@ func (p *PropCategories) decode(params []parser.Token, value string) error {
 			if p.Language != nil {
 				return errors.WithContext("error decoding Categories->Language: ", ErrDuplicateParam)
 			}
-			p.Language = new(Language)
+			p.Language = new(ParamLanguage)
 			if err := p.Language.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Categories->Language: ", err)
 			}
@@ -557,8 +557,8 @@ func (p *PropClass) valid() error {
 // PropComment specifies non-processing information intended to provide a
 // comment to the calendar user
 type PropComment struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	Text
 }
 
@@ -578,7 +578,7 @@ func (p *PropComment) decode(params []parser.Token, value string) error {
 			if p.AlternativeRepresentation != nil {
 				return errors.WithContext("error decoding Comment->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
-			p.AlternativeRepresentation = new(AlternativeRepresentation)
+			p.AlternativeRepresentation = new(ParamAlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Comment->AlternativeRepresentation: ", err)
 			}
@@ -586,7 +586,7 @@ func (p *PropComment) decode(params []parser.Token, value string) error {
 			if p.Language != nil {
 				return errors.WithContext("error decoding Comment->Language: ", ErrDuplicateParam)
 			}
-			p.Language = new(Language)
+			p.Language = new(ParamLanguage)
 			if err := p.Language.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Comment->Language: ", err)
 			}
@@ -678,8 +678,8 @@ func (p *PropCompleted) valid() error {
 // PropContact is used to represent contact information or alternately a
 // reference to contact information associated with the calendar component
 type PropContact struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	Text
 }
 
@@ -699,7 +699,7 @@ func (p *PropContact) decode(params []parser.Token, value string) error {
 			if p.AlternativeRepresentation != nil {
 				return errors.WithContext("error decoding Contact->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
-			p.AlternativeRepresentation = new(AlternativeRepresentation)
+			p.AlternativeRepresentation = new(ParamAlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Contact->AlternativeRepresentation: ", err)
 			}
@@ -707,7 +707,7 @@ func (p *PropContact) decode(params []parser.Token, value string) error {
 			if p.Language != nil {
 				return errors.WithContext("error decoding Contact->Language: ", ErrDuplicateParam)
 			}
-			p.Language = new(Language)
+			p.Language = new(ParamLanguage)
 			if err := p.Language.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Contact->Language: ", err)
 			}
@@ -800,8 +800,8 @@ func (p *PropCreated) valid() error {
 // PropDescription provides a more complete description of the calendar
 // component than that provided by the "SUMMARY" property
 type PropDescription struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	Text
 }
 
@@ -821,7 +821,7 @@ func (p *PropDescription) decode(params []parser.Token, value string) error {
 			if p.AlternativeRepresentation != nil {
 				return errors.WithContext("error decoding Description->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
-			p.AlternativeRepresentation = new(AlternativeRepresentation)
+			p.AlternativeRepresentation = new(ParamAlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Description->AlternativeRepresentation: ", err)
 			}
@@ -829,7 +829,7 @@ func (p *PropDescription) decode(params []parser.Token, value string) error {
 			if p.Language != nil {
 				return errors.WithContext("error decoding Description->Language: ", ErrDuplicateParam)
 			}
-			p.Language = new(Language)
+			p.Language = new(ParamLanguage)
 			if err := p.Language.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Description->Language: ", err)
 			}
@@ -1334,7 +1334,7 @@ func (p *PropExceptionDateTime) valid() error {
 
 // PropFreeBusy defines one or more free or busy time intervals
 type PropFreeBusy struct {
-	FreeBusyType *FreeBusyType
+	FreeBusyType *ParamFreeBusyType
 	Period
 }
 
@@ -1354,7 +1354,7 @@ func (p *PropFreeBusy) decode(params []parser.Token, value string) error {
 			if p.FreeBusyType != nil {
 				return errors.WithContext("error decoding FreeBusy->FreeBusyType: ", ErrDuplicateParam)
 			}
-			p.FreeBusyType = new(FreeBusyType)
+			p.FreeBusyType = new(ParamFreeBusyType)
 			if err := p.FreeBusyType.decode(pValues); err != nil {
 				return errors.WithContext("error decoding FreeBusy->FreeBusyType: ", err)
 			}
@@ -1482,8 +1482,8 @@ func (p *PropLastModified) valid() error {
 // PropLocation defines the intended venue for the activity defined by a
 // calendar component
 type PropLocation struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	Text
 }
 
@@ -1503,7 +1503,7 @@ func (p *PropLocation) decode(params []parser.Token, value string) error {
 			if p.AlternativeRepresentation != nil {
 				return errors.WithContext("error decoding Location->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
-			p.AlternativeRepresentation = new(AlternativeRepresentation)
+			p.AlternativeRepresentation = new(ParamAlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Location->AlternativeRepresentation: ", err)
 			}
@@ -1511,7 +1511,7 @@ func (p *PropLocation) decode(params []parser.Token, value string) error {
 			if p.Language != nil {
 				return errors.WithContext("error decoding Location->Language: ", ErrDuplicateParam)
 			}
-			p.Language = new(Language)
+			p.Language = new(ParamLanguage)
 			if err := p.Language.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Location->Language: ", err)
 			}
@@ -1603,10 +1603,10 @@ func (p *PropMethod) valid() error {
 
 // PropOrganizer defines the organizer for a calendar component
 type PropOrganizer struct {
-	CommonName     *CommonName
-	DirectoryEntry *DirectoryEntry
-	SentBy         *SentBy
-	Language       *Language
+	CommonName     *ParamCommonName
+	DirectoryEntry *ParamDirectoryEntry
+	SentBy         *ParamSentBy
+	Language       *ParamLanguage
 	CalendarAddress
 }
 
@@ -1626,7 +1626,7 @@ func (p *PropOrganizer) decode(params []parser.Token, value string) error {
 			if p.CommonName != nil {
 				return errors.WithContext("error decoding Organizer->CommonName: ", ErrDuplicateParam)
 			}
-			p.CommonName = new(CommonName)
+			p.CommonName = new(ParamCommonName)
 			if err := p.CommonName.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Organizer->CommonName: ", err)
 			}
@@ -1634,7 +1634,7 @@ func (p *PropOrganizer) decode(params []parser.Token, value string) error {
 			if p.DirectoryEntry != nil {
 				return errors.WithContext("error decoding Organizer->DirectoryEntry: ", ErrDuplicateParam)
 			}
-			p.DirectoryEntry = new(DirectoryEntry)
+			p.DirectoryEntry = new(ParamDirectoryEntry)
 			if err := p.DirectoryEntry.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Organizer->DirectoryEntry: ", err)
 			}
@@ -1642,7 +1642,7 @@ func (p *PropOrganizer) decode(params []parser.Token, value string) error {
 			if p.SentBy != nil {
 				return errors.WithContext("error decoding Organizer->SentBy: ", ErrDuplicateParam)
 			}
-			p.SentBy = new(SentBy)
+			p.SentBy = new(ParamSentBy)
 			if err := p.SentBy.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Organizer->SentBy: ", err)
 			}
@@ -1650,7 +1650,7 @@ func (p *PropOrganizer) decode(params []parser.Token, value string) error {
 			if p.Language != nil {
 				return errors.WithContext("error decoding Organizer->Language: ", ErrDuplicateParam)
 			}
-			p.Language = new(Language)
+			p.Language = new(ParamLanguage)
 			if err := p.Language.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Organizer->Language: ", err)
 			}
@@ -1967,7 +1967,7 @@ func (p *PropRecurrenceDateTimes) valid() error {
 // PropRecurrenceID is used to identify a specific instance of a recurring
 // Event, Todo or Journal
 type PropRecurrenceID struct {
-	Range    *Range
+	Range    *ParamRange
 	DateTime *DateTime
 	Date     *Date
 }
@@ -1989,7 +1989,7 @@ func (p *PropRecurrenceID) decode(params []parser.Token, value string) error {
 			if p.Range != nil {
 				return errors.WithContext("error decoding RecurrenceID->Range: ", ErrDuplicateParam)
 			}
-			p.Range = new(Range)
+			p.Range = new(ParamRange)
 			if err := p.Range.decode(pValues); err != nil {
 				return errors.WithContext("error decoding RecurrenceID->Range: ", err)
 			}
@@ -2077,7 +2077,7 @@ func (p *PropRecurrenceID) valid() error {
 // PropRelatedTo is used to represent a relationship or reference between one
 // calendar component and another
 type PropRelatedTo struct {
-	RelationshipType *RelationshipType
+	RelationshipType *ParamRelationshipType
 	Text
 }
 
@@ -2097,7 +2097,7 @@ func (p *PropRelatedTo) decode(params []parser.Token, value string) error {
 			if p.RelationshipType != nil {
 				return errors.WithContext("error decoding RelatedTo->RelationshipType: ", ErrDuplicateParam)
 			}
-			p.RelationshipType = new(RelationshipType)
+			p.RelationshipType = new(ParamRelationshipType)
 			if err := p.RelationshipType.decode(pValues); err != nil {
 				return errors.WithContext("error decoding RelatedTo->RelationshipType: ", err)
 			}
@@ -2230,8 +2230,8 @@ func (p *PropRequestStatus) valid() error {
 // PropResources defines the equipment or resources anticipated for an activity
 // specified by a calendar component
 type PropResources struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	MText
 }
 
@@ -2251,7 +2251,7 @@ func (p *PropResources) decode(params []parser.Token, value string) error {
 			if p.AlternativeRepresentation != nil {
 				return errors.WithContext("error decoding Resources->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
-			p.AlternativeRepresentation = new(AlternativeRepresentation)
+			p.AlternativeRepresentation = new(ParamAlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Resources->AlternativeRepresentation: ", err)
 			}
@@ -2259,7 +2259,7 @@ func (p *PropResources) decode(params []parser.Token, value string) error {
 			if p.Language != nil {
 				return errors.WithContext("error decoding Resources->Language: ", ErrDuplicateParam)
 			}
-			p.Language = new(Language)
+			p.Language = new(ParamLanguage)
 			if err := p.Language.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Resources->Language: ", err)
 			}
@@ -2478,8 +2478,8 @@ func (p *PropStatus) valid() error {
 
 // PropSummary defines a short summary or subject for the calendar component
 type PropSummary struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	Text
 }
 
@@ -2499,7 +2499,7 @@ func (p *PropSummary) decode(params []parser.Token, value string) error {
 			if p.AlternativeRepresentation != nil {
 				return errors.WithContext("error decoding Summary->AlternativeRepresentation: ", ErrDuplicateParam)
 			}
-			p.AlternativeRepresentation = new(AlternativeRepresentation)
+			p.AlternativeRepresentation = new(ParamAlternativeRepresentation)
 			if err := p.AlternativeRepresentation.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Summary->AlternativeRepresentation: ", err)
 			}
@@ -2507,7 +2507,7 @@ func (p *PropSummary) decode(params []parser.Token, value string) error {
 			if p.Language != nil {
 				return errors.WithContext("error decoding Summary->Language: ", ErrDuplicateParam)
 			}
-			p.Language = new(Language)
+			p.Language = new(ParamLanguage)
 			if err := p.Language.decode(pValues); err != nil {
 				return errors.WithContext("error decoding Summary->Language: ", err)
 			}
@@ -2740,7 +2740,7 @@ func (p *PropTimezoneID) valid() error {
 // PropTimezoneName specifies the customary designation for a time zone
 // description
 type PropTimezoneName struct {
-	Language *Language
+	Language *ParamLanguage
 	Text
 }
 
@@ -2760,7 +2760,7 @@ func (p *PropTimezoneName) decode(params []parser.Token, value string) error {
 			if p.Language != nil {
 				return errors.WithContext("error decoding TimezoneName->Language: ", ErrDuplicateParam)
 			}
-			p.Language = new(Language)
+			p.Language = new(ParamLanguage)
 			if err := p.Language.decode(pValues); err != nil {
 				return errors.WithContext("error decoding TimezoneName->Language: ", err)
 			}
@@ -3097,6 +3097,67 @@ func (p *PropVersion) valid() error {
 	t := Text(*p)
 	if err := t.valid(); err != nil {
 		return errors.WithContext("error validating Version: ", err)
+	}
+	return nil
+}
+
+// PropAlarmAgent
+type PropAlarmAgent struct {
+	URI *ParamURI
+	Text
+}
+
+func (p *PropAlarmAgent) decode(params []parser.Token, value string) error {
+	oParams := make(map[string]string)
+	var ts []string
+	for len(params) > 0 {
+		pName := strings.ToUpper(params[0].Data)
+		i := 1
+		for i < len(params) && params[i].Type != tokenParamName {
+			i++
+		}
+		pValues := params[1:i]
+		params = params[i:]
+		switch pName {
+		case "URI":
+			if p.URI != nil {
+				return errors.WithContext("error decoding AlarmAgent->URI: ", ErrDuplicateParam)
+			}
+			p.URI = new(ParamURI)
+			if err := p.URI.decode(pValues); err != nil {
+				return errors.WithContext("error decoding AlarmAgent->URI: ", err)
+			}
+		default:
+			for _, v := range pValues {
+				ts = append(ts, v.Data)
+			}
+			oParams[pName] = strings.Join(ts, ",")
+			ts = ts[:0]
+		}
+	}
+	if err := p.Text.decode(oParams, value); err != nil {
+		return errors.WithContext("error decoding AlarmAgent->Text: ", err)
+	}
+	return nil
+}
+
+func (p *PropAlarmAgent) encode(w writer) {
+	w.WriteString("ALARM-AGENT")
+	if p.URI != nil {
+		p.URI.encode(w)
+	}
+	p.Text.aencode(w)
+	w.WriteString("\r\n")
+}
+
+func (p *PropAlarmAgent) valid() error {
+	if p.URI != nil {
+		if err := p.URI.valid(); err != nil {
+			return errors.WithContext("error validating AlarmAgent->URI: ", err)
+		}
+	}
+	if err := p.Text.valid(); err != nil {
+		return errors.WithContext("error validating AlarmAgent->Text: ", err)
 	}
 	return nil
 }

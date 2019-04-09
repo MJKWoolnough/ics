@@ -75,9 +75,9 @@ function printProperty {
 				echo -n " ";
 			done;
 			if [ "$param" = "DELEGATED-FROM" -o "$param" = "DELEGATED-TO" -o "$param" = "MEMBER" ]; then
-				echo "$n";
+				echo "Param$n";
 			else
-				echo "*$n";
+				echo "*Param$n";
 			fi;
 		done;
 		if [ ${#values[@]} -eq 1 ]; then
@@ -126,7 +126,7 @@ function printProperty {
 			echo "				return errors.WithContext(\"error decoding $tName->$tParam: \", ErrDuplicateParam)";
 			echo "			}";
 			if [ "$param" != "DELEGATED-FROM" -a "$param" != "DELEGATED-TO" -a "$param" != "MEMBER" ]; then
-				echo "			p.$tParam = new($tParam)";
+				echo "			p.$tParam = new(Param$tParam)";
 			fi;
 			echo "			if err := p.${tParam}.decode(pValues); err != nil {";
 			echo "				return errors.WithContext(\"error decoding $tName->$tParam: \", err)";

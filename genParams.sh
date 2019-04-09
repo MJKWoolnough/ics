@@ -25,7 +25,7 @@ source "comments.sh";
 			values="$(echo "$line" | cut -d'=' -f2)";
 
 			getComment "$type";
-			echo -n "type $type ";
+			echo -n "type Param$type ";
 
 			declare multiple=false;
 			declare freeChoice=false;
@@ -67,16 +67,16 @@ source "comments.sh";
 				vType="$values";
 				if [ "$vType" = "Boolean" ]; then
 					echo;
-					echo "// New$type returns a *$type for ease of use with optional values";
-					echo "func New$type(v $type) *$type {";
+					echo "// New$type returns a *Param$type for ease of use with optional values";
+					echo "func New$type(v Param$type) *Param$type {";
 					echo "	return &v";
 					echo "}";
 				fi;
 			elif $string; then
 				echo "string";
 				echo;
-				echo "// New$type returns a *$type for ease of use with optional values";
-				echo "func New$type(v $type) *$type {";
+				echo "// New$type returns a *Param$type for ease of use with optional values";
+				echo "func New$type(v Param$type) *Param$type {";
 				echo "	return &v";
 				echo "}";
 				if [ ! -z "$regex" ]; then
@@ -102,7 +102,7 @@ source "comments.sh";
 					for choice in ${choices[@]};do
 						echo -n "	$type$(getName "$choice")";
 						if $first; then
-							echo -n " $type = iota";
+							echo -n " Param$type = iota";
 							first=false;
 						fi;
 						echo;
@@ -111,7 +111,7 @@ source "comments.sh";
 					echo;
 					echo "// New returns a pointer to the type (used with constants for ease of use with";
 					echo "// optional values)";
-					echo "func (t $type) New() *$type {";
+					echo "func (t Param$type) New() *Param$type {";
 					echo "	return &t";
 					echo "}";
 				esac;
@@ -121,7 +121,7 @@ source "comments.sh";
 
 			# decoder
 
-			echo "func (t *$type) decode(vs []parser.Token) error {";
+			echo "func (t *Param$type) decode(vs []parser.Token) error {";
 			declare indent="";
 			declare vName="vs[0]";
 			if $multiple; then
@@ -146,7 +146,7 @@ source "comments.sh";
 				if $multiple; then
 					echo "		*t = append(*t, q)";
 				else
-					echo "	*t = $type(q)";
+					echo "	*t = Param$type(q)";
 				fi;
 			elif [ ${#choices[@]} -eq 1 ]; then
 				echo "	if strings.ToUpper(${vName}.Data) != \"${choices[0]}\" {";
@@ -178,13 +178,13 @@ source "comments.sh";
 					if $multiple; then
 						echo "		*t = append(*t, decode6868(${vName}.Data))";
 					else
-						echo "	*t = $type(decode6868(${vName}.Data))";
+						echo "	*t = Param$type(decode6868(${vName}.Data))";
 					fi;
 				else
 					echo "$indent	if !regex${type}.MatchString(${vName}.Data) {";
 					echo "$indent		return errors.WithContext(\"error decoding $type: \", ErrInvalidParam)";
 					echo "$indent	}";
-					echo "$indent	*t = $type(${vName}.Data)";
+					echo "$indent	*t = Param$type(${vName}.Data)";
 				fi;
 			fi;
 			if $multiple; then
@@ -196,7 +196,7 @@ source "comments.sh";
 
 			#encoder
 
-			echo "func (t $type) encode(w writer) {";
+			echo "func (t Param$type) encode(w writer) {";
 			if [ ${#choices} -eq 0 ] || $multiple; then
 				if [ "$vType" = "CALADDRESS" -o "$vType" = "URI" ]; then
 					echo "	if len(t.String()) == 0 {";
@@ -261,7 +261,7 @@ source "comments.sh";
 
 			#validator
 
-			echo "func (t $type) valid() error {";
+			echo "func (t Param$type) valid() error {";
 			if [ "$vType" = "Boolean" ]; then
 				echo "	return nil";
 			elif [ ${#choices[@]} -eq 0 ] || ! $freeChoice; then
