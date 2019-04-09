@@ -1,6 +1,6 @@
 # ics
 --
-    import "github.com/MJKWoolnough/ics"
+    import "vimagination.zapto.org/ics"
 
 Package ics implements an encoder and decoder for iCalendar files
 
@@ -16,7 +16,6 @@ Errors
 
 ```go
 const (
-	ErrMultipleSingle    errors.Error = "unique property found multiple times"
 	ErrInvalidEnd        errors.Error = "invalid end of section"
 	ErrMissingRequired   errors.Error = "required property missing"
 	ErrRequirementNotMet errors.Error = "requirement not met"
@@ -111,10 +110,19 @@ Alarm is the encompassing type for the three alarm types
 
 ```go
 type AlarmAudio struct {
-	Trigger    PropTrigger
-	Duration   *PropDuration
-	Repeat     *PropRepeat
-	Attachment []PropAttachment
+	Trigger       PropTrigger
+	Duration      *PropDuration
+	Repeat        *PropRepeat
+	Attachment    []PropAttachment
+	UID           *PropUID
+	AlarmAgent    []PropAlarmAgent
+	AlarmStatus   *PropAlarmStatus
+	LastTriggered []PropLastTriggered
+	Acknowledged  *PropAcknowledged
+	Proximity     *PropProximity
+	GeoLocation   []PropGeoLocation
+	RelatedTo     *PropRelatedTo
+	DefaultAlarm  *PropDefaultAlarm
 }
 ```
 
@@ -131,10 +139,19 @@ Type returns the type of the alarm "AUDIO"
 
 ```go
 type AlarmDisplay struct {
-	Description PropDescription
-	Trigger     PropTrigger
-	Duration    *PropDuration
-	Repeat      *PropRepeat
+	Description   PropDescription
+	Trigger       PropTrigger
+	Duration      *PropDuration
+	Repeat        *PropRepeat
+	UID           *PropUID
+	AlarmAgent    []PropAlarmAgent
+	AlarmStatus   *PropAlarmStatus
+	LastTriggered []PropLastTriggered
+	Acknowledged  *PropAcknowledged
+	Proximity     *PropProximity
+	GeoLocation   []PropGeoLocation
+	RelatedTo     *PropRelatedTo
+	DefaultAlarm  *PropDefaultAlarm
 }
 ```
 
@@ -151,12 +168,21 @@ Type returns the type of the alarm "DISPLAY"
 
 ```go
 type AlarmEmail struct {
-	Description PropDescription
-	Trigger     PropTrigger
-	Summary     PropSummary
-	Attendee    *PropAttendee
-	Duration    *PropDuration
-	Repeat      *PropRepeat
+	Description   PropDescription
+	Trigger       PropTrigger
+	Summary       PropSummary
+	Attendee      *PropAttendee
+	Duration      *PropDuration
+	Repeat        *PropRepeat
+	UID           *PropUID
+	AlarmAgent    []PropAlarmAgent
+	AlarmStatus   *PropAlarmStatus
+	LastTriggered []PropLastTriggered
+	Acknowledged  *PropAcknowledged
+	Proximity     *PropProximity
+	GeoLocation   []PropGeoLocation
+	RelatedTo     *PropRelatedTo
+	DefaultAlarm  *PropDefaultAlarm
 }
 ```
 
@@ -168,6 +194,21 @@ AlarmEmail provides a group of components that define an Email Alarm
 func (AlarmEmail) Type() string
 ```
 Type returns the type of the alarm "EMAIL"
+
+#### type AlarmNone
+
+```go
+type AlarmNone struct{}
+```
+
+AlarmNone
+
+#### func (AlarmNone) Type
+
+```go
+func (AlarmNone) Type() string
+```
+Type returns the type of the alarm "NONE"
 
 #### type AlarmType
 
@@ -181,14 +222,33 @@ type AlarmType interface {
 AlarmType is an interface this is fulfilled by AlarmAudio, AlarmDisplay and
 AlarmEmail
 
-#### type AlternativeRepresentation
+#### type AlarmURI
 
 ```go
-type AlternativeRepresentation URI
+type AlarmURI struct {
+	URI           PropURI
+	Duration      *PropDuration
+	Repeat        *PropRepeat
+	UID           *PropUID
+	AlarmAgent    []PropAlarmAgent
+	AlarmStatus   *PropAlarmStatus
+	LastTriggered []PropLastTriggered
+	Acknowledged  *PropAcknowledged
+	Proximity     *PropProximity
+	GeoLocation   []PropGeoLocation
+	RelatedTo     *PropRelatedTo
+	DefaultAlarm  *PropDefaultAlarm
+}
 ```
 
-AlternativeRepresentation is an alternate text representation for the property
-value
+AlarmURI provies a group of components that define a URI Alarm
+
+#### func (AlarmURI) Type
+
+```go
+func (AlarmURI) Type() string
+```
+Type returns the type of the alarm "URI"
 
 #### type Binary
 
@@ -239,49 +299,6 @@ type CalendarAddress struct {
 
 CalendarAddress contains a calendar user address
 
-#### type CalendarUserType
-
-```go
-type CalendarUserType uint8
-```
-
-CalendarUserType is identify the type of calendar user specified by the property
-
-```go
-const (
-	CalendarUserTypeUnknown CalendarUserType = iota
-	CalendarUserTypeIndividual
-	CalendarUserTypeGroup
-	CalendarUserTypeResource
-	CalendarUserTypeRoom
-)
-```
-CalendarUserType constant values
-
-#### func (CalendarUserType) New
-
-```go
-func (t CalendarUserType) New() *CalendarUserType
-```
-New returns a pointer to the type (used with constants for ease of use with
-optional values)
-
-#### type CommonName
-
-```go
-type CommonName string
-```
-
-CommonName is the common name to be associated with the calendar user specified
-by the property
-
-#### func  NewCommonName
-
-```go
-func NewCommonName(v CommonName) *CommonName
-```
-NewCommonName returns a *CommonName for ease of use with optional values
-
 #### type Date
 
 ```go
@@ -330,39 +347,6 @@ type Daylight struct {
 
 Daylight represents daylight savings timezone rules
 
-#### type Delagatee
-
-```go
-type Delagatee []CalendarAddress
-```
-
-Delagatee is used to specify the calendar users to whom the calendar user
-specified by the property has delegated participation
-
-#### type Delegator
-
-```go
-type Delegator []CalendarAddress
-```
-
-Delegator is used to specify the calendar users that have delegated their
-participation to the calendar user specified by the property
-
-#### type DirectoryEntry
-
-```go
-type DirectoryEntry string
-```
-
-DirectoryEntry is a reference to a directory entry associated with the calendar
-
-#### func  NewDirectoryEntry
-
-```go
-func NewDirectoryEntry(v DirectoryEntry) *DirectoryEntry
-```
-NewDirectoryEntry returns a *DirectoryEntry for ease of use with optional values
-
 #### type Duration
 
 ```go
@@ -373,30 +357,6 @@ type Duration struct {
 ```
 
 Duration is a duration of time
-
-#### type Encoding
-
-```go
-type Encoding uint8
-```
-
-Encoding is the inline encoding for the property value
-
-```go
-const (
-	Encoding8bit Encoding = iota
-	EncodingBase64
-)
-```
-Encoding constant values
-
-#### func (Encoding) New
-
-```go
-func (t Encoding) New() *Encoding
-```
-New returns a pointer to the type (used with constants for ease of use with
-optional values)
 
 #### type Event
 
@@ -446,21 +406,6 @@ type Float float64
 
 Float contains a real-number value
 
-#### type FormatType
-
-```go
-type FormatType string
-```
-
-FormatType is the content type of a referenced object
-
-#### func  NewFormatType
-
-```go
-func NewFormatType(v FormatType) *FormatType
-```
-NewFormatType returns a *FormatType for ease of use with optional values
-
 #### type FreeBusy
 
 ```go
@@ -482,33 +427,6 @@ type FreeBusy struct {
 FreeBusy provides a group of components that describe either a request for
 free/busy time, describe a response to a request for free/busy time, or describe
 a published set of busy time
-
-#### type FreeBusyType
-
-```go
-type FreeBusyType uint8
-```
-
-FreeBusyType is used to specify the free or busy time type
-
-```go
-const (
-	FreeBusyTypeUnknown FreeBusyType = iota
-	FreeBusyTypeFree
-	FreeBusyTypeBusy
-	FreeBusyTypeBusyUnavailable
-	FreeBusyTypeBusyTentative
-)
-```
-FreeBusyType constant values
-
-#### func (FreeBusyType) New
-
-```go
-func (t FreeBusyType) New() *FreeBusyType
-```
-New returns a pointer to the type (used with constants for ease of use with
-optional values)
 
 #### type Frequency
 
@@ -572,21 +490,6 @@ type Journal struct {
 
 Journal provides a group of components that describe a journal entry
 
-#### type Language
-
-```go
-type Language string
-```
-
-Language is the language for text values
-
-#### func  NewLanguage
-
-```go
-func NewLanguage(v Language) *Language
-```
-NewLanguage returns a *Language for ease of use with optional values
-
 #### type MText
 
 ```go
@@ -594,21 +497,6 @@ type MText []Text
 ```
 
 MText contains multiple text values
-
-#### type Member
-
-```go
-type Member []string
-```
-
-Member is used to specify the group or list membership of the calendar
-
-#### func  NewMember
-
-```go
-func NewMember(v Member) *Member
-```
-NewMember returns a *Member for ease of use with optional values
 
 #### type Month
 
@@ -637,10 +525,222 @@ const (
 ```
 Month Constant Values
 
-#### type ParticipationRole
+#### type ParamAgentID
 
 ```go
-type ParticipationRole uint8
+type ParamAgentID string
+```
+
+AgentID
+
+#### func  NewAgentID
+
+```go
+func NewAgentID(v ParamAgentID) *ParamAgentID
+```
+NewAgentID returns a *ParamAgentID for ease of use with optional values
+
+#### type ParamAlternativeRepresentation
+
+```go
+type ParamAlternativeRepresentation URI
+```
+
+AlternativeRepresentation is an alternate text representation for the property
+value
+
+#### type ParamCalendarUserType
+
+```go
+type ParamCalendarUserType uint8
+```
+
+CalendarUserType is identify the type of calendar user specified by the property
+
+```go
+const (
+	CalendarUserTypeUnknown ParamCalendarUserType = iota
+	CalendarUserTypeIndividual
+	CalendarUserTypeGroup
+	CalendarUserTypeResource
+	CalendarUserTypeRoom
+)
+```
+CalendarUserType constant values
+
+#### func (ParamCalendarUserType) New
+
+```go
+func (t ParamCalendarUserType) New() *ParamCalendarUserType
+```
+New returns a pointer to the type (used with constants for ease of use with
+optional values)
+
+#### type ParamCommonName
+
+```go
+type ParamCommonName string
+```
+
+CommonName is the common name to be associated with the calendar user specified
+by the property
+
+#### func  NewCommonName
+
+```go
+func NewCommonName(v ParamCommonName) *ParamCommonName
+```
+NewCommonName returns a *ParamCommonName for ease of use with optional values
+
+#### type ParamDelagatee
+
+```go
+type ParamDelagatee []CalendarAddress
+```
+
+Delagatee is used to specify the calendar users to whom the calendar user
+specified by the property has delegated participation
+
+#### type ParamDelegator
+
+```go
+type ParamDelegator []CalendarAddress
+```
+
+Delegator is used to specify the calendar users that have delegated their
+participation to the calendar user specified by the property
+
+#### type ParamDirectoryEntry
+
+```go
+type ParamDirectoryEntry string
+```
+
+DirectoryEntry is a reference to a directory entry associated with the calendar
+
+#### func  NewDirectoryEntry
+
+```go
+func NewDirectoryEntry(v ParamDirectoryEntry) *ParamDirectoryEntry
+```
+NewDirectoryEntry returns a *ParamDirectoryEntry for ease of use with optional
+values
+
+#### type ParamEncoding
+
+```go
+type ParamEncoding uint8
+```
+
+Encoding is the inline encoding for the property value
+
+```go
+const (
+	Encoding8bit ParamEncoding = iota
+	EncodingBase64
+)
+```
+Encoding constant values
+
+#### func (ParamEncoding) New
+
+```go
+func (t ParamEncoding) New() *ParamEncoding
+```
+New returns a pointer to the type (used with constants for ease of use with
+optional values)
+
+#### type ParamFormatType
+
+```go
+type ParamFormatType string
+```
+
+FormatType is the content type of a referenced object
+
+#### func  NewFormatType
+
+```go
+func NewFormatType(v ParamFormatType) *ParamFormatType
+```
+NewFormatType returns a *ParamFormatType for ease of use with optional values
+
+#### type ParamFreeBusyType
+
+```go
+type ParamFreeBusyType uint8
+```
+
+FreeBusyType is used to specify the free or busy time type
+
+```go
+const (
+	FreeBusyTypeUnknown ParamFreeBusyType = iota
+	FreeBusyTypeFree
+	FreeBusyTypeBusy
+	FreeBusyTypeBusyUnavailable
+	FreeBusyTypeBusyTentative
+)
+```
+FreeBusyType constant values
+
+#### func (ParamFreeBusyType) New
+
+```go
+func (t ParamFreeBusyType) New() *ParamFreeBusyType
+```
+New returns a pointer to the type (used with constants for ease of use with
+optional values)
+
+#### type ParamID
+
+```go
+type ParamID string
+```
+
+ID
+
+#### func  NewID
+
+```go
+func NewID(v ParamID) *ParamID
+```
+NewID returns a *ParamID for ease of use with optional values
+
+#### type ParamLanguage
+
+```go
+type ParamLanguage string
+```
+
+Language is the language for text values
+
+#### func  NewLanguage
+
+```go
+func NewLanguage(v ParamLanguage) *ParamLanguage
+```
+NewLanguage returns a *ParamLanguage for ease of use with optional values
+
+#### type ParamMember
+
+```go
+type ParamMember []string
+```
+
+Member is used to specify the group or list membership of the calendar
+
+#### func  NewMember
+
+```go
+func NewMember(v ParamMember) *ParamMember
+```
+NewMember returns a *ParamMember for ease of use with optional values
+
+#### type ParamParticipationRole
+
+```go
+type ParamParticipationRole uint8
 ```
 
 ParticipationRole is used to specify the participation role for the calendar
@@ -648,7 +748,7 @@ user specified by the property
 
 ```go
 const (
-	ParticipationRoleUnknown ParticipationRole = iota
+	ParticipationRoleUnknown ParamParticipationRole = iota
 	ParticipationRoleRequiredParticipant
 	ParticipationRoleChair
 	ParticipationRoleOptParticipant
@@ -657,25 +757,25 @@ const (
 ```
 ParticipationRole constant values
 
-#### func (ParticipationRole) New
+#### func (ParamParticipationRole) New
 
 ```go
-func (t ParticipationRole) New() *ParticipationRole
+func (t ParamParticipationRole) New() *ParamParticipationRole
 ```
 New returns a pointer to the type (used with constants for ease of use with
 optional values)
 
-#### type ParticipationStatus
+#### type ParamParticipationStatus
 
 ```go
-type ParticipationStatus uint8
+type ParamParticipationStatus uint8
 ```
 
 ParticipationStatus is used to specify the participation status for the calendar
 
 ```go
 const (
-	ParticipationStatusUnknown ParticipationStatus = iota
+	ParticipationStatusUnknown ParamParticipationStatus = iota
 	ParticipationStatusNeedsAction
 	ParticipationStatusAccepted
 	ParticipationStatusDeclined
@@ -687,10 +787,164 @@ const (
 ```
 ParticipationStatus constant values
 
-#### func (ParticipationStatus) New
+#### func (ParamParticipationStatus) New
 
 ```go
-func (t ParticipationStatus) New() *ParticipationStatus
+func (t ParamParticipationStatus) New() *ParamParticipationStatus
+```
+New returns a pointer to the type (used with constants for ease of use with
+optional values)
+
+#### type ParamRSVP
+
+```go
+type ParamRSVP Boolean
+```
+
+RSVP is used to specify whether there is an expectation of a favor of a reply
+from the calendar user specified by the property value
+
+#### func  NewRSVP
+
+```go
+func NewRSVP(v ParamRSVP) *ParamRSVP
+```
+NewRSVP returns a *ParamRSVP for ease of use with optional values
+
+#### type ParamRange
+
+```go
+type ParamRange struct{}
+```
+
+Range is used to specify the effective range of recurrence instances from the
+instance specified by the recurrence identifier specified by the property
+
+#### type ParamRelated
+
+```go
+type ParamRelated uint8
+```
+
+Related is the relationship of the alarm trigger with respect to the start or
+end of the calendar component
+
+```go
+const (
+	RelatedStart ParamRelated = iota
+	RelatedEnd
+)
+```
+Related constant values
+
+#### func (ParamRelated) New
+
+```go
+func (t ParamRelated) New() *ParamRelated
+```
+New returns a pointer to the type (used with constants for ease of use with
+optional values)
+
+#### type ParamRelationshipType
+
+```go
+type ParamRelationshipType uint8
+```
+
+RelationshipType is the type of hierarchical relationship associated with the
+calendar component specified by the property
+
+```go
+const (
+	RelationshipTypeUnknown ParamRelationshipType = iota
+	RelationshipTypeParent
+	RelationshipTypeChild
+	RelationshipTypeSibling
+)
+```
+RelationshipType constant values
+
+#### func (ParamRelationshipType) New
+
+```go
+func (t ParamRelationshipType) New() *ParamRelationshipType
+```
+New returns a pointer to the type (used with constants for ease of use with
+optional values)
+
+#### type ParamSentBy
+
+```go
+type ParamSentBy string
+```
+
+SentBy is used to specify the calendar user that is acting on behalf of the
+calendar user specified by the property
+
+#### func  NewSentBy
+
+```go
+func NewSentBy(v ParamSentBy) *ParamSentBy
+```
+NewSentBy returns a *ParamSentBy for ease of use with optional values
+
+#### type ParamTimezoneID
+
+```go
+type ParamTimezoneID string
+```
+
+TimezoneID is used to specify the identifier for the time zone definition for a
+time component in the property value
+
+#### func  NewTimezoneID
+
+```go
+func NewTimezoneID(v ParamTimezoneID) *ParamTimezoneID
+```
+NewTimezoneID returns a *ParamTimezoneID for ease of use with optional values
+
+#### type ParamURI
+
+```go
+type ParamURI URI
+```
+
+URI
+
+#### type ParamValue
+
+```go
+type ParamValue uint8
+```
+
+Value is used to explicitly specify the value type format for a property value
+
+```go
+const (
+	ValueUnknown ParamValue = iota
+	ValueBinary
+	ValueBoolean
+	ValueCalendarAddress
+	ValueDate
+	ValueDateTime
+	ValueDuration
+	ValueFloat
+	ValueInteger
+	ValuePeriod
+	ValueRecur
+	ValueText
+	ValueTime
+	ValueURI
+	ValueUTCOffset
+)
+```
+Value constant values
+
+#### func (ParamValue) New
+
+```go
+func (t ParamValue) New() *ParamValue
 ```
 New returns a pointer to the type (used with constants for ease of use with
 optional values)
@@ -708,6 +962,14 @@ Period represents a precise period of time/
 
 Only one of End or Duration will be used. If Period.End.IsZero() is true, then
 it uses Period.Duration
+
+#### type PropAcknowledged
+
+```go
+type PropAcknowledged DateTime
+```
+
+PropAcknowledged
 
 #### type PropAction
 
@@ -734,11 +996,49 @@ func (p PropAction) New() *PropAction
 New returns a pointer to the type (used with constants for ease of use with
 optional values)
 
+#### type PropAlarmAgent
+
+```go
+type PropAlarmAgent struct {
+	URI     *ParamURI
+	ID      *ParamID
+	AgentID *ParamAgentID
+	Text
+}
+```
+
+PropAlarmAgent
+
+#### type PropAlarmStatus
+
+```go
+type PropAlarmStatus uint8
+```
+
+PropAlarmStatus
+
+```go
+const (
+	AlarmStatusActive PropAlarmStatus = iota
+	AlarmStatusCancelled
+	AlarmStatusCompleted
+)
+```
+PropAlarmStatus constant values
+
+#### func (PropAlarmStatus) New
+
+```go
+func (p PropAlarmStatus) New() *PropAlarmStatus
+```
+New returns a pointer to the type (used with constants for ease of use with
+optional values)
+
 #### type PropAttachment
 
 ```go
 type PropAttachment struct {
-	FormatType *FormatType
+	FormatType *ParamFormatType
 	URI        *URI
 	Binary     *Binary
 }
@@ -751,17 +1051,17 @@ calendar component
 
 ```go
 type PropAttendee struct {
-	CalendarUserType    *CalendarUserType
-	Member              Member
-	ParticipationRole   *ParticipationRole
-	ParticipationStatus *ParticipationStatus
-	RSVP                *RSVP
-	Delagatee           Delagatee
-	Delegator           Delegator
-	SentBy              *SentBy
-	CommonName          *CommonName
-	DirectoryEntry      *DirectoryEntry
-	Language            *Language
+	CalendarUserType    *ParamCalendarUserType
+	Member              ParamMember
+	ParticipationRole   *ParamParticipationRole
+	ParticipationStatus *ParamParticipationStatus
+	RSVP                *ParamRSVP
+	Delagatee           ParamDelagatee
+	Delegator           ParamDelegator
+	SentBy              *ParamSentBy
+	CommonName          *ParamCommonName
+	DirectoryEntry      *ParamDirectoryEntry
+	Language            *ParamLanguage
 	CalendarAddress
 }
 ```
@@ -795,7 +1095,7 @@ optional values)
 
 ```go
 type PropCategories struct {
-	Language *Language
+	Language *ParamLanguage
 	MText
 }
 ```
@@ -831,8 +1131,8 @@ optional values)
 
 ```go
 type PropComment struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	Text
 }
 ```
@@ -852,8 +1152,8 @@ PropCompleted defines the date and time that a to-do was actually completed
 
 ```go
 type PropContact struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	Text
 }
 ```
@@ -903,12 +1203,20 @@ type PropDateTimeStart struct {
 
 PropDateTimeStart specifies when the calendar component begins
 
+#### type PropDefaultAlarm
+
+```go
+type PropDefaultAlarm Boolean
+```
+
+PropDefaultAlarm
+
 #### type PropDescription
 
 ```go
 type PropDescription struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	Text
 }
 ```
@@ -951,7 +1259,7 @@ events, to-dos, journal entries, or time zone definitions
 
 ```go
 type PropFreeBusy struct {
-	FreeBusyType *FreeBusyType
+	FreeBusyType *ParamFreeBusyType
 	Period
 }
 ```
@@ -967,6 +1275,14 @@ type PropGeo TFloat
 PropGeo specifies information related to the global position for the activity
 specified by a calendar component
 
+#### type PropGeoLocation
+
+```go
+type PropGeoLocation URI
+```
+
+PropGeoLocation
+
 #### type PropLastModified
 
 ```go
@@ -976,12 +1292,20 @@ type PropLastModified DateTime
 PropLastModified specifies the date and time that the information associated
 with the calendar component was last revised in the calendar store
 
+#### type PropLastTriggered
+
+```go
+type PropLastTriggered DateTime
+```
+
+PropLastTriggered
+
 #### type PropLocation
 
 ```go
 type PropLocation struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	Text
 }
 ```
@@ -1002,10 +1326,10 @@ object
 
 ```go
 type PropOrganizer struct {
-	CommonName     *CommonName
-	DirectoryEntry *DirectoryEntry
-	SentBy         *SentBy
-	Language       *Language
+	CommonName     *ParamCommonName
+	DirectoryEntry *ParamDirectoryEntry
+	SentBy         *ParamSentBy
+	Language       *ParamLanguage
 	CalendarAddress
 }
 ```
@@ -1054,6 +1378,14 @@ type PropProductID Text
 PropProductID specifies the identifier for the product that created the
 iCalendar object
 
+#### type PropProximity
+
+```go
+type PropProximity Text
+```
+
+PropProximity
+
 #### type PropRecurrenceDateTimes
 
 ```go
@@ -1071,7 +1403,7 @@ events, to-dos, journal entries, or time zone definitions
 
 ```go
 type PropRecurrenceID struct {
-	Range    *Range
+	Range    *ParamRange
 	DateTime *DateTime
 	Date     *Date
 }
@@ -1093,7 +1425,7 @@ to-dos, journal entries, or time zone definitions
 
 ```go
 type PropRelatedTo struct {
-	RelationshipType *RelationshipType
+	RelationshipType *ParamRelationshipType
 	Text
 }
 ```
@@ -1130,8 +1462,8 @@ PropRequestStatus defines the status code returned for a scheduling request
 
 ```go
 type PropResources struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	MText
 }
 ```
@@ -1190,8 +1522,8 @@ optional values)
 
 ```go
 type PropSummary struct {
-	AlternativeRepresentation *AlternativeRepresentation
-	Language                  *Language
+	AlternativeRepresentation *ParamAlternativeRepresentation
+	Language                  *ParamLanguage
 	Text
 }
 ```
@@ -1236,7 +1568,7 @@ calendar component in the scope of an iCalendar object
 
 ```go
 type PropTimezoneName struct {
-	Language *Language
+	Language *ParamLanguage
 	Text
 }
 ```
@@ -1290,6 +1622,14 @@ type PropUID Text
 PropUID defines the persistent, globally unique identifier for the calendar
 component
 
+#### type PropURI
+
+```go
+type PropURI URI
+```
+
+PropURI
+
 #### type PropURL
 
 ```go
@@ -1307,31 +1647,6 @@ type PropVersion Text
 PropVersion specifies the identifier corresponding to the highest version number
 or the minimum and maximum range of the iCalendar specification that is required
 in order to interpret the iCalendar object
-
-#### type RSVP
-
-```go
-type RSVP Boolean
-```
-
-RSVP is used to specify whether there is an expectation of a favor of a reply
-from the calendar user specified by the property value
-
-#### func  NewRSVP
-
-```go
-func NewRSVP(v RSVP) *RSVP
-```
-NewRSVP returns a *RSVP for ease of use with optional values
-
-#### type Range
-
-```go
-type Range struct{}
-```
-
-Range is used to specify the effective range of recurrence instances from the
-instance specified by the recurrence identifier specified by the property
 
 #### type Recur
 
@@ -1356,74 +1671,6 @@ type Recur struct {
 ```
 
 Recur contains a recurrence rule specification
-
-#### type Related
-
-```go
-type Related uint8
-```
-
-Related is the relationship of the alarm trigger with respect to the start or
-end of the calendar component
-
-```go
-const (
-	RelatedStart Related = iota
-	RelatedEnd
-)
-```
-Related constant values
-
-#### func (Related) New
-
-```go
-func (t Related) New() *Related
-```
-New returns a pointer to the type (used with constants for ease of use with
-optional values)
-
-#### type RelationshipType
-
-```go
-type RelationshipType uint8
-```
-
-RelationshipType is the type of hierarchical relationship associated with the
-calendar component specified by the property
-
-```go
-const (
-	RelationshipTypeUnknown RelationshipType = iota
-	RelationshipTypeParent
-	RelationshipTypeChild
-	RelationshipTypeSibling
-)
-```
-RelationshipType constant values
-
-#### func (RelationshipType) New
-
-```go
-func (t RelationshipType) New() *RelationshipType
-```
-New returns a pointer to the type (used with constants for ease of use with
-optional values)
-
-#### type SentBy
-
-```go
-type SentBy string
-```
-
-SentBy is used to specify the calendar user that is acting on behalf of the
-calendar user specified by the property
-
-#### func  NewSentBy
-
-```go
-func NewSentBy(v SentBy) *SentBy
-```
-NewSentBy returns a *SentBy for ease of use with optional values
 
 #### type Standard
 
@@ -1480,22 +1727,6 @@ type Timezone struct {
 ```
 
 Timezone provide a group of components that defines a time zone
-
-#### type TimezoneID
-
-```go
-type TimezoneID string
-```
-
-TimezoneID is used to specify the identifier for the time zone definition for a
-time component in the property value
-
-#### func  NewTimezoneID
-
-```go
-func NewTimezoneID(v TimezoneID) *TimezoneID
-```
-NewTimezoneID returns a *TimezoneID for ease of use with optional values
 
 #### type Todo
 
@@ -1554,43 +1785,6 @@ type UTCOffset int
 ```
 
 UTCOffset contains the offset from UTC to local time
-
-#### type Value
-
-```go
-type Value uint8
-```
-
-Value is used to explicitly specify the value type format for a property value
-
-```go
-const (
-	ValueUnknown Value = iota
-	ValueBinary
-	ValueBoolean
-	ValueCalendarAddress
-	ValueDate
-	ValueDateTime
-	ValueDuration
-	ValueFloat
-	ValueInteger
-	ValuePeriod
-	ValueRecur
-	ValueText
-	ValueTime
-	ValueURI
-	ValueUTCOffset
-)
-```
-Value constant values
-
-#### func (Value) New
-
-```go
-func (t Value) New() *Value
-```
-New returns a pointer to the type (used with constants for ease of use with
-optional values)
 
 #### type WeekDay
 
