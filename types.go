@@ -2,6 +2,7 @@ package ics
 
 import (
 	"encoding/base64"
+	"fmt"
 	"math"
 	"net/url"
 	"strconv"
@@ -25,7 +26,7 @@ func (b *Binary) decode(params map[string]string, data string) error {
 	cb, err := base64.StdEncoding.DecodeString(data)
 	*b = cb
 	if err != nil {
-		return errors.WithContext("error while decoding binary data: ", err)
+		return fmt.Errorf("error while decoding binary data: %w", err)
 	}
 	return nil
 }
@@ -87,7 +88,7 @@ type CalendarAddress struct {
 func (c *CalendarAddress) decode(_ map[string]string, data string) error {
 	cu, err := url.Parse(data)
 	if err != nil {
-		return errors.WithContext("error parsing CalendarAddress: ", err)
+		return fmt.Errorf("error parsing CalendarAddress: %w", err)
 	}
 	c.URL = *cu
 	return nil
@@ -114,7 +115,7 @@ type Date struct {
 func (d *Date) decode(_ map[string]string, data string) error {
 	t, err := time.Parse(dateTimeFormat[:8], data)
 	if err != nil {
-		return errors.WithContext("error parsing Date: ", err)
+		return fmt.Errorf("error parsing Date: %w", err)
 	}
 	d.Time = t
 	return nil
@@ -146,23 +147,23 @@ func (d *DateTime) decode(params map[string]string, data string) error {
 	if tz, ok := params["TZID"]; ok {
 		l, err := time.LoadLocation(tz)
 		if err != nil {
-			return errors.WithContext("error loading timezone for DateTime: ", err)
+			return fmt.Errorf("error loading timezone for DateTime: %w", err)
 		}
 		t, err := time.ParseInLocation(dateTimeFormat[:15], data, l)
 		if err != nil {
-			return errors.WithContext("error parsing time in location for DateTime: ", err)
+			return fmt.Errorf("error parsing time in location for DateTime: %w", err)
 		}
 		d.Time = t
 	} else if len(data) > 0 && data[len(data)-1] == 'Z' {
 		t, err := time.ParseInLocation(dateTimeFormat, data, time.UTC)
 		if err != nil {
-			return errors.WithContext("error parsing time in UTC for DateTime: ", err)
+			return fmt.Errorf("error parsing time in UTC for DateTime: %w", err)
 		}
 		d.Time = t
 	} else {
 		t, err := time.ParseInLocation(dateTimeFormat[:15], data, time.Local)
 		if err != nil {
-			return errors.WithContext("error parsing local time for DateTime: ", err)
+			return fmt.Errorf("error parsing local time for DateTime: %w", err)
 		}
 		d.Time = t
 	}
@@ -221,7 +222,7 @@ func (d *Duration) decode(_ map[string]string, data string) error {
 		n, err := strconv.ParseUint(t.Get(), 10, 0)
 		num := uint(n)
 		if err != nil {
-			return errors.WithContext("error decoding duration: ", err)
+			return fmt.Errorf("error decoding duration: %w", err)
 		}
 		switch mode {
 		case 'W':
@@ -345,7 +346,7 @@ type Float float64
 func (f *Float) decode(_ map[string]string, data string) error {
 	cf, err := strconv.ParseFloat(data, 64)
 	if err != nil {
-		return errors.WithContext("error parsing Float: ", err)
+		return fmt.Errorf("error parsing Float: %w", err)
 	}
 	*f = Float(cf)
 	return nil
@@ -379,11 +380,11 @@ func (t *TFloat) decode(_ map[string]string, data string) error {
 	var err error
 	(*t)[0], err = strconv.ParseFloat(fs[0], 64)
 	if err != nil {
-		return errors.WithContext("error parsing TFloat[0]: ", err)
+		return fmt.Errorf("error parsing TFloat[0]: %w", err)
 	}
 	(*t)[1], err = strconv.ParseFloat(fs[1], 64)
 	if err != nil {
-		return errors.WithContext("error parsing TFloat[1]: ", err)
+		return fmt.Errorf("error parsing TFloat[1]: %w", err)
 	}
 	return nil
 }
@@ -452,18 +453,18 @@ func (p *Period) decode(params map[string]string, data string) error {
 	}
 	err := p.Start.decode(params, data[:i])
 	if err != nil {
-		return errors.WithContext("error while decoding Period Start: ", err)
+		return fmt.Errorf("error while decoding Period Start: %w", err)
 	}
 	if data[i+1] == 'P' || data[i+1] == '+' {
 		err = p.Duration.decode(params, data[i+1:])
 		if err != nil {
-			return errors.WithContext("error while decoding Period: ", err)
+			return fmt.Errorf("error while decoding Period: %w", err)
 		}
 		return nil
 	}
 	err = p.End.decode(params, data[i+1:])
 	if err != nil {
-		return errors.WithContext("error while decoding Period End: ", err)
+		return fmt.Errorf("error while decoding Period End: %w", err)
 	}
 	return nil
 }
@@ -1202,23 +1203,23 @@ func (t *Time) decode(params map[string]string, data string) error {
 	if tz, ok := params["TZID"]; ok {
 		l, err := time.LoadLocation(tz)
 		if err != nil {
-			return errors.WithContext("error loading timezone for Time: ", err)
+			return fmt.Errorf("error loading timezone for Time: %w", err)
 		}
 		ct, err := time.ParseInLocation(dateTimeFormat[9:15], data, l)
 		if err != nil {
-			return errors.WithContext("error parsing time in location for Time: ", err)
+			return fmt.Errorf("error parsing time in location for Time: %w", err)
 		}
 		t.Time = ct
 	} else if len(data) > 0 && data[len(data)-1] == 'Z' {
 		ct, err := time.ParseInLocation(dateTimeFormat[9:], data, time.UTC)
 		if err != nil {
-			return errors.WithContext("error parsing time in UTC for Time: ", err)
+			return fmt.Errorf("error parsing time in UTC for Time: %w", err)
 		}
 		t.Time = ct
 	} else {
 		ct, err := time.ParseInLocation(dateTimeFormat[9:15], data, time.Local)
 		if err != nil {
-			return errors.WithContext("error parsing local time for Time: ", err)
+			return fmt.Errorf("error parsing local time for Time: %w", err)
 		}
 		t.Time = ct
 	}
@@ -1259,7 +1260,7 @@ type URI struct {
 func (u *URI) decode(_ map[string]string, data string) error {
 	cu, err := url.Parse(data)
 	if err != nil {
-		return errors.WithContext("error decoding URI: ", err)
+		return fmt.Errorf("error decoding URI: %w", err)
 	}
 	u.URL = *cu
 	return nil
@@ -1391,4 +1392,12 @@ const (
 	ErrInvalidRecurByMonth    errors.Error = "invalid Recur ByMonth"
 	ErrInvalidRecurBySetPos   errors.Error = "invalid Recur BySetPos"
 	ErrInvalidRecurWeekStart  errors.Error = "invalid Recur WeekStart"
+	cBinary                                = "Binary"
+	cCalendarAddress                       = "CalendarAddress"
+	cDate                                  = "Date"
+	cDateTime                              = "DateTime"
+	cMText                                 = "MText"
+	cPeriod                                = "Period"
+	cText                                  = "Text"
+	cAlarm                                 = "Alarm"
 )
