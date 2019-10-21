@@ -10,6 +10,7 @@ source "comments.sh";
 	echo "// File automatically generated with ./genParams.sh";
 	echo;
 	echo "import (";
+	echo "	\"fmt\"";
 	echo "	\"regexp\"";
 	echo "	\"strings\"";
 	echo "	\"unicode/utf8\"";
@@ -130,18 +131,18 @@ source "comments.sh";
 				vName="v";
 			else
 				echo "	if len(vs) != 1 {";
-				echo "		return errors.WithContext(\"error decoding $type: \", ErrInvalidParam)";
+				echo "		return fmt.Errorf(errDecodingType, c$type, ErrInvalidParam)";
 				echo "	}";
 			fi;
 			if $doubleQuote; then
 				echo "$indent	if ${vName}.Type != tokenParamQuotedValue {";
-				echo "$indent		return errors.WithContext(\"error decoding $type: \", ErrInvalidParam)";
+				echo "$indent		return fmt.Errorf(errDecodingType, c$type, ErrInvalidParam)";
 				echo "$indent	}";
 			fi;
 			if [ ! -z "$vType" ]; then
 				echo "$indent	var q $vType";
 				echo "$indent	if err := q.decode(nil, ${vName}.Data); err != nil {";
-				echo "$indent		return errors.WithContext(\"error decoding $type: \", err)";
+				echo "$indent		return fmt.Errorf(errDecodingType, c$type, err)";
 				echo "$indent	}";
 				if $multiple; then
 					echo "		*t = append(*t, q)";
@@ -150,7 +151,7 @@ source "comments.sh";
 				fi;
 			elif [ ${#choices[@]} -eq 1 ]; then
 				echo "	if strings.ToUpper(${vName}.Data) != \"${choices[0]}\" {";
-				echo "		return errors.WithContext(\"error decoding $type\", ErrInvalidParam)";
+				echo "		return fmt.Errorf(errDecodingType, c$type, ErrInvalidParam)";
 				echo "	}";
 			elif [ ${#choices[@]} -gt 1 ]; then
 				echo "$indent	switch strings.ToUpper(${vName}.Data) {";
@@ -170,7 +171,7 @@ source "comments.sh";
 						echo "		*t = ${type}Unknown";
 					fi;
 				else
-					echo "$indent		return errors.WithContext(\"error decoding $type: \", ErrInvalidParam)";
+					echo "$indent		return fmt.Errorf(errDecodingType, c$type, ErrInvalidParam)";
 				fi;
 				echo "$indent	}";
 			else
@@ -182,7 +183,7 @@ source "comments.sh";
 					fi;
 				else
 					echo "$indent	if !regex${type}.MatchString(${vName}.Data) {";
-					echo "$indent		return errors.WithContext(\"error decoding $type: \", ErrInvalidParam)";
+					echo "$indent		return fmt.Errorf(errDecodingType, c$type, ErrInvalidParam)";
 					echo "$indent	}";
 					echo "$indent	*t = Param$type(${vName}.Data)";
 				fi;
@@ -271,12 +272,12 @@ source "comments.sh";
 				if [ ! -z "$vType" ]; then
 					if $multiple; then
 						echo "		if err := v.valid(); err != nil {"
-						echo "			return errors.WithContext(\"error validation $type: \", err)";
+						echo "			return fmt.Errorf(errValidatingType, c$type, err)";
 						echo "		}";
 					else
 						echo "	q := $vType(t)";
 						echo "	if err := q.valid(); err != nil {";
-						echo "		return errors.WithContext(\"error validating $type: \", err)";
+						echo "		return fmt.Errorf(errValidatingType, c$type, err)";
 						echo "	}";
 						echo "	return nil";
 					fi;
@@ -293,15 +294,15 @@ source "comments.sh";
 					done;
 					echo ":";
 					echo "$indent	default:";
-					echo "$indent		return errors.WithContext(\"error validating $type: \", ErrInvalidValue)";
+					echo "$indent		return fmt.Errorf(errValidatingType, c$type, ErrInvalidValue)";
 					echo "$indent	}";
 				elif [ ! -z "$regex" ]; then
 					echo "$indent	if !regex${type}.Match([]byte($vName)) {";
-					echo "$indent		return errors.WithContext(\"error validating $type: \", ErrInvalidValue)";
+					echo "$indent		return fmt.Errorf(errValidatingType, c$type, ErrInvalidValue)";
 					echo "$indent	}";
 				else
 					echo "$indent	if strings.ContainsAny(string($vName), nonsafeChars[:31]) {";
-					echo "$indent		return errors.WithContext(\"error validating $type: \", ErrInvalidText)";
+					echo "$indent		return fmt.Errorf(errValidatingType, c$type, ErrInvalidText)";
 					echo "$indent	}";
 				fi;
 				if $multiple; then
@@ -384,7 +385,20 @@ HEREDOC
 	echo;
 	echo "// Errors";
 	echo "const (";
-	echo "	ErrInvalidParam errors.Error = \"invalid param value\"";
-	echo "	ErrInvalidValue errors.Error = \"invalid value\"";
+	echo "	ErrInvalidParam            errors.Error = \"invalid param value\"";
+	echo "	ErrInvalidValue            errors.Error = \"invalid value\"";
+	echo "	errDecodingType                         = \"error decoding %s: %w\"";
+	echo "	errValidatingType                       = \"error decoding %s: %w\"";
+	{
+		while read line; do
+			keyword="$(echo "$line" | cut -d'=' -f1)";
+			type="$(getName "$keyword")";
+			echo -n "	c$type";
+			for i in $(seq $(( 39 - ${#type} ))); do
+				echo -n " ";
+			done;
+			echo "= \"$type\"";
+		done;
+	} < params.gen
 	echo ")";
 ) > params.go
