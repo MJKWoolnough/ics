@@ -123,22 +123,22 @@ function printProperty {
 			local tParam="$(getName "$param")";
 			echo "		case \"$param\":";
 			echo "			if p.$tParam != nil {";
-			echo "				return errors.WithContext(\"error decoding $tName->$tParam: \", ErrDuplicateParam)";
+			echo "				return fmt.Errorf(errDecodingProp, c$tName, c$tParam, ErrDuplicateParam)";
 			echo "			}";
 			if [ "$param" != "DELEGATED-FROM" -a "$param" != "DELEGATED-TO" -a "$param" != "MEMBER" ]; then
 				echo "			p.$tParam = new(Param$tParam)";
 			fi;
 			echo "			if err := p.${tParam}.decode(pValues); err != nil {";
-			echo "				return errors.WithContext(\"error decoding $tName->$tParam: \", err)";
+			echo "				return fmt.Errorf(errDecodingProp, c$tName, c$tParam, err)";
 			echo "			}";
 		done;
 		if [ ${#values[@]} -gt 1 ]; then
 			echo "		case \"VALUE\":";
 			echo "			if len(pValues) != 1 {";
-			echo "				return errors.WithContext(\"error decoding $tName->Value: \", ErrInvalidValue)";
+			echo "				return fmt.Errorf(errDecodingProp, c$tName, cValue, ErrInvalidValue)";
 			echo "			}";
 			echo "			if vType != -1 {";
-			echo "				return errors.WithContext(\"error decoding $tName->Value: \", ErrDuplicateParam)";
+			echo "				return fmt.Errorf(errDecodingProp, c$tName, cValue, ErrDuplicateParam)";
 			echo "			}";
 			echo "			switch strings.ToUpper(pValues[0].Data) {";
 			local i=0;
@@ -148,7 +148,7 @@ function printProperty {
 				let "i++";
 			done;
 			echo "			default:";
-			echo "				return errors.WithContext(\"error decoding $tName: \", ErrInvalidValue)";
+			echo "				return fmt.Errorf(errDecodingType, c$tName, ErrInvalidValue)";
 			echo "			}";
 		fi;
 		echo "		default:";
@@ -172,14 +172,14 @@ function printProperty {
 					echo "		p.$tValue = new($tValue)";
 				fi;
 				echo "		if err := p.${tValue}.decode(oParams, value); err != nil {";
-				echo "			return errors.WithContext(\"error decoding $tName->$tValue: \", err)";
+				echo "			return fmt.Errorf(errDecodingProp, c$tName, c$tValue, err)";
 				echo "		}";
 				let "i++";
 			done;
 			echo "	}";
 		else
 			echo "	if err := p.$(getName "${values[0]}").decode(oParams, value); err != nil {";
-			echo "		return errors.WithContext(\"error decoding $tName->$(getName "${values[0]}"): \", err)";
+			echo "		return fmt.Errorf(errDecodingProp, c$tName, c$(getName "${values[0]}"), err)";
 			echo "	}";
 		fi;;
 	1)
@@ -189,7 +189,7 @@ function printProperty {
 			echo "		*p = $tName$(getName "$value")";
 		done;
 		echo "	default:";
-		echo "		return errors.WithContext(\"error decoding $tName: \", ErrInvalidValue)";
+		echo "		return fmt.Errorf(errDecodingType, c$tName, ErrInvalidValue)";
 		echo "	}";;
 	2)
 		echo "	oParams := make(map[string]string)";
@@ -209,7 +209,7 @@ function printProperty {
 		echo "	}";
 		echo "	var t ${values[0]}";
 		echo "	if err := t.decode(oParams, value); err != nil {";
-		echo "		return errors.WithContext(\"error decoding $tName: \", err)";
+		echo "		return fmt.Errorf(errDecodingType, c$tName, err)";
 		echo "	}";
 		echo "	*p = Prop$tName(t)";
 	esac;
@@ -269,7 +269,7 @@ function printProperty {
 			tParam="$(getName "$param")";
 			echo "	if p.$tParam != nil {";
 			echo "		if err := p.${tParam}.valid(); err != nil {";
-			echo "			return errors.WithContext(\"error validating $tName->$tParam: \", err)";
+			echo "			return fmt.Errorf(errValidatingProp, c$tName, c$tParam, err)";
 			echo "		}";
 			echo "	}";
 		done;
@@ -279,17 +279,17 @@ function printProperty {
 				tValue="$(getName "$value")";
 				echo "	if p.$tValue != nil {";
 				echo "		if err := p.${tValue}.valid(); err != nil {";
-				echo "			return errors.WithContext(\"error validating $tName->$tValue: \", err)";
+				echo "			return fmt.Errorf(errValidatingProp, c$tName, c$tValue, err)";
 				echo "		}";
 				echo "		c++";
 				echo "	}";
 			done;
 			echo "	if c != 1 {";
-			echo "		return errors.WithContext(\"error validating $tName: \", ErrInvalidValue)";
+			echo "		return fmt.Errorf(errValidatingType, c$tName, ErrInvalidValue)";
 			echo "	}";
 		else
 			echo "	if err := p.$(getName "${values[0]}").valid(); err != nil {";
-			echo "		return errors.WithContext(\"error validating $tName->$(getName "${values[0]}"): \", err)";
+			echo "		return fmt.Errorf(errValidatingProp, c$tName, c$(getName "${values[0]}"), err)";
 			echo "	}";
 		fi;
 		echo "	return nil";;
@@ -306,13 +306,13 @@ function printProperty {
 		done;
 		echo ":";
 		echo "	default:";
-		echo "		return errors.WithContext(\"error validating $tName: \", ErrInvalidValue)";
+		echo "		return fmt.Errorf(errValidatingType, c$tName, ErrInvalidValue)";
 		echo "	}";
 		echo "	return nil";;
 	2)
 		echo "	t := ${values[0]}(*p)";
 		echo "	if err := t.valid(); err != nil {";
-		echo "		return errors.WithContext(\"error validating $tName: \", err)";
+		echo "		return fmt.Errorf(errValidatingType, c$tName, err)";
 		echo "	}";
 		echo "	return nil";
 	esac;
@@ -333,6 +333,7 @@ function printProperty {
 	echo "// File automatically generated with ./genProperties.sh";
 	echo;
 	echo "import (";
+	echo "	\"fmt\"";
 	echo "	\"strings\"";
 	echo;
 	echo "	\"vimagination.zapto.org/errors\"";
@@ -360,6 +361,25 @@ function printProperty {
 	printProperty;
 	echo "// Errors";
 	echo "const (";
-	echo "	ErrDuplicateParam errors.Error = \"duplicate param\"";
+	echo "	ErrDuplicateParam    errors.Error = \"duplicate param\"";
+	echo "	errDecodingProp                   = \"error decoding %s->%s: %w\"";
+	echo "	errValidatingProp                 = \"error validating %s->%s: %w\"";
+	{
+		while read line; do
+			if [ "${line:0:1}" == "	" ]; then
+				continue;
+			fi;
+			keyword="$(echo "$line" | cut -d':' -f1 | cut -d'#' -f1)";
+			if [ "$keyword" = "TZID" -o "$keyword" = "URI" ]; then
+				continue;
+			fi;
+			type="$(getName "$keyword")";
+			echo -n "	c$type";
+			for i in $(seq $(( 33 - ${#type} ))); do
+				echo -n " ";
+			done;
+			echo "= \"$type\"";
+		done;
+	} < "properties.gen";
 	echo ")";
 ) > "properties.go";
