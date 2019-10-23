@@ -3,11 +3,11 @@ package ics
 // File automatically generated with ./genSections.sh
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"strings"
 
-	"vimagination.zapto.org/errors"
 	"vimagination.zapto.org/parser"
 )
 
@@ -3419,22 +3419,25 @@ func decodeDummy(t tokeniser, n string) error {
 }
 
 // Errors
+var (
+	ErrInvalidEnd        = errors.New("invalid end of section")
+	ErrMissingRequired   = errors.New("required property missing")
+	ErrRequirementNotMet = errors.New("requirement not met")
+)
+
 const (
-	ErrInvalidEnd        errors.Error = "invalid end of section"
-	ErrMissingRequired   errors.Error = "required property missing"
-	ErrRequirementNotMet errors.Error = "requirement not met"
-	errMultiple                       = "error decoding %s: multiple %s"
-	errMissing                        = "error validating %s: missing %s"
-	cCalendar                         = "Calendar"
-	cEvent                            = "Event"
-	cTodo                             = "Todo"
-	cJournal                          = "Journal"
-	cTimezone                         = "Timezone"
-	cStandard                         = "Standard"
-	cDaylight                         = "Daylight"
-	cAlarmAudio                       = "AlarmAudio"
-	cAlarmDisplay                     = "AlarmDisplay"
-	cAlarmEmail                       = "AlarmEmail"
-	cAlarmURI                         = "AlarmURI"
-	cAlarmNone                        = "AlarmNone"
+	errMultiple   = "error decoding %s: multiple %s"
+	errMissing    = "error validating %s: missing %s"
+	cCalendar     = "Calendar"
+	cEvent        = "Event"
+	cTodo         = "Todo"
+	cJournal      = "Journal"
+	cTimezone     = "Timezone"
+	cStandard     = "Standard"
+	cDaylight     = "Daylight"
+	cAlarmAudio   = "AlarmAudio"
+	cAlarmDisplay = "AlarmDisplay"
+	cAlarmEmail   = "AlarmEmail"
+	cAlarmURI     = "AlarmURI"
+	cAlarmNone    = "AlarmNone"
 )

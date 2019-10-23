@@ -2,6 +2,7 @@ package ics
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"math"
 	"net/url"
@@ -10,7 +11,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"vimagination.zapto.org/errors"
 	"vimagination.zapto.org/parser"
 )
 
@@ -1367,37 +1367,40 @@ func writeTimezone(w writer, t time.Time) {
 }
 
 // Errors
+var (
+	ErrInvalidEncoding        = errors.New("invalid Binary encoding")
+	ErrInvalidPeriod          = errors.New("invalid Period")
+	ErrInvalidDuration        = errors.New("invalid Duration")
+	ErrInvalidText            = errors.New("invalid encoded text")
+	ErrInvalidBoolean         = errors.New("invalid Boolean")
+	ErrInvalidOffset          = errors.New("invalid UTC Offset")
+	ErrInvalidRecur           = errors.New("invalid Recur")
+	ErrInvalidTime            = errors.New("invalid Time")
+	ErrInvalidFloat           = errors.New("invalid float")
+	ErrInvalidTFloat          = errors.New("invalid number of floats")
+	ErrInvalidPeriodStart     = errors.New("invalid start of Period")
+	ErrInvalidPeriodDuration  = errors.New("invalid Period duration")
+	ErrInvalidPeriodEnd       = errors.New("invalid end of Period")
+	ErrInvalidRecurFrequency  = errors.New("invalid Recur frequency")
+	ErrInvalidRecurBySecond   = errors.New("invalid Recur BySecond")
+	ErrInvalidRecurByMinute   = errors.New("invalid Recur ByMinute")
+	ErrInvalidRecurByHour     = errors.New("invalid Recur ByHour")
+	ErrInvalidRecurByDay      = errors.New("invalid Recur ByDay")
+	ErrInvalidRecurByMonthDay = errors.New("invalid Recur ByMonthDay")
+	ErrInvalidRecurByYearDay  = errors.New("invalid Recur ByYearDay")
+	ErrInvalidRecurByWeekNum  = errors.New("invalid Recur ByWeekNum")
+	ErrInvalidRecurByMonth    = errors.New("invalid Recur ByMonth")
+	ErrInvalidRecurBySetPos   = errors.New("invalid Recur BySetPos")
+	ErrInvalidRecurWeekStart  = errors.New("invalid Recur WeekStart")
+)
+
 const (
-	ErrInvalidEncoding        errors.Error = "invalid Binary encoding"
-	ErrInvalidPeriod          errors.Error = "invalid Period"
-	ErrInvalidDuration        errors.Error = "invalid Duration"
-	ErrInvalidText            errors.Error = "invalid encoded text"
-	ErrInvalidBoolean         errors.Error = "invalid Boolean"
-	ErrInvalidOffset          errors.Error = "invalid UTC Offset"
-	ErrInvalidRecur           errors.Error = "invalid Recur"
-	ErrInvalidTime            errors.Error = "invalid time"
-	ErrInvalidFloat           errors.Error = "invalid float"
-	ErrInvalidTFloat          errors.Error = "invalid number of floats"
-	ErrInvalidPeriodStart     errors.Error = "invalid start of Period"
-	ErrInvalidPeriodDuration  errors.Error = "invalid Period duration"
-	ErrInvalidPeriodEnd       errors.Error = "invalid end of Period"
-	ErrInvalidRecurFrequency  errors.Error = "invalid Recur frequency"
-	ErrInvalidRecurBySecond   errors.Error = "invalid Recur BySecond"
-	ErrInvalidRecurByMinute   errors.Error = "invalid Recur ByMinute"
-	ErrInvalidRecurByHour     errors.Error = "invalid Recur ByHour"
-	ErrInvalidRecurByDay      errors.Error = "invalid Recur ByDay"
-	ErrInvalidRecurByMonthDay errors.Error = "invalid Recur ByMonthDay"
-	ErrInvalidRecurByYearDay  errors.Error = "invalid Recur ByYearDay"
-	ErrInvalidRecurByWeekNum  errors.Error = "invalid Recur ByWeekNum"
-	ErrInvalidRecurByMonth    errors.Error = "invalid Recur ByMonth"
-	ErrInvalidRecurBySetPos   errors.Error = "invalid Recur BySetPos"
-	ErrInvalidRecurWeekStart  errors.Error = "invalid Recur WeekStart"
-	cBinary                                = "Binary"
-	cCalendarAddress                       = "CalendarAddress"
-	cDate                                  = "Date"
-	cDateTime                              = "DateTime"
-	cMText                                 = "MText"
-	cPeriod                                = "Period"
-	cText                                  = "Text"
-	cAlarm                                 = "Alarm"
+	cBinary          = "Binary"
+	cCalendarAddress = "CalendarAddress"
+	cDate            = "Date"
+	cDateTime        = "DateTime"
+	cMText           = "MText"
+	cPeriod          = "Period"
+	cText            = "Text"
+	cAlarm           = "Alarm"
 )

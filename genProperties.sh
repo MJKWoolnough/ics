@@ -333,10 +333,10 @@ function printProperty {
 	echo "// File automatically generated with ./genProperties.sh";
 	echo;
 	echo "import (";
+	echo "	\"errors\"";
 	echo "	\"fmt\"";
 	echo "	\"strings\"";
 	echo;
-	echo "	\"vimagination.zapto.org/errors\"";
 	echo "	\"vimagination.zapto.org/parser\"";
 	echo ")";
 	echo;
@@ -360,10 +360,13 @@ function printProperty {
 	} < "properties.gen";
 	printProperty;
 	echo "// Errors";
+	echo "var (";
+	echo "	ErrDuplicateParam = errors.New(\"duplicate param\")";
+	echo ")";
+	echo;
 	echo "const (";
-	echo "	ErrDuplicateParam    errors.Error = \"duplicate param\"";
-	echo "	errDecodingProp                   = \"error decoding %s->%s: %w\"";
-	echo "	errValidatingProp                 = \"error validating %s->%s: %w\"";
+	echo "	errDecodingProp      = \"error decoding %s->%s: %w\"";
+	echo "	errValidatingProp    = \"error validating %s->%s: %w\"";
 	{
 		while read line; do
 			if [ "${line:0:1}" == "	" ]; then
@@ -375,7 +378,7 @@ function printProperty {
 			fi;
 			type="$(getName "$keyword")";
 			echo -n "	c$type";
-			for i in $(seq $(( 33 - ${#type} ))); do
+			for i in $(seq $(( 20 - ${#type} ))); do
 				echo -n " ";
 			done;
 			echo "= \"$type\"";

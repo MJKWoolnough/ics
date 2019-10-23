@@ -10,12 +10,12 @@ source "comments.sh";
 	echo "// File automatically generated with ./genParams.sh";
 	echo;
 	echo "import (";
+	echo "	\"errors\"";
 	echo "	\"fmt\"";
 	echo "	\"regexp\"";
 	echo "	\"strings\"";
 	echo "	\"unicode/utf8\"";
 	echo;
-	echo "	\"vimagination.zapto.org/errors\"";
 	echo "	\"vimagination.zapto.org/parser\"";
 	echo ")";
 	echo;
@@ -384,17 +384,20 @@ HEREDOC
 	echo "}";
 	echo;
 	echo "// Errors";
-	echo "const (";
-	echo "	ErrInvalidParam            errors.Error = \"invalid param value\"";
-	echo "	ErrInvalidValue            errors.Error = \"invalid value\"";
-	echo "	errDecodingType                         = \"error decoding %s: %w\"";
-	echo "	errValidatingType                       = \"error decoding %s: %w\"";
+	echo "var (";
+	echo "	ErrInvalidParam = errors.New(\"invalid param value\")";
+	echo "	ErrInvalidValue = errors.New(\"invalid value\")";
+	echo ")";
+	echo;
+	echo "const ("
+	echo "	errDecodingType            = \"error decoding %s: %w\"";
+	echo "	errValidatingType          = \"error decoding %s: %w\"";
 	{
 		while read line; do
 			keyword="$(echo "$line" | cut -d'=' -f1)";
 			type="$(getName "$keyword")";
 			echo -n "	c$type";
-			for i in $(seq $(( 39 - ${#type} ))); do
+			for i in $(seq $(( 26 - ${#type} ))); do
 				echo -n " ";
 			done;
 			echo "= \"$type\"";

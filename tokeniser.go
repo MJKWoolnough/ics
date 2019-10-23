@@ -1,9 +1,9 @@
 package ics
 
 import (
+	"errors"
 	"io"
 
-	"vimagination.zapto.org/errors"
 	"vimagination.zapto.org/parser"
 )
 
@@ -150,11 +150,11 @@ func phrase(p *parser.Parser) (parser.Phrase, parser.PhraseFunc) {
 }
 
 // Errors
-const (
-	ErrInvalidContentLine                 errors.Error = "invalid content line"
-	ErrInvalidContentLineName             errors.Error = "invalid content line name"
-	ErrInvalidContentLineParamName        errors.Error = "invalid content line param name"
-	ErrInvalidContentLineQuotedParamValue errors.Error = "invalid content line quoted param value"
-	ErrInvalidContentLineParamValue       errors.Error = "invalid content line param value"
-	ErrInvalidContentLineValue            errors.Error = "invalid content line value"
+var (
+	ErrInvalidContentLine                 = errors.New("invalid content line")
+	ErrInvalidContentLineName             = errors.New("invalid content line name")
+	ErrInvalidContentLineParamName        = errors.New("invalid content line param name")
+	ErrInvalidContentLineQuotedParamValue = errors.New("invalid content line quoted param value")
+	ErrInvalidContentLineParamValue       = errors.New("invalid content line param value")
+	ErrInvalidContentLineValue            = errors.New("invalid content line value")
 )

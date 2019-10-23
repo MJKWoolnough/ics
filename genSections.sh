@@ -360,11 +360,11 @@ OFS="$IFS";
 	echo "// File automatically generated with ./genSections.sh";
 	echo;
 	echo "import (";
+	echo "	\"errors\"";
 	echo "	\"fmt\"";
 	echo "	\"io\"";
 	echo "	\"strings\"";
 	echo;
-	echo "	\"vimagination.zapto.org/errors\"";
 	echo "	\"vimagination.zapto.org/parser\"";
 	echo ")";
 	echo;
@@ -442,12 +442,15 @@ func decodeDummy(t tokeniser, n string) error {
 }
 
 // Errors
+var (
+	ErrInvalidEnd        = errors.New("invalid end of section")
+	ErrMissingRequired   = errors.New("required property missing")
+	ErrRequirementNotMet = errors.New("requirement not met")
+)
+
 const (
-	ErrInvalidEnd        errors.Error = "invalid end of section"
-	ErrMissingRequired   errors.Error = "required property missing"
-	ErrRequirementNotMet errors.Error = "requirement not met"
-	errMultiple                       = "error decoding %s: multiple %s"
-	errMissing                        = "error validating %s: missing %s"
+	errMultiple   = "error decoding %s: multiple %s"
+	errMissing    = "error validating %s: missing %s"
 HEREDOC
 	while read line; do
 		if [ "${line:0:1}" = "	" -o "$line" = "VFREEBUSY" ]; then
@@ -456,7 +459,7 @@ HEREDOC
 		type="$(getName $line)";
 		echo -n "	c$type";
 		IFS="$OFS";
-		for i in $(seq $(( 33 - ${#type} ))); do
+		for i in $(seq $(( 13 - ${#type} ))); do
 			echo -n " ";
 		done;
 		IFS="$(echo)";

@@ -3,12 +3,12 @@ package ics
 // File automatically generated with ./genParams.sh
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
 	"unicode/utf8"
 
-	"vimagination.zapto.org/errors"
 	"vimagination.zapto.org/parser"
 )
 
@@ -1131,32 +1131,35 @@ func init() {
 }
 
 // Errors
+var (
+	ErrInvalidParam = errors.New("invalid param value")
+	ErrInvalidValue = errors.New("invalid value")
+)
+
 const (
-	ErrInvalidParam            errors.Error = "invalid param value"
-	ErrInvalidValue            errors.Error = "invalid value"
-	errDecodingType                         = "error decoding %s: %w"
-	errValidatingType                       = "error decoding %s: %w"
-	cAlternativeRepresentation              = "AlternativeRepresentation"
-	cCommonName                             = "CommonName"
-	cCalendarUserType                       = "CalendarUserType"
-	cDelegator                              = "Delegator"
-	cDelagatee                              = "Delagatee"
-	cDirectoryEntry                         = "DirectoryEntry"
-	cEncoding                               = "Encoding"
-	cFormatType                             = "FormatType"
-	cFreeBusyType                           = "FreeBusyType"
-	cLanguage                               = "Language"
-	cMember                                 = "Member"
-	cParticipationStatus                    = "ParticipationStatus"
-	cRange                                  = "Range"
-	cRelated                                = "Related"
-	cRelationshipType                       = "RelationshipType"
-	cParticipationRole                      = "ParticipationRole"
-	cRSVP                                   = "RSVP"
-	cSentBy                                 = "SentBy"
-	cTimezoneID                             = "TimezoneID"
-	cValue                                  = "Value"
-	cURI                                    = "URI"
-	cID                                     = "ID"
-	cAgentID                                = "AgentID"
+	errDecodingType            = "error decoding %s: %w"
+	errValidatingType          = "error decoding %s: %w"
+	cAlternativeRepresentation = "AlternativeRepresentation"
+	cCommonName                = "CommonName"
+	cCalendarUserType          = "CalendarUserType"
+	cDelegator                 = "Delegator"
+	cDelagatee                 = "Delagatee"
+	cDirectoryEntry            = "DirectoryEntry"
+	cEncoding                  = "Encoding"
+	cFormatType                = "FormatType"
+	cFreeBusyType              = "FreeBusyType"
+	cLanguage                  = "Language"
+	cMember                    = "Member"
+	cParticipationStatus       = "ParticipationStatus"
+	cRange                     = "Range"
+	cRelated                   = "Related"
+	cRelationshipType          = "RelationshipType"
+	cParticipationRole         = "ParticipationRole"
+	cRSVP                      = "RSVP"
+	cSentBy                    = "SentBy"
+	cTimezoneID                = "TimezoneID"
+	cValue                     = "Value"
+	cURI                       = "URI"
+	cID                        = "ID"
+	cAgentID                   = "AgentID"
 )
