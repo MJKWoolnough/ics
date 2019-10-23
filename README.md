@@ -8,23 +8,6 @@ Package ics implements an encoder and decoder for iCalendar files
 
 ```go
 const (
-	ErrInvalidParam errors.Error = "invalid param value"
-	ErrInvalidValue errors.Error = "invalid value"
-)
-```
-Errors
-
-```go
-const (
-	ErrInvalidEnd        errors.Error = "invalid end of section"
-	ErrMissingRequired   errors.Error = "required property missing"
-	ErrRequirementNotMet errors.Error = "requirement not met"
-)
-```
-Errors
-
-```go
-const (
 	ErrInvalidStructure   errors.Error = "invalid structure"
 	ErrMissingAlarmAction errors.Error = "missing alarm action"
 	ErrInvalidAlarm       errors.Error = "invalid alarm type"
@@ -33,50 +16,67 @@ const (
 Errors
 
 ```go
-const (
-	ErrInvalidContentLine                 errors.Error = "invalid content line"
-	ErrInvalidContentLineName             errors.Error = "invalid content line name"
-	ErrInvalidContentLineParamName        errors.Error = "invalid content line param name"
-	ErrInvalidContentLineQuotedParamValue errors.Error = "invalid content line quoted param value"
-	ErrInvalidContentLineParamValue       errors.Error = "invalid content line param value"
-	ErrInvalidContentLineValue            errors.Error = "invalid content line value"
+var (
+	ErrInvalidParam = errors.New("invalid param value")
+	ErrInvalidValue = errors.New("invalid value")
 )
 ```
 Errors
 
 ```go
-const (
-	ErrInvalidEncoding        errors.Error = "invalid Binary encoding"
-	ErrInvalidPeriod          errors.Error = "invalid Period"
-	ErrInvalidDuration        errors.Error = "invalid Duration"
-	ErrInvalidText            errors.Error = "invalid encoded text"
-	ErrInvalidBoolean         errors.Error = "invalid Boolean"
-	ErrInvalidOffset          errors.Error = "invalid UTC Offset"
-	ErrInvalidRecur           errors.Error = "invalid Recur"
-	ErrInvalidTime            errors.Error = "invalid time"
-	ErrInvalidFloat           errors.Error = "invalid float"
-	ErrInvalidTFloat          errors.Error = "invalid number of floats"
-	ErrInvalidPeriodStart     errors.Error = "invalid start of Period"
-	ErrInvalidPeriodDuration  errors.Error = "invalid Period duration"
-	ErrInvalidPeriodEnd       errors.Error = "invalid end of Period"
-	ErrInvalidRecurFrequency  errors.Error = "invalid Recur frequency"
-	ErrInvalidRecurBySecond   errors.Error = "invalid Recur BySecond"
-	ErrInvalidRecurByMinute   errors.Error = "invalid Recur ByMinute"
-	ErrInvalidRecurByHour     errors.Error = "invalid Recur ByHour"
-	ErrInvalidRecurByDay      errors.Error = "invalid Recur ByDay"
-	ErrInvalidRecurByMonthDay errors.Error = "invalid Recur ByMonthDay"
-	ErrInvalidRecurByYearDay  errors.Error = "invalid Recur ByYearDay"
-	ErrInvalidRecurByWeekNum  errors.Error = "invalid Recur ByWeekNum"
-	ErrInvalidRecurByMonth    errors.Error = "invalid Recur ByMonth"
-	ErrInvalidRecurBySetPos   errors.Error = "invalid Recur BySetPos"
-	ErrInvalidRecurWeekStart  errors.Error = "invalid Recur WeekStart"
+var (
+	ErrInvalidEnd        = errors.New("invalid end of section")
+	ErrMissingRequired   = errors.New("required property missing")
+	ErrRequirementNotMet = errors.New("requirement not met")
 )
 ```
 Errors
 
 ```go
-const (
-	ErrDuplicateParam errors.Error = "duplicate param"
+var (
+	ErrInvalidContentLine                 = errors.New("invalid content line")
+	ErrInvalidContentLineName             = errors.New("invalid content line name")
+	ErrInvalidContentLineParamName        = errors.New("invalid content line param name")
+	ErrInvalidContentLineQuotedParamValue = errors.New("invalid content line quoted param value")
+	ErrInvalidContentLineParamValue       = errors.New("invalid content line param value")
+	ErrInvalidContentLineValue            = errors.New("invalid content line value")
+)
+```
+Errors
+
+```go
+var (
+	ErrInvalidEncoding        = errors.New("invalid Binary encoding")
+	ErrInvalidPeriod          = errors.New("invalid Period")
+	ErrInvalidDuration        = errors.New("invalid Duration")
+	ErrInvalidText            = errors.New("invalid encoded text")
+	ErrInvalidBoolean         = errors.New("invalid Boolean")
+	ErrInvalidOffset          = errors.New("invalid UTC Offset")
+	ErrInvalidRecur           = errors.New("invalid Recur")
+	ErrInvalidTime            = errors.New("invalid Time")
+	ErrInvalidFloat           = errors.New("invalid float")
+	ErrInvalidTFloat          = errors.New("invalid number of floats")
+	ErrInvalidPeriodStart     = errors.New("invalid start of Period")
+	ErrInvalidPeriodDuration  = errors.New("invalid Period duration")
+	ErrInvalidPeriodEnd       = errors.New("invalid end of Period")
+	ErrInvalidRecurFrequency  = errors.New("invalid Recur frequency")
+	ErrInvalidRecurBySecond   = errors.New("invalid Recur BySecond")
+	ErrInvalidRecurByMinute   = errors.New("invalid Recur ByMinute")
+	ErrInvalidRecurByHour     = errors.New("invalid Recur ByHour")
+	ErrInvalidRecurByDay      = errors.New("invalid Recur ByDay")
+	ErrInvalidRecurByMonthDay = errors.New("invalid Recur ByMonthDay")
+	ErrInvalidRecurByYearDay  = errors.New("invalid Recur ByYearDay")
+	ErrInvalidRecurByWeekNum  = errors.New("invalid Recur ByWeekNum")
+	ErrInvalidRecurByMonth    = errors.New("invalid Recur ByMonth")
+	ErrInvalidRecurBySetPos   = errors.New("invalid Recur BySetPos")
+	ErrInvalidRecurWeekStart  = errors.New("invalid Recur WeekStart")
+)
+```
+Errors
+
+```go
+var (
+	ErrDuplicateParam = errors.New("duplicate param")
 )
 ```
 Errors
