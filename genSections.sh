@@ -86,9 +86,9 @@ function printSection {
 	echo "	for {"
 	echo "		p, err := t.GetPhrase()";
 	echo "		if err != nil {";
-	echo "			return errors.WithContext(\"error decoding $sName: \", err)";
+	echo "			return fmt.Errorf(errDecodingType, c$sName, err)";
 	echo "		} else if p.Type == parser.PhraseDone {";
-	echo "			return errors.WithContext(\"error decoding $sName: \", io.ErrUnexpectedEOF)";
+	echo "			return fmt.Errorf(errDecodingType, c$sName, io.ErrUnexpectedEOF)";
 	echo "		}";
 	if [ ${#currSection[@]} -gt 0 ]; then
 		echo "		params := p.Data[1 : len(p.Data)-1]";
@@ -113,31 +113,31 @@ function printSection {
 		echo "			case \"$keyword\":";
 		if $required && ! $multiple; then
 			echo "				if required$name {";
-			echo "					return errors.Error(\"error decoding $sName: multiple $name\")";
+			echo "					return fmt.Errorf(errMultiple, c$sName, c$name)";
 			echo "				}";
 			echo "				required$name = true";
 			echo "				if err := s.${name}.decode(t); err != nil {";
-			echo "					return errors.WithContext(\"error decoding $sName->$name: \", err)";
+			echo "					return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "				}";
 		elif $multiple; then
 			echo "				var e $name";
 			echo "				if err := e.decode(t); err != nil {";
-			echo "					return errors.WithContext(\"error decoding $sName->$name: \", err)";
+			echo "					return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "				}";
 			echo "				s.$name = append(s.$name, e)";
 		else
 			echo "				if s.$name != nil {";
-			echo "					return errors.Error(\"error decoding $sName: multiple $name\")";
+			echo "					return fmt.Errorf(errMultiple, c$sName, c$name)";
 			echo "				}";
 			echo "				s.$name = new($name)";
 			echo "				if err := s.${name}.decode(t); err != nil {";
-			echo "					return errors.WithContext(\"error decoding $sName->$name: \", err)";
+			echo "					return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "				}";
 		fi;
 	done;
 	echo "			default:";
 	echo "				if err := decodeDummy(t, n); err != nil {";
-	echo "					return errors.WithContext(\"error decoding $sName: \", err)";
+	echo "					return fmt.Errorf(errDecodingType, c$sName, err)";
 	echo "				}";
 	echo "			}";
 
@@ -156,25 +156,25 @@ function printSection {
 		echo "		case \"$keyword\":";
 		if $required && ! $multiple; then
 			echo "			if required$name {";
-			echo "				return errors.Error(\"error decoding $sName: multiple $name\")";
+			echo "				return fmt.Errorf(errMultiple, c$sName, c$name)";
 			echo "			}";
 			echo "			required$name = true";
 			echo "			if err := s.${name}.decode(params, value); err != nil {";
-			echo "				return errors.WithContext(\"error decoding $sName->$name: \", err)";
+			echo "				return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "			}";
 		elif $multiple; then
 			echo "			var e Prop$name";
 			echo "			if err := e.decode(params, value); err != nil {";
-			echo "				return errors.WithContext(\"error decoding $sName->$name: \", err)";
+			echo "				return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "			}";
 			echo "			s.$name = append(s.$name, e)";
 		else
 			echo "			if s.$name != nil {";
-			echo "				return errors.Error(\"error decoding $sName: multiple $name\")";
+			echo "				return fmt.Errorf(errMultiple, c$sName, c$name)";
 			echo "			}";
 			echo "			s.$name = new(Prop$name)";
 			echo "			if err := s.${name}.decode(params, value); err != nil {";
-			echo "				return errors.WithContext(\"error decoding $sName->$name: \", err)";
+			echo "				return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "			}";
 		fi;
 	done;
@@ -184,7 +184,7 @@ function printSection {
 	else
 		echo "			if value != \"$sectionName\" {";
 	fi;
-	echo "				return errors.WithContext(\"error decoding $sName: \", ErrInvalidEnd)"
+	echo "				return fmt.Errorf(errDecodingType, c$sName, ErrInvalidEnd)"
 	echo "			}";
 	echo "			break Loop";
 	echo "		}";
@@ -213,7 +213,7 @@ function printSection {
 			fi;
 		done;
 		echo " {";
-		echo "		return errors.WithContext(\"error decoding $sName: \", ErrMissingRequired)";
+		echo "		return fmt.Errorf(errDecodingType, c$sName, ErrMissingRequired)";
 		echo "	}";
 	fi;
 
@@ -272,7 +272,7 @@ function printSection {
 			echo -n ")";
 		fi;
 		echo " {";
-		echo "		return errors.WithContext(\"error decoding $sName: \", ErrRequirementNotMet)";
+		echo "		return fmt.Errorf(errDecodingType, c$sName, ErrRequirementNotMet)";
 		echo "	}";
 	done;
 
@@ -322,23 +322,23 @@ function printSection {
 		if $multiple; then
 			if $required; then
 				echo "	if len(s.$name) == 0 {";
-				echo "		return errors.Error(\"error validating $sName: missing $name\")";
+				echo "		return fmt.Errorf(errMissing, c$sName, c$name)";
 				echo "	}";
 			fi;
 			echo "	for n := range s.$name {";
 			echo "		if err := s.$name[n].valid(); err != nil {";
-			echo "			return errors.WithContext(\"error validating $sName->$name: \", err)";
+			echo "			return fmt.Errorf(errValidatingProp, c$sName, c$name, err)";
 			echo "		}";
 			echo "	}";
 		else
 			if $required; then
 				echo "	if err := s.${name}.valid(); err != nil {";
-				echo "		return errors.WithContext(\"error validating $sName->$name: \", err)";
+				echo "		return fmt.Errorf(errValidatingProp, c$sName, c$name, err)";
 				echo "	}";
 			else
 				echo "	if s.$name != nil {";
 				echo "		if err := s.${name}.valid(); err != nil {";
-				echo "			return errors.WithContext(\"error validating $sName->$name: \", err)";
+				echo "			return fmt.Errorf(errValidatingProp, c$sName, c$name, err)";
 				echo "		}";
 				echo "	}";
 			fi;
@@ -360,6 +360,7 @@ OFS="$IFS";
 	echo "// File automatically generated with ./genSections.sh";
 	echo;
 	echo "import (";
+	echo "	\"fmt\"";
 	echo "	\"io\"";
 	echo "	\"strings\"";
 	echo;
@@ -445,6 +446,21 @@ const (
 	ErrInvalidEnd        errors.Error = "invalid end of section"
 	ErrMissingRequired   errors.Error = "required property missing"
 	ErrRequirementNotMet errors.Error = "requirement not met"
-)
+	errMultiple                       = "error decoding %s: multiple %s"
+	errMissing                        = "error validating %s: missing %s"
 HEREDOC
+	while read line; do
+		if [ "${line:0:1}" = "	" -o "$line" = "VFREEBUSY" ]; then
+			continue;
+		fi;
+		type="$(getName $line)";
+		echo -n "	c$type";
+		IFS="$OFS";
+		for i in $(seq $(( 33 - ${#type} ))); do
+			echo -n " ";
+		done;
+		IFS="$(echo)";
+		echo "= \"$type\"";
+	done < sections.gen;
+	echo ")";
 ) > sections.go
