@@ -6,7 +6,7 @@ import (
 )
 
 type writer interface {
-	Write([]byte) (int, error)
+	io.Writer
 	WriteString(string) (int, error)
 }
 
