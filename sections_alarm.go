@@ -1,9 +1,9 @@
 package ics
 
 import (
+	"errors"
 	"io"
 
-	"vimagination.zapto.org/errors"
 	"vimagination.zapto.org/parser"
 )
 
@@ -123,8 +123,8 @@ func (AlarmNone) Type() string {
 }
 
 // Errors
-const (
-	ErrInvalidStructure   errors.Error = "invalid structure"
-	ErrMissingAlarmAction errors.Error = "missing alarm action"
-	ErrInvalidAlarm       errors.Error = "invalid alarm type"
+var (
+	ErrInvalidStructure   = errors.New("invalid structure")
+	ErrMissingAlarmAction = errors.New("missing alarm action")
+	ErrInvalidAlarm       = errors.New("invalid alarm type")
 )
