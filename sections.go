@@ -3427,7 +3427,6 @@ var (
 
 const (
 	errMultiple   = "error decoding %s: multiple %s"
-	errMissing    = "error validating %s: missing %s"
 	cCalendar     = "Calendar"
 	cEvent        = "Event"
 	cTodo         = "Todo"
