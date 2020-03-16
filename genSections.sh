@@ -320,11 +320,6 @@ function printSection {
 		required=${aline[2]};
 		multiple=${aline[3]};
 		if $multiple; then
-			if $required; then
-				echo "	if len(s.$name) == 0 {";
-				echo "		return fmt.Errorf(errMissing, c$sName, c$name)";
-				echo "	}";
-			fi;
 			echo "	for n := range s.$name {";
 			echo "		if err := s.$name[n].valid(); err != nil {";
 			echo "			return fmt.Errorf(errValidatingProp, c$sName, c$name, err)";
@@ -450,7 +445,6 @@ var (
 
 const (
 	errMultiple   = "error decoding %s: multiple %s"
-	errMissing    = "error validating %s: missing %s"
 HEREDOC
 	while read line; do
 		if [ "${line:0:1}" = "	" -o "$line" = "VFREEBUSY" ]; then
