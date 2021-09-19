@@ -7,15 +7,6 @@ Package ics implements an encoder and decoder for iCalendar files
 ## Usage
 
 ```go
-const (
-	ErrInvalidStructure   errors.Error = "invalid structure"
-	ErrMissingAlarmAction errors.Error = "missing alarm action"
-	ErrInvalidAlarm       errors.Error = "invalid alarm type"
-)
-```
-Errors
-
-```go
 var (
 	ErrInvalidParam = errors.New("invalid param value")
 	ErrInvalidValue = errors.New("invalid value")
@@ -28,6 +19,15 @@ var (
 	ErrInvalidEnd        = errors.New("invalid end of section")
 	ErrMissingRequired   = errors.New("required property missing")
 	ErrRequirementNotMet = errors.New("requirement not met")
+)
+```
+Errors
+
+```go
+var (
+	ErrInvalidStructure   = errors.New("invalid structure")
+	ErrMissingAlarmAction = errors.New("missing alarm action")
+	ErrInvalidAlarm       = errors.New("invalid alarm type")
 )
 ```
 Errors
