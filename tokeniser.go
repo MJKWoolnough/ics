@@ -67,10 +67,7 @@ func parseParamName(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 		t.Err = ErrInvalidContentLineParamName
 		return t.Error()
 	}
-	return parser.Token{
-		Type: tokenParamName,
-		Data: t.Get(),
-	}, parseParamValue
+	return t.Return(tokenParamName, parseParamValue)
 }
 
 func parseParamValue(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
@@ -118,10 +115,7 @@ func parseValue(t *parser.Tokeniser) (parser.Token, parser.TokenFunc) {
 			}, parseName
 		}
 	case -1:
-		return parser.Token{
-			Type: tokenValue,
-			Data: t.Get(),
-		}, (*parser.Tokeniser).Done
+		return t.Return(tokenValue, nil)
 	}
 	t.Err = ErrInvalidContentLineValue
 	return t.Error()
@@ -143,10 +137,7 @@ func phrase(p *parser.Parser) (parser.Phrase, parser.PhraseFunc) {
 	if !p.Accept(tokenValue) {
 		return p.Error()
 	}
-	return parser.Phrase{
-		Type: phraseContentLine,
-		Data: p.Get(),
-	}, phrase
+	return p.Return(phraseContentLine, phrase)
 }
 
 // Errors
