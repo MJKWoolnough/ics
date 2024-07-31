@@ -1094,7 +1094,7 @@ Loop:
 		switch c {
 		case '\\':
 			t.Accept("\\")
-			switch c := t.Peek(); c {
+			switch c := t.Next(); c {
 			case '\\':
 				d = append(d, '\\')
 			case ';':
@@ -1108,7 +1108,6 @@ Loop:
 				l := utf8.EncodeRune(ru[:], c)
 				d = append(d, ru[:l]...)
 			}
-			t.Except("")
 			t.Get()
 		default:
 			break Loop
@@ -1323,6 +1322,7 @@ func (u *UTCOffset) decode(_ map[string]string, data string) error {
 	}
 	return nil
 }
+
 func (u UTCOffset) aencode(w writer) {
 	w.WriteString(":")
 	u.encode(w)

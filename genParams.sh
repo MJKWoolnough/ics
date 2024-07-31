@@ -333,7 +333,7 @@ Loop:
 			break Loop
 		case '^':
 			t.Accept("^")
-			switch t.Peek() {
+			switch t.Next() {
 			case -1:
 				d = append(d, '^')
 				break Loop
@@ -348,7 +348,6 @@ Loop:
 				l := utf8.EncodeRune(ru[:], c)
 				d = append(d, ru[:l]...)
 			}
-			t.Except("")
 		}
 	}
 	return string(d)
