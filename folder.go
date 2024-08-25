@@ -19,13 +19,16 @@ func (f *folder) Write(q []byte) (int, error) {
 	if f.err != nil {
 		return 0, f.err
 	}
+
 	var (
 		r       rune
 		s, n, m int
 	)
+
 	for pos := 0; pos < len(q); pos += s {
 		r, s = utf8.DecodeRune(q[pos:])
 		f.line += uint8(s)
+
 		if r == '\n' {
 			f.line = 0
 		} else if r == '\r' {
@@ -33,13 +36,15 @@ func (f *folder) Write(q []byte) (int, error) {
 			if pos > 0 {
 				m, f.err = f.w.Write(q[:pos])
 				n += m
+
 				if f.err != nil {
 					return n, f.err
 				}
+
 				q = q[pos:]
 			}
-			_, f.err = f.w.Write(eol[:])
-			if f.err != nil {
+
+			if _, f.err = f.w.Write(eol[:]); f.err != nil {
 				return n, f.err
 			}
 
@@ -47,10 +52,12 @@ func (f *folder) Write(q []byte) (int, error) {
 			f.line = uint8(s) + 1
 		}
 	}
+
 	if len(q) > 0 {
 		m, f.err = f.w.Write(q)
 		n += m
 	}
+
 	return n, f.err
 }
 

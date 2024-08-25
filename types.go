@@ -16,18 +16,21 @@ import (
 
 const dateTimeFormat = "20060102T150405Z"
 
-// Binary is inline binary data
+// Binary is inline binary data.
 type Binary []byte
 
 func (b *Binary) decode(params map[string]string, data string) error {
 	if params["ENCODING"] != "BASE64" {
 		return ErrInvalidEncoding
 	}
+
 	cb, err := base64.StdEncoding.DecodeString(data)
 	*b = cb
+
 	if err != nil {
 		return fmt.Errorf("error while decoding binary data: %w", err)
 	}
+
 	return nil
 }
 
@@ -38,6 +41,7 @@ func (b Binary) aencode(w writer) {
 
 func (b Binary) encode(w writer) {
 	e := base64.NewEncoder(base64.StdEncoding, w)
+
 	e.Write(b)
 	e.Close()
 }
@@ -46,15 +50,17 @@ func (Binary) valid() error {
 	return nil
 }
 
-// Boolean is true or false
+// Boolean is true or false.
 type Boolean bool
 
 func (b *Boolean) decode(_ map[string]string, data string) error {
 	cb, err := strconv.ParseBool(data)
 	*b = Boolean(cb)
+
 	if err != nil {
 		return ErrInvalidBoolean
 	}
+
 	return nil
 }
 
@@ -80,7 +86,7 @@ func (Boolean) valid() error {
 	return nil
 }
 
-// CalendarAddress contains a calendar user address
+// CalendarAddress contains a calendar user address.
 type CalendarAddress struct {
 	url.URL
 }
@@ -90,7 +96,9 @@ func (c *CalendarAddress) decode(_ map[string]string, data string) error {
 	if err != nil {
 		return fmt.Errorf("error parsing CalendarAddress: %w", err)
 	}
+
 	c.URL = *cu
+
 	return nil
 }
 
@@ -107,7 +115,7 @@ func (CalendarAddress) valid() error {
 	return nil
 }
 
-// Date is a Calendar Data
+// Date is a Calendar Data.
 type Date struct {
 	time.Time
 }
@@ -117,7 +125,9 @@ func (d *Date) decode(_ map[string]string, data string) error {
 	if err != nil {
 		return fmt.Errorf("error parsing Date: %w", err)
 	}
+
 	d.Time = t
+
 	return nil
 }
 
@@ -128,6 +138,7 @@ func (d Date) aencode(w writer) {
 
 func (d Date) encode(w writer) {
 	b := make([]byte, 0, 8)
+
 	w.Write(d.AppendFormat(b, dateTimeFormat[:8]))
 }
 
@@ -135,10 +146,11 @@ func (d Date) valid() error {
 	if d.IsZero() {
 		return ErrInvalidTime
 	}
+
 	return nil
 }
 
-// DateTime is a Calendar Date and Time
+// DateTime is a Calendar Date and Time.
 type DateTime struct {
 	time.Time
 }
@@ -149,24 +161,29 @@ func (d *DateTime) decode(params map[string]string, data string) error {
 		if err != nil {
 			return fmt.Errorf("error loading timezone for DateTime: %w", err)
 		}
+
 		t, err := time.ParseInLocation(dateTimeFormat[:15], data, l)
 		if err != nil {
 			return fmt.Errorf("error parsing time in location for DateTime: %w", err)
 		}
+
 		d.Time = t
 	} else if len(data) > 0 && data[len(data)-1] == 'Z' {
 		t, err := time.ParseInLocation(dateTimeFormat, data, time.UTC)
 		if err != nil {
 			return fmt.Errorf("error parsing time in UTC for DateTime: %w", err)
 		}
+
 		d.Time = t
 	} else {
 		t, err := time.ParseInLocation(dateTimeFormat[:15], data, time.Local)
 		if err != nil {
 			return fmt.Errorf("error parsing local time for DateTime: %w", err)
 		}
+
 		d.Time = t
 	}
+
 	return nil
 }
 
@@ -178,6 +195,7 @@ func (d DateTime) aencode(w writer) {
 
 func (d DateTime) encode(w writer) {
 	b := make([]byte, 0, 16)
+
 	switch d.Location() {
 	case time.UTC:
 		b = d.AppendFormat(b, dateTimeFormat)
@@ -186,6 +204,7 @@ func (d DateTime) encode(w writer) {
 	default:
 		b = d.AppendFormat(b, dateTimeFormat[:15])
 	}
+
 	w.Write(b)
 }
 
@@ -193,10 +212,11 @@ func (d DateTime) valid() error {
 	if d.IsZero() {
 		return ErrInvalidTime
 	}
+
 	return nil
 }
 
-// Duration is a duration of time
+// Duration is a duration of time.
 type Duration struct {
 	Negative                             bool
 	Weeks, Days, Hours, Minutes, Seconds uint
@@ -204,74 +224,97 @@ type Duration struct {
 
 func (d *Duration) decode(_ map[string]string, data string) error {
 	t := parser.NewStringTokeniser(data)
+
 	if t.Accept("-") {
 		d.Negative = true
 	} else {
 		t.Accept("+")
 	}
+
 	if !t.Accept("P") {
 		return ErrInvalidDuration
 	}
+
 	var level uint8
+
 	for t.Peek() != -1 {
 		if t.Accept("T") {
 			level = 1
 		}
+
 		t.Get()
+
 		mode := t.AcceptRun("0123456789")
 		n, err := strconv.ParseUint(t.Get(), 10, 0)
 		num := uint(n)
+
 		if err != nil {
 			return fmt.Errorf("error decoding duration: %w", err)
 		}
+
 		switch mode {
 		case 'W':
 			if level > 0 {
 				return ErrInvalidDuration
 			}
+
 			t.Accept("W")
+
 			if t.Peek() != -1 {
 				return ErrInvalidDuration
 			}
+
 			d.Weeks = num
+
 			return nil
 		case 'D':
 			if level > 0 {
 				return ErrInvalidDuration
 			}
+
 			t.Accept("D")
+
 			d.Days = num
 			level = 1
 		case 'H':
 			if level > 1 {
 				return ErrInvalidDuration
 			}
+
 			t.Accept("H")
+
 			d.Hours = num
 			level = 2
 		case 'M':
 			if level > 2 {
 				return ErrInvalidDuration
 			}
+
 			t.Accept("M")
+
 			d.Minutes = num
 			level = 3
 		case 'S':
 			if level > 3 {
 				return ErrInvalidDuration
 			}
+
 			t.Accept("S")
+
 			if t.Peek() != -1 {
 				return ErrInvalidDuration
 			}
+
 			d.Seconds = num
 		default:
 			return ErrInvalidDuration
 		}
 	}
+
 	if level == 0 {
 		return ErrInvalidDuration
 	}
+
 	return nil
 }
 
@@ -279,12 +322,16 @@ func itoa(n uint) []byte {
 	if n == 0 {
 		return []byte{'0'}
 	}
+
 	var digits [20]byte
+
 	pos := 20
+
 	for ; n > 0; n /= 10 {
 		pos--
 		digits[pos] = '0' + byte(n%10)
 	}
+
 	return digits[pos:]
 }
 
@@ -295,10 +342,13 @@ func (d Duration) aencode(w writer) {
 
 func (d Duration) encode(w writer) {
 	data := make([]byte, 0, 64)
+
 	if d.Negative {
 		data = append(data, '-')
 	}
+
 	data = append(data, 'P')
+
 	if d.Weeks != 0 {
 		data = append(data, itoa(d.Weeks)...)
 		data = append(data, 'W')
@@ -307,14 +357,17 @@ func (d Duration) encode(w writer) {
 			data = append(data, itoa(d.Days)...)
 			data = append(data, 'D')
 		}
+
 		if d.Days == 0 || (d.Hours != 0 || d.Minutes != 0 || d.Seconds != 0) {
 			data = append(data, 'T')
 			if d.Hours != 0 {
 				data = append(data, itoa(d.Hours)...)
 				data = append(data, 'H')
+
 				if d.Minutes != 0 || d.Seconds != 0 {
 					data = append(data, itoa(d.Minutes)...)
 					data = append(data, 'M')
+
 					if d.Seconds != 0 {
 						data = append(data, itoa(d.Seconds)...)
 						data = append(data, 'S')
@@ -323,6 +376,7 @@ func (d Duration) encode(w writer) {
 			} else if d.Minutes != 0 {
 				data = append(data, itoa(d.Minutes)...)
 				data = append(data, 'M')
+
 				if d.Seconds != 0 {
 					data = append(data, itoa(d.Seconds)...)
 					data = append(data, 'S')
@@ -333,6 +387,7 @@ func (d Duration) encode(w writer) {
 			}
 		}
 	}
+
 	w.Write(data)
 }
 
@@ -340,7 +395,7 @@ func (Duration) valid() error {
 	return nil
 }
 
-// Float contains a real-number value
+// Float contains a real-number value.
 type Float float64
 
 func (f *Float) decode(_ map[string]string, data string) error {
@@ -348,7 +403,9 @@ func (f *Float) decode(_ map[string]string, data string) error {
 	if err != nil {
 		return fmt.Errorf("error parsing Float: %w", err)
 	}
+
 	*f = Float(cf)
+
 	return nil
 }
 
@@ -363,29 +420,32 @@ func (f Float) encode(w writer) {
 
 func (f Float) valid() error {
 	d := float64(f)
+
 	if !math.IsNaN(d) && !math.IsInf(d, 0) {
 		return ErrInvalidFloat
 	}
+
 	return nil
 }
 
-// TFloat is a pair of float values used for coords
+// TFloat is a pair of float values used for coords.
 type TFloat [2]float64
 
 func (t *TFloat) decode(_ map[string]string, data string) error {
 	fs := strings.SplitN(data, ";", 2)
+
 	if len(fs) != 2 {
 		return ErrInvalidTFloat
 	}
+
 	var err error
-	(*t)[0], err = strconv.ParseFloat(fs[0], 64)
-	if err != nil {
+
+	if (*t)[0], err = strconv.ParseFloat(fs[0], 64); err != nil {
 		return fmt.Errorf("error parsing TFloat[0]: %w", err)
-	}
-	(*t)[1], err = strconv.ParseFloat(fs[1], 64)
-	if err != nil {
+	} else if (*t)[1], err = strconv.ParseFloat(fs[1], 64); err != nil {
 		return fmt.Errorf("error parsing TFloat[1]: %w", err)
 	}
+
 	return nil
 }
 
@@ -402,17 +462,21 @@ func (t TFloat) encode(w writer) {
 
 func (t TFloat) valid() error {
 	d := float64(t[0])
+
 	if !math.IsNaN(d) && !math.IsInf(d, 0) {
 		return ErrInvalidFloat
 	}
+
 	d = float64(t[1])
+
 	if !math.IsNaN(d) && !math.IsInf(d, 0) {
 		return ErrInvalidFloat
 	}
+
 	return nil
 }
 
-// Integer is a signed integer value
+// Integer is a signed integer value.
 type Integer int32
 
 func (i *Integer) decode(_ map[string]string, data string) error {
@@ -420,7 +484,9 @@ func (i *Integer) decode(_ map[string]string, data string) error {
 	if err != nil {
 		return err
 	}
+
 	*i = Integer(ci)
+
 	return nil
 }
 
@@ -440,32 +506,27 @@ func (Integer) valid() error {
 // Period represents a precise period of time/
 //
 // Only one of End or Duration will be used. If Period.End.IsZero() is true,
-// then it uses Period.Duration
+// then it uses Period.Duration.
 type Period struct {
 	Start, End DateTime
 	Duration   Duration
 }
 
 func (p *Period) decode(params map[string]string, data string) error {
-	i := strings.IndexByte(data, '/')
-	if i == -1 || len(data) == i+1 {
+	if i := strings.IndexByte(data, '/'); i == -1 || len(data) == i+1 {
 		return ErrInvalidPeriod
-	}
-	err := p.Start.decode(params, data[:i])
-	if err != nil {
+	} else if err := p.Start.decode(params, data[:i]); err != nil {
 		return fmt.Errorf("error while decoding Period Start: %w", err)
-	}
-	if data[i+1] == 'P' || data[i+1] == '+' {
-		err = p.Duration.decode(params, data[i+1:])
-		if err != nil {
+	} else if data[i+1] == 'P' || data[i+1] == '+' {
+		if err = p.Duration.decode(params, data[i+1:]); err != nil {
 			return fmt.Errorf("error while decoding Period: %w", err)
 		}
+
 		return nil
-	}
-	err = p.End.decode(params, data[i+1:])
-	if err != nil {
+	} else if err = p.End.decode(params, data[i+1:]); err != nil {
 		return fmt.Errorf("error while decoding Period End: %w", err)
 	}
+
 	return nil
 }
 
@@ -478,6 +539,7 @@ func (p Period) aencode(w writer) {
 func (p Period) encode(w writer) {
 	p.Start.encode(w)
 	w.Write([]byte{'/'})
+
 	if p.End.IsZero() {
 		p.Duration.encode(w)
 	} else {
@@ -488,21 +550,21 @@ func (p Period) encode(w writer) {
 func (p Period) valid() error {
 	if p.Start.IsZero() {
 		return ErrInvalidPeriodStart
-	}
-	if p.End.IsZero() {
+	} else if p.End.IsZero() {
 		if p.Duration.Negative {
 			return ErrInvalidPeriodDuration
 		}
 	} else if !p.End.After(p.Start.Time) || p.Start.Location() != p.End.Location() {
 		return ErrInvalidPeriodEnd
 	}
+
 	return nil
 }
 
-// Frequency represents the Recurrence frequency
+// Frequency represents the Recurrence frequency.
 type Frequency uint8
 
-// Frequency constant values
+// Frequency constant values.
 const (
 	Secondly Frequency = iota
 	Minutely
@@ -513,10 +575,10 @@ const (
 	Yearly
 )
 
-// WeekDay is a numeric representation of a Day of the Week
+// WeekDay is a numeric representation of a Day of the Week.
 type WeekDay uint8
 
-// Weekday constant values
+// Weekday constant values.
 const (
 	UnknownDay WeekDay = iota
 	Sunday
@@ -528,10 +590,10 @@ const (
 	Saturday
 )
 
-// Month is a numeric representation of a Month of the Year
+// Month is a numeric representation of a Month of the Year.
 type Month uint8
 
-// Month Constant Values
+// Month Constant Values.
 const (
 	UnknownMonth Month = iota
 	January
@@ -555,7 +617,7 @@ type DayRecur struct {
 	Occurrence int8
 }
 
-// Recur contains a recurrence rule specification
+// Recur contains a recurrence rule specification.
 type Recur struct {
 	Frequency  Frequency
 	WeekStart  WeekDay
@@ -576,11 +638,14 @@ type Recur struct {
 
 func (r *Recur) decode(params map[string]string, data string) error {
 	var freq bool
+
 	for _, rule := range strings.Split(data, ";") {
 		parts := strings.SplitN(rule, "=", 2)
+
 		if len(parts) != 2 {
 			return ErrInvalidRecur
 		}
+
 		switch parts[0] {
 		case "FREQ":
 			switch parts[1] {
@@ -601,23 +666,27 @@ func (r *Recur) decode(params map[string]string, data string) error {
 			default:
 				return ErrInvalidRecur
 			}
+
 			freq = true
 		case "UNTIL":
 			if r.Count > 0 {
 				return ErrInvalidRecur
-			}
-			if len(parts[1]) > 10 {
+			} else if len(parts[1]) > 10 {
 				var d DateTime
+
 				if err := d.decode(params, parts[1]); err != nil {
 					return ErrInvalidRecur
 				}
+
 				r.Until = d.Time
 				r.UntilTime = true
 			} else {
 				var d Date
+
 				if err := d.decode(params, parts[1]); err != nil {
 					return ErrInvalidRecur
 				}
+
 				r.Until = d.Time
 				r.UntilTime = false
 			}
@@ -625,104 +694,129 @@ func (r *Recur) decode(params map[string]string, data string) error {
 			if !r.Until.IsZero() {
 				return ErrInvalidRecur
 			}
+
 			n, err := strconv.ParseUint(parts[1], 10, 64)
 			if err != nil {
 				return ErrInvalidRecur
 			}
+
 			r.Count = n
 		case "INTERVAL":
 			if r.Interval > 0 {
 				return ErrInvalidRecur
 			}
+
 			n, err := strconv.ParseUint(parts[1], 10, 64)
 			if err != nil {
 				return ErrInvalidRecur
 			}
+
 			r.Interval = n
 		case "BYSECOND":
 			if r.BySecond != nil {
 				return ErrInvalidRecur
 			}
+
 			seconds := strings.Split(parts[1], ",")
 			secondList := make([]uint8, len(seconds))
+
 			for n, second := range seconds {
 				i, err := strconv.ParseUint(second, 10, 8)
 				if err != nil || i > 60 {
 					return ErrInvalidRecur
 				}
+
 				secondList[n] = uint8(i)
 			}
+
 			r.BySecond = secondList
 		case "BYMINUTE":
 			if r.ByMinute != nil {
 				return ErrInvalidRecur
 			}
+
 			minutes := strings.Split(parts[1], ",")
 			minuteList := make([]uint8, len(minutes))
+
 			for n, minute := range minutes {
 				i, err := strconv.ParseUint(minute, 10, 8)
 				if err != nil || i > 59 {
 					return ErrInvalidRecur
 				}
+
 				minuteList[n] = uint8(i)
 			}
+
 			r.ByMinute = minuteList
 		case "BYHOUR":
 			if r.ByHour != nil {
 				return ErrInvalidRecur
 			}
+
 			hours := strings.Split(parts[1], ",")
 			hourList := make([]uint8, len(hours))
+
 			for n, hour := range hours {
 				i, err := strconv.ParseUint(hour, 10, 8)
 				if err != nil || i > 23 {
 					return ErrInvalidRecur
 				}
+
 				hourList[n] = uint8(i)
 			}
+
 			r.ByHour = hourList
 		case "BYDAY":
 			if r.ByDay != nil {
 				return ErrInvalidRecur
 			}
+
 			days := strings.Split(parts[1], ",")
 			dayList := make([]DayRecur, len(days))
+
 			for n, day := range days {
 				neg := false
 				numCheck := true
+
 				if len(day) < 2 {
 					return ErrInvalidRecur
 				}
+
 				if day[0] == '+' {
 					day = day[1:]
 				} else if day[0] == '-' {
 					neg = true
 					numCheck = false
 					day = day[1:]
+
 					if len(day) < 2 {
 						return ErrInvalidRecur
 					}
 				}
+
 				var num int8
+
 				if day[0] >= '0' && day[0] <= '9' {
 					numCheck = true
 					num = int8(day[0] - '0')
 					day = day[1:]
+
 					if day[0] >= '0' && day[0] <= '9' {
 						num *= 10
 						num += int8(day[0] - '0')
 						day = day[1:]
 					}
+
 					if num == 0 || num > 53 {
 						return ErrInvalidRecur
-					}
-					if neg {
+					} else if neg {
 						num = -num
 					}
 				}
 				if !numCheck || len(day) != 2 {
 					return ErrInvalidRecur
 				}
+
 				switch day {
 				case "SU":
 					dayList[n].Day = Sunday
@@ -741,6 +835,7 @@ func (r *Recur) decode(params map[string]string, data string) error {
 				default:
 					return ErrInvalidRecur
 				}
+
 				dayList[n].Occurrence = num
 			}
 			r.ByDay = dayList
@@ -748,76 +843,97 @@ func (r *Recur) decode(params map[string]string, data string) error {
 			if r.ByMonthDay != nil {
 				return ErrInvalidRecur
 			}
+
 			monthDays := strings.Split(parts[1], ",")
 			monthDayList := make([]int8, len(monthDays))
+
 			for n, monthDay := range monthDays {
 				i, err := strconv.ParseInt(monthDay, 10, 8)
 				if err != nil || i == 0 || i > 31 || i < -31 {
 					return ErrInvalidRecur
 				}
+
 				monthDayList[n] = int8(i)
 			}
+
 			r.ByMonthDay = monthDayList
 		case "BYYEARDAY":
 			if r.ByYearDay != nil {
 				return ErrInvalidRecur
 			}
+
 			yearDays := strings.Split(parts[1], ",")
 			yearDayList := make([]int16, len(yearDays))
+
 			for n, yearDay := range yearDays {
 				i, err := strconv.ParseInt(yearDay, 10, 16)
 				if err != nil || i == 0 || i > 366 || i < -366 {
 					return ErrInvalidRecur
 				}
+
 				yearDayList[n] = int16(i)
 			}
+
 			r.ByYearDay = yearDayList
 		case "BYWEEKNO":
 			if r.ByWeekNum != nil {
 				return ErrInvalidRecur
 			}
+
 			weekNums := strings.Split(parts[1], ",")
 			weekNumList := make([]int8, len(weekNums))
+
 			for n, weekNum := range weekNums {
 				i, err := strconv.ParseInt(weekNum, 10, 8)
 				if err != nil || i == 0 || i > 53 || i < -53 {
 					return ErrInvalidRecur
 				}
+
 				weekNumList[n] = int8(i)
 			}
+
 			r.ByWeekNum = weekNumList
 		case "BYMONTH":
 			if r.ByMonth != nil {
 				return ErrInvalidRecur
 			}
+
 			months := strings.Split(parts[1], ",")
 			monthList := make([]Month, len(months))
+
 			for n, month := range months {
 				i, err := strconv.ParseUint(month, 10, 8)
 				if err != nil || i == 0 || i > 12 {
 					return ErrInvalidRecur
 				}
+
 				monthList[n] = Month(i)
 			}
+
 			r.ByMonth = monthList
 		case "BYSETPOS":
 			if r.BySetPos != nil {
 				return ErrInvalidRecur
 			}
+
 			setPoss := strings.Split(parts[1], ",")
 			setPosList := make([]int16, len(setPoss))
+
 			for n, setPos := range setPoss {
 				i, err := strconv.ParseInt(setPos, 10, 16)
 				if err != nil || i == 0 || i > 366 || i < -366 {
 					return ErrInvalidRecur
 				}
+
 				setPosList[n] = int16(i)
 			}
+
 			r.BySetPos = setPosList
 		case "WKST":
 			if r.WeekStart != UnknownDay {
 				return ErrInvalidRecur
 			}
+
 			switch parts[1] {
 			case "SU":
 				r.WeekStart = Sunday
@@ -840,9 +956,11 @@ func (r *Recur) decode(params map[string]string, data string) error {
 			return ErrInvalidRecur
 		}
 	}
+
 	if !freq {
 		return ErrInvalidRecur
 	}
+
 	return nil
 }
 
@@ -854,6 +972,7 @@ func (r *Recur) aencode(w writer) {
 
 func (r *Recur) encode(w writer) {
 	comma := []byte{','}
+
 	switch r.Frequency {
 	case Secondly:
 		w.WriteString("FREQ=SECONDLY")
@@ -872,6 +991,7 @@ func (r *Recur) encode(w writer) {
 	default:
 		w.WriteString("FREQ=SECONDLY")
 	}
+
 	if r.Count != 0 {
 		w.WriteString(";COUNT=")
 		w.WriteString(strconv.FormatUint(r.Count, 10))
@@ -885,46 +1005,60 @@ func (r *Recur) encode(w writer) {
 			d.encode(w)
 		}
 	}
+
 	if r.Interval != 0 {
 		w.WriteString(";INTERVAL=")
 		w.WriteString(strconv.FormatUint(r.Interval, 10))
 	}
+
 	if len(r.BySecond) > 0 {
 		w.WriteString(";BYSECOND=")
+
 		for n, second := range r.BySecond {
 			if n > 0 {
 				w.Write(comma)
 			}
+
 			w.WriteString(strconv.FormatUint(uint64(second), 10))
 		}
 	}
+
 	if len(r.ByMinute) > 0 {
 		w.WriteString(";BYMINUTE=")
+
 		for n, minute := range r.ByMinute {
 			if n > 0 {
 				w.Write(comma)
 			}
+
 			w.WriteString(strconv.FormatUint(uint64(minute), 10))
 		}
 	}
+
 	if len(r.ByHour) > 0 {
 		w.WriteString(";BYHOUR=")
+
 		for n, hour := range r.ByHour {
 			if n > 0 {
 				w.Write(comma)
 			}
+
 			w.WriteString(strconv.FormatUint(uint64(hour), 10))
 		}
 	}
+
 	if len(r.ByDay) > 0 {
 		w.WriteString(";BYDAY=")
+
 		for n, day := range r.ByDay {
 			if n > 0 {
 				w.Write(comma)
 			}
+
 			if day.Occurrence != 0 {
 				w.WriteString(strconv.FormatInt(int64(day.Occurrence), 10))
 			}
+
 			switch day.Day {
 			case Sunday:
 				w.Write([]byte{'S', 'U'})
@@ -943,53 +1077,70 @@ func (r *Recur) encode(w writer) {
 			}
 		}
 	}
+
 	if len(r.ByMonthDay) > 0 {
 		w.WriteString(";BYMONTHDAY=")
+
 		for n, month := range r.ByMonthDay {
 			if n > 0 {
 				w.Write(comma)
 			}
+
 			w.WriteString(strconv.FormatInt(int64(month), 10))
 		}
 	}
+
 	if len(r.ByYearDay) > 0 {
 		w.WriteString(";BYYEARDAY=")
+
 		for n, year := range r.ByYearDay {
 			if n > 0 {
 				w.Write(comma)
 			}
+
 			w.WriteString(strconv.FormatInt(int64(year), 10))
 		}
 	}
+
 	if len(r.ByWeekNum) > 0 {
 		w.WriteString(";BYWEEKNO=")
+
 		for n, week := range r.ByWeekNum {
 			if n > 0 {
 				w.Write(comma)
 			}
+
 			w.WriteString(strconv.FormatInt(int64(week), 10))
 		}
 	}
+
 	if len(r.ByMonth) > 0 {
 		w.WriteString(";BYMONTH=")
+
 		for n, month := range r.ByMonth {
 			if n > 0 {
 				w.Write(comma)
 			}
+
 			w.WriteString(strconv.FormatUint(uint64(month), 10))
 		}
 	}
+
 	if len(r.BySetPos) > 0 {
 		w.WriteString(";BYSETPOS=")
+
 		for n, setPos := range r.BySetPos {
 			if n > 0 {
 				w.Write(comma)
 			}
+
 			w.WriteString(strconv.FormatInt(int64(setPos), 10))
 		}
 	}
+
 	if r.WeekStart != UnknownDay {
 		w.WriteString(";WKST=")
+
 		switch r.WeekStart {
 		case Sunday:
 			w.Write([]byte{'S', 'U'})
@@ -1015,21 +1166,25 @@ func (r *Recur) valid() error {
 	default:
 		return ErrInvalidRecurFrequency
 	}
+
 	for _, second := range r.BySecond {
 		if second > 60 {
 			return ErrInvalidRecurBySecond
 		}
 	}
+
 	for _, minute := range r.ByMinute {
 		if minute > 59 {
 			return ErrInvalidRecurByMinute
 		}
 	}
+
 	for _, hour := range r.ByHour {
 		if hour > 23 {
 			return ErrInvalidRecurByHour
 		}
 	}
+
 	for _, day := range r.ByDay {
 		switch day.Day {
 		case Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday:
@@ -1037,31 +1192,37 @@ func (r *Recur) valid() error {
 			return ErrInvalidRecurByDay
 		}
 	}
+
 	for _, monthDay := range r.ByMonthDay {
 		if monthDay == 0 || monthDay > 31 || monthDay < -31 {
 			return ErrInvalidRecurByMonthDay
 		}
 	}
+
 	for _, yearDay := range r.ByYearDay {
 		if yearDay == 0 || yearDay > 366 || yearDay < -366 {
 			return ErrInvalidRecurByYearDay
 		}
 	}
+
 	for _, week := range r.ByWeekNum {
 		if week == 0 || week > 53 || week < -53 {
 			return ErrInvalidRecurByWeekNum
 		}
 	}
+
 	for _, month := range r.ByMonth {
 		if month == 0 || month > 12 {
 			return ErrInvalidRecurByMonth
 		}
 	}
+
 	for _, setPos := range r.BySetPos {
 		if setPos == 0 || setPos > 366 || setPos < -366 {
 			return ErrInvalidRecurBySetPos
 		}
 	}
+
 	if r.WeekStart != UnknownDay {
 		switch r.WeekStart {
 		case Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday:
@@ -1069,31 +1230,37 @@ func (r *Recur) valid() error {
 			return ErrInvalidRecurWeekStart
 		}
 	}
+
 	return nil
 }
 
-// Text contains human-readable text
+// Text contains human-readable text.
 type Text string
 
 func (t *Text) decode(_ map[string]string, data string) error {
 	st := parser.NewStringTokeniser(data)
 	*t = Text(decodeText(st))
+
 	if st.Peek() != -1 {
 		return ErrInvalidText
 	}
+
 	return nil
 }
 
 func decodeText(t parser.Tokeniser) string {
 	var d []byte
 	var ru [4]byte
+
 Loop:
 	for {
 		c := t.ExceptRun("\\,;")
 		d = append(d, t.Get()...)
+
 		switch c {
 		case '\\':
 			t.Accept("\\")
+
 			switch c := t.Next(); c {
 			case '\\':
 				d = append(d, '\\')
@@ -1108,11 +1275,13 @@ Loop:
 				l := utf8.EncodeRune(ru[:], c)
 				d = append(d, ru[:l]...)
 			}
+
 			t.Get()
 		default:
 			break Loop
 		}
 	}
+
 	return string(d)
 }
 
@@ -1123,7 +1292,9 @@ func (t *Text) aencode(w writer) {
 
 func (t Text) encode(w writer) {
 	d := make([]byte, 0, len(t)+256)
+
 	var ru [4]byte
+
 	for _, c := range t {
 		switch c {
 		case '\\':
@@ -1139,6 +1310,7 @@ func (t Text) encode(w writer) {
 			d = append(d, ru[:l]...)
 		}
 	}
+
 	w.Write(d)
 }
 
@@ -1146,10 +1318,11 @@ func (t Text) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return ErrInvalidText
 	}
+
 	return nil
 }
 
-// MText contains multiple text values
+// MText contains multiple text values.
 type MText []Text
 
 func (t *MText) decode(_ map[string]string, data string) error {
@@ -1157,6 +1330,7 @@ func (t *MText) decode(_ map[string]string, data string) error {
 Loop:
 	for {
 		*t = append(*t, Text(decodeText(st)))
+
 		switch st.Peek() {
 		case -1:
 			break Loop
@@ -1167,6 +1341,7 @@ Loop:
 			return ErrInvalidText
 		}
 	}
+
 	return nil
 }
 
@@ -1180,6 +1355,7 @@ func (t MText) encode(w writer) {
 		if n > 0 {
 			w.WriteString(",")
 		}
+
 		tx.encode(w)
 	}
 }
@@ -1190,10 +1366,11 @@ func (t MText) valid() error {
 			return err
 		}
 	}
+
 	return nil
 }
 
-// Time contains a precise time
+// Time contains a precise time.
 type Time struct {
 	time.Time
 }
@@ -1204,24 +1381,29 @@ func (t *Time) decode(params map[string]string, data string) error {
 		if err != nil {
 			return fmt.Errorf("error loading timezone for Time: %w", err)
 		}
+
 		ct, err := time.ParseInLocation(dateTimeFormat[9:15], data, l)
 		if err != nil {
 			return fmt.Errorf("error parsing time in location for Time: %w", err)
 		}
+
 		t.Time = ct
 	} else if len(data) > 0 && data[len(data)-1] == 'Z' {
 		ct, err := time.ParseInLocation(dateTimeFormat[9:], data, time.UTC)
 		if err != nil {
 			return fmt.Errorf("error parsing time in UTC for Time: %w", err)
 		}
+
 		t.Time = ct
 	} else {
 		ct, err := time.ParseInLocation(dateTimeFormat[9:15], data, time.Local)
 		if err != nil {
 			return fmt.Errorf("error parsing local time for Time: %w", err)
 		}
+
 		t.Time = ct
 	}
+
 	return nil
 }
 
@@ -1233,6 +1415,7 @@ func (t Time) aencode(w writer) {
 
 func (t Time) encode(w writer) {
 	b := make([]byte, 0, 7)
+
 	switch t.Location() {
 	case time.UTC:
 		b = t.AppendFormat(b, dateTimeFormat[9:])
@@ -1241,6 +1424,7 @@ func (t Time) encode(w writer) {
 	default:
 		b = t.AppendFormat(b, dateTimeFormat[9:15])
 	}
+
 	w.Write(b)
 }
 
@@ -1248,10 +1432,11 @@ func (t Time) valid() error {
 	if t.IsZero() {
 		return ErrInvalidTime
 	}
+
 	return nil
 }
 
-// URI contains a reference to another piece of data
+// URI contains a reference to another piece of data.
 type URI struct {
 	url.URL
 }
@@ -1261,7 +1446,9 @@ func (u *URI) decode(_ map[string]string, data string) error {
 	if err != nil {
 		return fmt.Errorf("error decoding URI: %w", err)
 	}
+
 	u.URL = *cu
+
 	return nil
 }
 
@@ -1278,48 +1465,63 @@ func (URI) valid() error {
 	return nil
 }
 
-// UTCOffset contains the offset from UTC to local time
+// UTCOffset contains the offset from UTC to local time.
 type UTCOffset int
 
 func (u *UTCOffset) decode(_ map[string]string, data string) error {
 	t := parser.NewStringTokeniser(data)
 	neg := false
+
 	if t.Accept("-") {
 		neg = true
 	} else {
 		t.Accept("+")
 	}
+
 	t.Get()
+
 	if !t.Accept("0123456789") || !t.Accept("0123456789") {
 		return ErrInvalidOffset
 	}
+
 	h, _ := strconv.ParseInt(t.Get(), 10, 32)
+
 	if !t.Accept("0123456789") || !t.Accept("0123456789") {
 		return ErrInvalidOffset
 	}
+
 	m, _ := strconv.ParseInt(t.Get(), 10, 32)
+
 	if m >= 60 {
 		return ErrInvalidOffset
 	}
+
 	var s int64
+
 	if t.Accept("0123456789") {
 		if !t.Accept("0123456789") || t.Peek() != -1 {
 			return ErrInvalidOffset
 		}
+
 		s, _ = strconv.ParseInt(t.Get(), 10, 32)
+
 		if s >= 60 {
 			return ErrInvalidOffset
 		}
 	} else if t.Peek() != -1 {
 		return ErrInvalidOffset
 	}
+
 	*u = UTCOffset(3600*h + 60*m + s)
+
 	if neg {
 		if *u == 0 {
 			return ErrInvalidOffset
 		}
+
 		*u = -(*u)
 	}
+
 	return nil
 }
 
@@ -1331,25 +1533,31 @@ func (u UTCOffset) aencode(w writer) {
 func (u UTCOffset) encode(w writer) {
 	o := int64(u)
 	b := make([]byte, 0, 7)
+
 	if o < 0 {
 		b = append(b, '-')
 		o = -o
 	}
+
 	s := byte(o % 60)
 	o /= 60
 	m := byte(o % 60)
 	h := byte(o / 60)
+
 	if h > 99 {
 		h = 0
 	}
+
 	b = append(b, '0'+h/10)
 	b = append(b, '0'+h%10)
 	b = append(b, '0'+m/10)
 	b = append(b, '0'+m%10)
+
 	if s > 0 {
 		b = append(b, '0'+s/10)
 		b = append(b, '0'+s%10)
 	}
+
 	w.Write(b)
 }
 
@@ -1366,7 +1574,7 @@ func writeTimezone(w writer, t time.Time) {
 	}
 }
 
-// Errors
+// Errors.
 var (
 	ErrInvalidEncoding        = errors.New("invalid Binary encoding")
 	ErrInvalidPeriod          = errors.New("invalid Period")
