@@ -25,7 +25,7 @@ source "comments.sh";
 			type="$(getName "$keyword")";
 			values="$(echo "$line" | cut -d'=' -f2)";
 
-			getComment "$type";
+			getComment "Param$type";
 			echo -n "type Param$type ";
 
 			declare multiple=false;
@@ -68,7 +68,7 @@ source "comments.sh";
 				vType="$values";
 				if [ "$vType" = "Boolean" ]; then
 					echo;
-					echo "// New$type returns a *Param$type for ease of use with optional values";
+					echo "// New$type returns a *Param$type for ease of use with optional values.";
 					echo "func New$type(v Param$type) *Param$type {";
 					echo "	return &v";
 					echo "}";
@@ -76,7 +76,7 @@ source "comments.sh";
 			elif $string; then
 				echo "string";
 				echo;
-				echo "// New$type returns a *Param$type for ease of use with optional values";
+				echo "// New$type returns a *Param$type for ease of use with optional values.";
 				echo "func New$type(v Param$type) *Param$type {";
 				echo "	return &v";
 				echo "}";
@@ -97,7 +97,7 @@ source "comments.sh";
 				*)
 					echo "uint8";
 					echo;
-					echo "// $type constant values";
+					echo "// $type constant values.";
 					echo "const (";
 					declare first=true;
 					for choice in ${choices[@]};do
@@ -111,7 +111,7 @@ source "comments.sh";
 					echo ")";
 					echo;
 					echo "// New returns a pointer to the type (used with constants for ease of use with";
-					echo "// optional values)";
+					echo "// optional values).";
 					echo "func (t Param$type) New() *Param$type {";
 					echo "	return &t";
 					echo "}";
@@ -133,17 +133,21 @@ source "comments.sh";
 				echo "	if len(vs) != 1 {";
 				echo "		return fmt.Errorf(errDecodingType, c$type, ErrInvalidParam)";
 				echo "	}";
+				echo;
 			fi;
 			if $doubleQuote; then
 				echo "$indent	if ${vName}.Type != tokenParamQuotedValue {";
 				echo "$indent		return fmt.Errorf(errDecodingType, c$type, ErrInvalidParam)";
 				echo "$indent	}";
+				echo;
 			fi;
 			if [ ! -z "$vType" ]; then
 				echo "$indent	var q $vType";
+				echo;
 				echo "$indent	if err := q.decode(nil, ${vName}.Data); err != nil {";
 				echo "$indent		return fmt.Errorf(errDecodingType, c$type, err)";
 				echo "$indent	}";
+				echo;
 				if $multiple; then
 					echo "		*t = append(*t, q)";
 				else
@@ -185,12 +189,14 @@ source "comments.sh";
 					echo "$indent	if !regex${type}.MatchString(${vName}.Data) {";
 					echo "$indent		return fmt.Errorf(errDecodingType, c$type, ErrInvalidParam)";
 					echo "$indent	}";
+					echo;
 					echo "$indent	*t = Param$type(${vName}.Data)";
 				fi;
 			fi;
 			if $multiple; then
 				echo "	}";
-			fi;
+			fi; 
+			echo;
 			echo "	return nil";
 			echo "}";
 			echo;
@@ -212,18 +218,22 @@ source "comments.sh";
 					echo "		return";
 					echo "	}";
 				fi;
+				echo;
 			fi;
 			echo "	w.WriteString(\";${keyword}=\")";
+			echo;
 			if $multiple; then
 				echo "	for n, v := range t {";
 				echo "		if n > 0 {";
 				echo "			w.WriteString(\",\")";
 				echo "		}";
+				echo;
 			else
 				vName="t";
 			fi;
 			if [ ! -z "$vType" ]; then
 				echo "$indent	q := $vType($vName)";
+				echo;
 				echo "$indent	q.encode(w)";
 			elif [ ${#choices[@]} -eq 1 ]; then
 				echo "$indent	w.WriteString(\"${choices[0]}\")";
@@ -276,9 +286,11 @@ source "comments.sh";
 						echo "		}";
 					else
 						echo "	q := $vType(t)";
+						echo;
 						echo "	if err := q.valid(); err != nil {";
 						echo "		return fmt.Errorf(errValidatingType, c$type, err)";
 						echo "	}";
+						echo;
 						echo "	return nil";
 					fi;
 				elif [ ${#choices[@]} -gt 0 ]; then
@@ -309,6 +321,7 @@ source "comments.sh";
 					echo "	}";
 				fi;
 				if [ -z "$vType" ] || $multiple; then
+					echo;
 					echo "	return nil";
 				fi;
 			else
@@ -382,7 +395,7 @@ HEREDOC
 	done;
 	echo "}";
 	echo;
-	echo "// Errors";
+	echo "// Errors.";
 	echo "var (";
 	echo "	ErrInvalidParam = errors.New(\"invalid param value\")";
 	echo "	ErrInvalidValue = errors.New(\"invalid value\")";

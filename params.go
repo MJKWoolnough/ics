@@ -12,22 +12,26 @@ import (
 	"vimagination.zapto.org/parser"
 )
 
-// AlternativeRepresentation is an alternate text representation for the
-// property value
+// ParamAlternativeRepresentation.
 type ParamAlternativeRepresentation URI
 
 func (t *ParamAlternativeRepresentation) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cAlternativeRepresentation, ErrInvalidParam)
 	}
+
 	if vs[0].Type != tokenParamQuotedValue {
 		return fmt.Errorf(errDecodingType, cAlternativeRepresentation, ErrInvalidParam)
 	}
+
 	var q URI
+
 	if err := q.decode(nil, vs[0].Data); err != nil {
 		return fmt.Errorf(errDecodingType, cAlternativeRepresentation, err)
 	}
+
 	*t = ParamAlternativeRepresentation(q)
+
 	return nil
 }
 
@@ -35,24 +39,28 @@ func (t ParamAlternativeRepresentation) encode(w writer) {
 	if len(t.String()) == 0 {
 		return
 	}
+
 	w.WriteString(";ALTREP=")
+
 	q := URI(t)
+
 	q.encode(w)
 }
 
 func (t ParamAlternativeRepresentation) valid() error {
 	q := URI(t)
+
 	if err := q.valid(); err != nil {
 		return fmt.Errorf(errValidatingType, cAlternativeRepresentation, err)
 	}
+
 	return nil
 }
 
-// CommonName is the common name to be associated with the calendar user
-// specified by the property
+// ParamCommonName.
 type ParamCommonName string
 
-// NewCommonName returns a *ParamCommonName for ease of use with optional values
+// NewCommonName returns a *ParamCommonName for ease of use with optional values.
 func NewCommonName(v ParamCommonName) *ParamCommonName {
 	return &v
 }
@@ -61,7 +69,9 @@ func (t *ParamCommonName) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cCommonName, ErrInvalidParam)
 	}
+
 	*t = ParamCommonName(decode6868(vs[0].Data))
+
 	return nil
 }
 
@@ -69,7 +79,9 @@ func (t ParamCommonName) encode(w writer) {
 	if len(t) == 0 {
 		return
 	}
+
 	w.WriteString(";CN=")
+
 	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
 		w.Write(encode6868(string(t)))
@@ -83,14 +95,14 @@ func (t ParamCommonName) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return fmt.Errorf(errValidatingType, cCommonName, ErrInvalidText)
 	}
+
 	return nil
 }
 
-// CalendarUserType is identify the type of calendar user specified by the
-// property
+// ParamCalendarUserType.
 type ParamCalendarUserType uint8
 
-// CalendarUserType constant values
+// CalendarUserType constant values.
 const (
 	CalendarUserTypeUnknown ParamCalendarUserType = iota
 	CalendarUserTypeIndividual
@@ -100,7 +112,7 @@ const (
 )
 
 // New returns a pointer to the type (used with constants for ease of use with
-// optional values)
+// optional values).
 func (t ParamCalendarUserType) New() *ParamCalendarUserType {
 	return &t
 }
@@ -109,6 +121,7 @@ func (t *ParamCalendarUserType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cCalendarUserType, ErrInvalidParam)
 	}
+
 	switch strings.ToUpper(vs[0].Data) {
 	case "INDIVIDUAL":
 		*t = CalendarUserTypeIndividual
@@ -121,11 +134,13 @@ func (t *ParamCalendarUserType) decode(vs []parser.Token) error {
 	default:
 		*t = CalendarUserTypeUnknown
 	}
+
 	return nil
 }
 
 func (t ParamCalendarUserType) encode(w writer) {
 	w.WriteString(";CUTYPE=")
+
 	switch t {
 	case CalendarUserTypeIndividual:
 		w.WriteString("INDIVIDUAL")
@@ -144,8 +159,7 @@ func (t ParamCalendarUserType) valid() error {
 	return nil
 }
 
-// Delegator is used to specify the calendar users that have delegated their
-// participation to the calendar user specified by the property
+// ParamDelegator.
 type ParamDelegator []CalendarAddress
 
 func (t *ParamDelegator) decode(vs []parser.Token) error {
@@ -153,12 +167,16 @@ func (t *ParamDelegator) decode(vs []parser.Token) error {
 		if v.Type != tokenParamQuotedValue {
 			return fmt.Errorf(errDecodingType, cDelegator, ErrInvalidParam)
 		}
+
 		var q CalendarAddress
+
 		if err := q.decode(nil, v.Data); err != nil {
 			return fmt.Errorf(errDecodingType, cDelegator, err)
 		}
+
 		*t = append(*t, q)
 	}
+
 	return nil
 }
 
@@ -166,12 +184,17 @@ func (t ParamDelegator) encode(w writer) {
 	if len(t) == 0 {
 		return
 	}
+
 	w.WriteString(";DELEGATED-FROM=")
+
 	for n, v := range t {
 		if n > 0 {
 			w.WriteString(",")
 		}
+
+
 		q := CalendarAddress(v)
+
 		q.encode(w)
 	}
 }
@@ -182,11 +205,11 @@ func (t ParamDelegator) valid() error {
 			return fmt.Errorf(errValidatingType, cDelegator, err)
 		}
 	}
+
 	return nil
 }
 
-// Delagatee is used to specify the calendar users to whom the calendar user
-// specified by the property has delegated participation
+// ParamDelagatee.
 type ParamDelagatee []CalendarAddress
 
 func (t *ParamDelagatee) decode(vs []parser.Token) error {
@@ -194,12 +217,16 @@ func (t *ParamDelagatee) decode(vs []parser.Token) error {
 		if v.Type != tokenParamQuotedValue {
 			return fmt.Errorf(errDecodingType, cDelagatee, ErrInvalidParam)
 		}
+
 		var q CalendarAddress
+
 		if err := q.decode(nil, v.Data); err != nil {
 			return fmt.Errorf(errDecodingType, cDelagatee, err)
 		}
+
 		*t = append(*t, q)
 	}
+
 	return nil
 }
 
@@ -207,12 +234,17 @@ func (t ParamDelagatee) encode(w writer) {
 	if len(t) == 0 {
 		return
 	}
+
 	w.WriteString(";DELEGATED-TO=")
+
 	for n, v := range t {
 		if n > 0 {
 			w.WriteString(",")
 		}
+
+
 		q := CalendarAddress(v)
+
 		q.encode(w)
 	}
 }
@@ -223,14 +255,14 @@ func (t ParamDelagatee) valid() error {
 			return fmt.Errorf(errValidatingType, cDelagatee, err)
 		}
 	}
+
 	return nil
 }
 
-// DirectoryEntry is a reference to a directory entry associated with the
-// calendar
+// ParamDirectoryEntry.
 type ParamDirectoryEntry string
 
-// NewDirectoryEntry returns a *ParamDirectoryEntry for ease of use with optional values
+// NewDirectoryEntry returns a *ParamDirectoryEntry for ease of use with optional values.
 func NewDirectoryEntry(v ParamDirectoryEntry) *ParamDirectoryEntry {
 	return &v
 }
@@ -239,10 +271,13 @@ func (t *ParamDirectoryEntry) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cDirectoryEntry, ErrInvalidParam)
 	}
+
 	if vs[0].Type != tokenParamQuotedValue {
 		return fmt.Errorf(errDecodingType, cDirectoryEntry, ErrInvalidParam)
 	}
+
 	*t = ParamDirectoryEntry(decode6868(vs[0].Data))
+
 	return nil
 }
 
@@ -250,6 +285,7 @@ func (t ParamDirectoryEntry) encode(w writer) {
 	if len(t) == 0 {
 		return
 	}
+
 	w.WriteString(";DIR=")
 	w.WriteString("\"")
 	w.Write(encode6868(string(t)))
@@ -260,20 +296,21 @@ func (t ParamDirectoryEntry) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return fmt.Errorf(errValidatingType, cDirectoryEntry, ErrInvalidText)
 	}
+
 	return nil
 }
 
-// Encoding is the inline encoding for the property value
+// ParamEncoding.
 type ParamEncoding uint8
 
-// Encoding constant values
+// Encoding constant values.
 const (
 	Encoding8bit ParamEncoding = iota
 	EncodingBase64
 )
 
 // New returns a pointer to the type (used with constants for ease of use with
-// optional values)
+// optional values).
 func (t ParamEncoding) New() *ParamEncoding {
 	return &t
 }
@@ -282,6 +319,7 @@ func (t *ParamEncoding) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cEncoding, ErrInvalidParam)
 	}
+
 	switch strings.ToUpper(vs[0].Data) {
 	case "8BIT":
 		*t = Encoding8bit
@@ -290,11 +328,13 @@ func (t *ParamEncoding) decode(vs []parser.Token) error {
 	default:
 		return fmt.Errorf(errDecodingType, cEncoding, ErrInvalidParam)
 	}
+
 	return nil
 }
 
 func (t ParamEncoding) encode(w writer) {
 	w.WriteString(";ENCODING=")
+
 	switch t {
 	case Encoding8bit:
 		w.WriteString("8BIT")
@@ -309,13 +349,14 @@ func (t ParamEncoding) valid() error {
 	default:
 		return fmt.Errorf(errValidatingType, cEncoding, ErrInvalidValue)
 	}
+
 	return nil
 }
 
-// FormatType is the content type of a referenced object
+// ParamFormatType.
 type ParamFormatType string
 
-// NewFormatType returns a *ParamFormatType for ease of use with optional values
+// NewFormatType returns a *ParamFormatType for ease of use with optional values.
 func NewFormatType(v ParamFormatType) *ParamFormatType {
 	return &v
 }
@@ -326,10 +367,13 @@ func (t *ParamFormatType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cFormatType, ErrInvalidParam)
 	}
+
 	if !regexFormatType.MatchString(vs[0].Data) {
 		return fmt.Errorf(errDecodingType, cFormatType, ErrInvalidParam)
 	}
+
 	*t = ParamFormatType(vs[0].Data)
+
 	return nil
 }
 
@@ -337,7 +381,9 @@ func (t ParamFormatType) encode(w writer) {
 	if len(t) == 0 {
 		return
 	}
+
 	w.WriteString(";FMTTYPE=")
+
 	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
 		w.Write(encode6868(string(t)))
@@ -351,13 +397,14 @@ func (t ParamFormatType) valid() error {
 	if !regexFormatType.Match([]byte(t)) {
 		return fmt.Errorf(errValidatingType, cFormatType, ErrInvalidValue)
 	}
+
 	return nil
 }
 
-// FreeBusyType is used to specify the free or busy time type
+// ParamFreeBusyType.
 type ParamFreeBusyType uint8
 
-// FreeBusyType constant values
+// FreeBusyType constant values.
 const (
 	FreeBusyTypeUnknown ParamFreeBusyType = iota
 	FreeBusyTypeFree
@@ -367,7 +414,7 @@ const (
 )
 
 // New returns a pointer to the type (used with constants for ease of use with
-// optional values)
+// optional values).
 func (t ParamFreeBusyType) New() *ParamFreeBusyType {
 	return &t
 }
@@ -376,6 +423,7 @@ func (t *ParamFreeBusyType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cFreeBusyType, ErrInvalidParam)
 	}
+
 	switch strings.ToUpper(vs[0].Data) {
 	case "FREE":
 		*t = FreeBusyTypeFree
@@ -388,11 +436,13 @@ func (t *ParamFreeBusyType) decode(vs []parser.Token) error {
 	default:
 		*t = FreeBusyTypeUnknown
 	}
+
 	return nil
 }
 
 func (t ParamFreeBusyType) encode(w writer) {
 	w.WriteString(";FBTYPE=")
+
 	switch t {
 	case FreeBusyTypeFree:
 		w.WriteString("FREE")
@@ -411,10 +461,10 @@ func (t ParamFreeBusyType) valid() error {
 	return nil
 }
 
-// Language is the language for text values
+// ParamLanguage.
 type ParamLanguage string
 
-// NewLanguage returns a *ParamLanguage for ease of use with optional values
+// NewLanguage returns a *ParamLanguage for ease of use with optional values.
 func NewLanguage(v ParamLanguage) *ParamLanguage {
 	return &v
 }
@@ -423,7 +473,9 @@ func (t *ParamLanguage) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cLanguage, ErrInvalidParam)
 	}
+
 	*t = ParamLanguage(decode6868(vs[0].Data))
+
 	return nil
 }
 
@@ -431,7 +483,9 @@ func (t ParamLanguage) encode(w writer) {
 	if len(t) == 0 {
 		return
 	}
+
 	w.WriteString(";LANGUAGE=")
+
 	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
 		w.Write(encode6868(string(t)))
@@ -445,13 +499,14 @@ func (t ParamLanguage) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return fmt.Errorf(errValidatingType, cLanguage, ErrInvalidText)
 	}
+
 	return nil
 }
 
-// Member is used to specify the group or list membership of the calendar
+// ParamMember.
 type ParamMember []string
 
-// NewMember returns a *ParamMember for ease of use with optional values
+// NewMember returns a *ParamMember for ease of use with optional values.
 func NewMember(v ParamMember) *ParamMember {
 	return &v
 }
@@ -461,8 +516,10 @@ func (t *ParamMember) decode(vs []parser.Token) error {
 		if v.Type != tokenParamQuotedValue {
 			return fmt.Errorf(errDecodingType, cMember, ErrInvalidParam)
 		}
+
 		*t = append(*t, decode6868(v.Data))
 	}
+
 	return nil
 }
 
@@ -470,11 +527,14 @@ func (t ParamMember) encode(w writer) {
 	if len(t) == 0 {
 		return
 	}
+
 	w.WriteString(";MEMBER=")
+
 	for n, v := range t {
 		if n > 0 {
 			w.WriteString(",")
 		}
+
 		w.WriteString("\"")
 		w.Write(encode6868(string(v)))
 		w.WriteString("\"")
@@ -487,14 +547,14 @@ func (t ParamMember) valid() error {
 			return fmt.Errorf(errValidatingType, cMember, ErrInvalidText)
 		}
 	}
+
 	return nil
 }
 
-// ParticipationStatus is used to specify the participation status for the
-// calendar
+// ParamParticipationStatus.
 type ParamParticipationStatus uint8
 
-// ParticipationStatus constant values
+// ParticipationStatus constant values.
 const (
 	ParticipationStatusUnknown ParamParticipationStatus = iota
 	ParticipationStatusNeedsAction
@@ -507,7 +567,7 @@ const (
 )
 
 // New returns a pointer to the type (used with constants for ease of use with
-// optional values)
+// optional values).
 func (t ParamParticipationStatus) New() *ParamParticipationStatus {
 	return &t
 }
@@ -516,6 +576,7 @@ func (t *ParamParticipationStatus) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cParticipationStatus, ErrInvalidParam)
 	}
+
 	switch strings.ToUpper(vs[0].Data) {
 	case "NEEDS-ACTION":
 		*t = ParticipationStatusNeedsAction
@@ -534,11 +595,13 @@ func (t *ParamParticipationStatus) decode(vs []parser.Token) error {
 	default:
 		*t = ParticipationStatusUnknown
 	}
+
 	return nil
 }
 
 func (t ParamParticipationStatus) encode(w writer) {
 	w.WriteString(";PARTSTAT=")
+
 	switch t {
 	case ParticipationStatusNeedsAction:
 		w.WriteString("NEEDS-ACTION")
@@ -563,17 +626,18 @@ func (t ParamParticipationStatus) valid() error {
 	return nil
 }
 
-// Range is used to specify the effective range of recurrence instances from the
-// instance specified by the recurrence identifier specified by the property
+// ParamRange.
 type ParamRange struct{}
 
 func (t *ParamRange) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cRange, ErrInvalidParam)
 	}
+
 	if strings.ToUpper(vs[0].Data) != "THISANDFUTURE" {
 		return fmt.Errorf(errDecodingType, cRange, ErrInvalidParam)
 	}
+
 	return nil
 }
 
@@ -586,18 +650,17 @@ func (t ParamRange) valid() error {
 	return nil
 }
 
-// Related is the relationship of the alarm trigger with respect to the start or
-// end of the calendar component
+// ParamRelated.
 type ParamRelated uint8
 
-// Related constant values
+// Related constant values.
 const (
 	RelatedStart ParamRelated = iota
 	RelatedEnd
 )
 
 // New returns a pointer to the type (used with constants for ease of use with
-// optional values)
+// optional values).
 func (t ParamRelated) New() *ParamRelated {
 	return &t
 }
@@ -606,6 +669,7 @@ func (t *ParamRelated) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cRelated, ErrInvalidParam)
 	}
+
 	switch strings.ToUpper(vs[0].Data) {
 	case "START":
 		*t = RelatedStart
@@ -614,11 +678,13 @@ func (t *ParamRelated) decode(vs []parser.Token) error {
 	default:
 		return fmt.Errorf(errDecodingType, cRelated, ErrInvalidParam)
 	}
+
 	return nil
 }
 
 func (t ParamRelated) encode(w writer) {
 	w.WriteString(";RELATED=")
+
 	switch t {
 	case RelatedStart:
 		w.WriteString("START")
@@ -633,14 +699,14 @@ func (t ParamRelated) valid() error {
 	default:
 		return fmt.Errorf(errValidatingType, cRelated, ErrInvalidValue)
 	}
+
 	return nil
 }
 
-// RelationshipType is the type of hierarchical relationship associated with the
-// calendar component specified by the property
+// ParamRelationshipType.
 type ParamRelationshipType uint8
 
-// RelationshipType constant values
+// RelationshipType constant values.
 const (
 	RelationshipTypeUnknown ParamRelationshipType = iota
 	RelationshipTypeParent
@@ -649,7 +715,7 @@ const (
 )
 
 // New returns a pointer to the type (used with constants for ease of use with
-// optional values)
+// optional values).
 func (t ParamRelationshipType) New() *ParamRelationshipType {
 	return &t
 }
@@ -658,6 +724,7 @@ func (t *ParamRelationshipType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cRelationshipType, ErrInvalidParam)
 	}
+
 	switch strings.ToUpper(vs[0].Data) {
 	case "PARENT":
 		*t = RelationshipTypeParent
@@ -668,11 +735,13 @@ func (t *ParamRelationshipType) decode(vs []parser.Token) error {
 	default:
 		*t = RelationshipTypeUnknown
 	}
+
 	return nil
 }
 
 func (t ParamRelationshipType) encode(w writer) {
 	w.WriteString(";RELTYPE=")
+
 	switch t {
 	case RelationshipTypeParent:
 		w.WriteString("PARENT")
@@ -689,11 +758,10 @@ func (t ParamRelationshipType) valid() error {
 	return nil
 }
 
-// ParticipationRole is used to specify the participation role for the calendar
-// user specified by the property
+// ParamParticipationRole.
 type ParamParticipationRole uint8
 
-// ParticipationRole constant values
+// ParticipationRole constant values.
 const (
 	ParticipationRoleUnknown ParamParticipationRole = iota
 	ParticipationRoleRequiredParticipant
@@ -703,7 +771,7 @@ const (
 )
 
 // New returns a pointer to the type (used with constants for ease of use with
-// optional values)
+// optional values).
 func (t ParamParticipationRole) New() *ParamParticipationRole {
 	return &t
 }
@@ -712,6 +780,7 @@ func (t *ParamParticipationRole) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cParticipationRole, ErrInvalidParam)
 	}
+
 	switch strings.ToUpper(vs[0].Data) {
 	case "REQ-PARTICIPANT":
 		*t = ParticipationRoleRequiredParticipant
@@ -724,11 +793,13 @@ func (t *ParamParticipationRole) decode(vs []parser.Token) error {
 	default:
 		*t = ParticipationRoleUnknown
 	}
+
 	return nil
 }
 
 func (t ParamParticipationRole) encode(w writer) {
 	w.WriteString(";ROLE=")
+
 	switch t {
 	case ParticipationRoleRequiredParticipant:
 		w.WriteString("REQ-PARTICIPANT")
@@ -747,11 +818,10 @@ func (t ParamParticipationRole) valid() error {
 	return nil
 }
 
-// RSVP is used to specify whether there is an expectation of a favor of a reply
-// from the calendar user specified by the property value
+// ParamRSVP.
 type ParamRSVP Boolean
 
-// NewRSVP returns a *ParamRSVP for ease of use with optional values
+// NewRSVP returns a *ParamRSVP for ease of use with optional values.
 func NewRSVP(v ParamRSVP) *ParamRSVP {
 	return &v
 }
@@ -760,11 +830,15 @@ func (t *ParamRSVP) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cRSVP, ErrInvalidParam)
 	}
+
 	var q Boolean
+
 	if err := q.decode(nil, vs[0].Data); err != nil {
 		return fmt.Errorf(errDecodingType, cRSVP, err)
 	}
+
 	*t = ParamRSVP(q)
+
 	return nil
 }
 
@@ -772,8 +846,11 @@ func (t ParamRSVP) encode(w writer) {
 	if !t {
 		return
 	}
+
 	w.WriteString(";RSVP=")
+
 	q := Boolean(t)
+
 	q.encode(w)
 }
 
@@ -781,11 +858,10 @@ func (t ParamRSVP) valid() error {
 	return nil
 }
 
-// SentBy is used to specify the calendar user that is acting on behalf of the
-// calendar user specified by the property
+// ParamSentBy.
 type ParamSentBy string
 
-// NewSentBy returns a *ParamSentBy for ease of use with optional values
+// NewSentBy returns a *ParamSentBy for ease of use with optional values.
 func NewSentBy(v ParamSentBy) *ParamSentBy {
 	return &v
 }
@@ -794,10 +870,13 @@ func (t *ParamSentBy) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cSentBy, ErrInvalidParam)
 	}
+
 	if vs[0].Type != tokenParamQuotedValue {
 		return fmt.Errorf(errDecodingType, cSentBy, ErrInvalidParam)
 	}
+
 	*t = ParamSentBy(decode6868(vs[0].Data))
+
 	return nil
 }
 
@@ -805,6 +884,7 @@ func (t ParamSentBy) encode(w writer) {
 	if len(t) == 0 {
 		return
 	}
+
 	w.WriteString(";SENT-BY=")
 	w.WriteString("\"")
 	w.Write(encode6868(string(t)))
@@ -815,14 +895,14 @@ func (t ParamSentBy) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return fmt.Errorf(errValidatingType, cSentBy, ErrInvalidText)
 	}
+
 	return nil
 }
 
-// TimezoneID is used to specify the identifier for the time zone definition for
-// a time component in the property value
+// ParamTimezoneID.
 type ParamTimezoneID string
 
-// NewTimezoneID returns a *ParamTimezoneID for ease of use with optional values
+// NewTimezoneID returns a *ParamTimezoneID for ease of use with optional values.
 func NewTimezoneID(v ParamTimezoneID) *ParamTimezoneID {
 	return &v
 }
@@ -831,7 +911,9 @@ func (t *ParamTimezoneID) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cTimezoneID, ErrInvalidParam)
 	}
+
 	*t = ParamTimezoneID(decode6868(vs[0].Data))
+
 	return nil
 }
 
@@ -839,7 +921,9 @@ func (t ParamTimezoneID) encode(w writer) {
 	if len(t) == 0 {
 		return
 	}
+
 	w.WriteString(";TZID=")
+
 	if strings.ContainsAny(string(t), nonsafeChars[32:]) {
 		w.WriteString("\"")
 		w.Write(encode6868(string(t)))
@@ -853,14 +937,14 @@ func (t ParamTimezoneID) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return fmt.Errorf(errValidatingType, cTimezoneID, ErrInvalidText)
 	}
+
 	return nil
 }
 
-// Value is used to explicitly specify the value type format for a property
-// value
+// ParamValue.
 type ParamValue uint8
 
-// Value constant values
+// Value constant values.
 const (
 	ValueUnknown ParamValue = iota
 	ValueBinary
@@ -880,7 +964,7 @@ const (
 )
 
 // New returns a pointer to the type (used with constants for ease of use with
-// optional values)
+// optional values).
 func (t ParamValue) New() *ParamValue {
 	return &t
 }
@@ -889,6 +973,7 @@ func (t *ParamValue) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cValue, ErrInvalidParam)
 	}
+
 	switch strings.ToUpper(vs[0].Data) {
 	case "BINARY":
 		*t = ValueBinary
@@ -921,11 +1006,13 @@ func (t *ParamValue) decode(vs []parser.Token) error {
 	default:
 		*t = ValueUnknown
 	}
+
 	return nil
 }
 
 func (t ParamValue) encode(w writer) {
 	w.WriteString(";VALUE=")
+
 	switch t {
 	case ValueBinary:
 		w.WriteString("BINARY")
@@ -964,21 +1051,26 @@ func (t ParamValue) valid() error {
 	return nil
 }
 
-// URI
+// ParamURI.
 type ParamURI URI
 
 func (t *ParamURI) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cURI, ErrInvalidParam)
 	}
+
 	if vs[0].Type != tokenParamQuotedValue {
 		return fmt.Errorf(errDecodingType, cURI, ErrInvalidParam)
 	}
+
 	var q URI
+
 	if err := q.decode(nil, vs[0].Data); err != nil {
 		return fmt.Errorf(errDecodingType, cURI, err)
 	}
+
 	*t = ParamURI(q)
+
 	return nil
 }
 
@@ -986,23 +1078,28 @@ func (t ParamURI) encode(w writer) {
 	if len(t.String()) == 0 {
 		return
 	}
+
 	w.WriteString(";URI=")
+
 	q := URI(t)
+
 	q.encode(w)
 }
 
 func (t ParamURI) valid() error {
 	q := URI(t)
+
 	if err := q.valid(); err != nil {
 		return fmt.Errorf(errValidatingType, cURI, err)
 	}
+
 	return nil
 }
 
-// ID
+// ParamID.
 type ParamID string
 
-// NewID returns a *ParamID for ease of use with optional values
+// NewID returns a *ParamID for ease of use with optional values.
 func NewID(v ParamID) *ParamID {
 	return &v
 }
@@ -1011,10 +1108,13 @@ func (t *ParamID) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cID, ErrInvalidParam)
 	}
+
 	if vs[0].Type != tokenParamQuotedValue {
 		return fmt.Errorf(errDecodingType, cID, ErrInvalidParam)
 	}
+
 	*t = ParamID(decode6868(vs[0].Data))
+
 	return nil
 }
 
@@ -1022,6 +1122,7 @@ func (t ParamID) encode(w writer) {
 	if len(t) == 0 {
 		return
 	}
+
 	w.WriteString(";ID=")
 	w.WriteString("\"")
 	w.Write(encode6868(string(t)))
@@ -1032,13 +1133,14 @@ func (t ParamID) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return fmt.Errorf(errValidatingType, cID, ErrInvalidText)
 	}
+
 	return nil
 }
 
-// AgentID
+// ParamAgentID.
 type ParamAgentID string
 
-// NewAgentID returns a *ParamAgentID for ease of use with optional values
+// NewAgentID returns a *ParamAgentID for ease of use with optional values.
 func NewAgentID(v ParamAgentID) *ParamAgentID {
 	return &v
 }
@@ -1047,10 +1149,13 @@ func (t *ParamAgentID) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
 		return fmt.Errorf(errDecodingType, cAgentID, ErrInvalidParam)
 	}
+
 	if vs[0].Type != tokenParamQuotedValue {
 		return fmt.Errorf(errDecodingType, cAgentID, ErrInvalidParam)
 	}
+
 	*t = ParamAgentID(decode6868(vs[0].Data))
+
 	return nil
 }
 
@@ -1058,6 +1163,7 @@ func (t ParamAgentID) encode(w writer) {
 	if len(t) == 0 {
 		return
 	}
+
 	w.WriteString(";AGENT-ID=")
 	w.WriteString("\"")
 	w.Write(encode6868(string(t)))
@@ -1068,6 +1174,7 @@ func (t ParamAgentID) valid() error {
 	if strings.ContainsAny(string(t), nonsafeChars[:31]) {
 		return fmt.Errorf(errValidatingType, cAgentID, ErrInvalidText)
 	}
+
 	return nil
 }
 
@@ -1084,7 +1191,7 @@ Loop:
 			break Loop
 		case '^':
 			t.Accept("^")
-			switch t.Peek() {
+			switch t.Next() {
 			case -1:
 				d = append(d, '^')
 				break Loop
@@ -1099,7 +1206,6 @@ Loop:
 				l := utf8.EncodeRune(ru[:], c)
 				d = append(d, ru[:l]...)
 			}
-			t.Except("")
 		}
 	}
 	return string(d)
@@ -1130,7 +1236,7 @@ func init() {
 	regexFormatType = regexp.MustCompile("[A-Za-z0-9!#$&.+-^_]/[A-Za-z0-9!#$&.+-^_]")
 }
 
-// Errors
+// Errors.
 var (
 	ErrInvalidParam = errors.New("invalid param value")
 	ErrInvalidValue = errors.New("invalid value")
