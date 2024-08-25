@@ -78,6 +78,7 @@ function printSection {
 			fi;
 		done;
 		echo " bool";
+		echo;
 	fi;
 
 	# type switch
@@ -90,10 +91,12 @@ function printSection {
 	echo "		} else if p.Type == parser.PhraseDone {";
 	echo "			return fmt.Errorf(errDecodingType, c$sName, io.ErrUnexpectedEOF)";
 	echo "		}";
+	echo;
 	if [ ${#currSection[@]} -gt 0 ]; then
 		echo "		params := p.Data[1 : len(p.Data)-1]";
 	fi;
 	echo "		value := p.Data[len(p.Data)-1].Data";
+	echo;
 	echo "		switch strings.ToUpper(p.Data[0].Data) {";
 	echo "		case \"BEGIN\":";
 	echo "			switch n := strings.ToUpper(value); n {";
@@ -115,21 +118,27 @@ function printSection {
 			echo "				if required$name {";
 			echo "					return fmt.Errorf(errMultiple, c$sName, c$name)";
 			echo "				}";
+			echo;
 			echo "				required$name = true";
+			echo;
 			echo "				if err := s.${name}.decode(t); err != nil {";
 			echo "					return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "				}";
 		elif $multiple; then
 			echo "				var e $name";
+			echo;
 			echo "				if err := e.decode(t); err != nil {";
 			echo "					return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "				}";
+			echo;
 			echo "				s.$name = append(s.$name, e)";
 		else
 			echo "				if s.$name != nil {";
 			echo "					return fmt.Errorf(errMultiple, c$sName, c$name)";
 			echo "				}";
+			echo;
 			echo "				s.$name = new($name)";
+			echo;
 			echo "				if err := s.${name}.decode(t); err != nil {";
 			echo "					return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "				}";
@@ -158,21 +167,27 @@ function printSection {
 			echo "			if required$name {";
 			echo "				return fmt.Errorf(errMultiple, c$sName, c$name)";
 			echo "			}";
+			echo;
 			echo "			required$name = true";
+			echo;
 			echo "			if err := s.${name}.decode(params, value); err != nil {";
 			echo "				return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "			}";
 		elif $multiple; then
 			echo "			var e Prop$name";
+			echo;
 			echo "			if err := e.decode(params, value); err != nil {";
 			echo "				return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "			}";
+			echo;
 			echo "			s.$name = append(s.$name, e)";
 		else
 			echo "			if s.$name != nil {";
 			echo "				return fmt.Errorf(errMultiple, c$sName, c$name)";
 			echo "			}";
+			echo;
 			echo "			s.$name = new(Prop$name)";
+			echo;
 			echo "			if err := s.${name}.decode(params, value); err != nil {";
 			echo "				return fmt.Errorf(errDecodingProp, c$sName, c$name, err)";
 			echo "			}";
@@ -186,6 +201,7 @@ function printSection {
 	fi;
 	echo "				return fmt.Errorf(errDecodingType, c$sName, ErrInvalidEnd)"
 	echo "			}";
+	echo;
 	echo "			break Loop";
 	echo "		}";
 	echo "	}";
@@ -194,6 +210,7 @@ function printSection {
 	
 	if $checkRequired; then
 		first=false;
+		echo;
 		echo -n "	if";
 		for tline in "${currSection[@]}"; do
 			aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
@@ -215,6 +232,7 @@ function printSection {
 		echo " {";
 		echo "		return fmt.Errorf(errDecodingType, c$sName, ErrMissingRequired)";
 		echo "	}";
+		echo;
 	fi;
 
 	# check other requirements
@@ -274,6 +292,7 @@ function printSection {
 		echo " {";
 		echo "		return fmt.Errorf(errDecodingType, c$sName, ErrRequirementNotMet)";
 		echo "	}";
+		echo;
 	done;
 
 	# end of decoder
@@ -288,23 +307,32 @@ function printSection {
 	if [ "${sectionName:0:6}" != "VALARM" ]; then
 		echo "	w.WriteString(\"BEGIN:$sectionName\r\n\")";
 	fi;
+	declare nl=false;
 	for tline in "${currSection[@]}"; do
 		aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
 		name="${aline[0]}";
 		required=${aline[2]};
 		multiple=${aline[3]};
 		if $multiple; then
+			echo;
 			echo "	for n := range s.$name {";
 			echo "		s.$name[n].encode(w)";
 			echo "	}";
+			nl=true;
 		elif $required; then
 			echo "	s.${name}.encode(w)";
+			nl=false;
 		else
+			echo;
 			echo "	if s.$name != nil {";
 			echo "		s.${name}.encode(w)";
 			echo "	}";
+			nl=true;
 		fi;
 	done;
+	if $nl; then
+		echo;
+	fi;
 	if [ "${sectionName:0:6}" != "VALARM" ]; then
 		echo "	w.WriteString(\"END:$sectionName\r\n\")";
 	fi;
@@ -338,6 +366,7 @@ function printSection {
 				echo "	}";
 			fi;
 		fi;
+		echo;
 	done;
 	echo "	return nil";
 	echo "}";
@@ -413,7 +442,7 @@ OFS="$IFS";
 	}< sections.gen;
 	printSection
 	cat <<HEREDOC
-// decodeDummy reads unknown sections, discarding the data
+// decodeDummy reads unknown sections, discarding the data.
 func decodeDummy(t tokeniser, n string) error {
 	for {
 		p, err := t.GetPhrase()
@@ -422,6 +451,7 @@ func decodeDummy(t tokeniser, n string) error {
 		} else if p.Type == parser.PhraseDone {
 			return io.ErrUnexpectedEOF
 		}
+
 		switch strings.ToUpper(p.Data[0].Data) {
 		case "BEGIN":
 			if err := decodeDummy(t, p.Data[len(p.Data)-1].Data); err != nil {
@@ -431,12 +461,13 @@ func decodeDummy(t tokeniser, n string) error {
 			if strings.ToUpper(p.Data[len(p.Data)-1].Data) == n {
 				return nil
 			}
+
 			return ErrInvalidEnd
 		}
 	}
 }
 
-// Errors
+// Errors.
 var (
 	ErrInvalidEnd        = errors.New("invalid end of section")
 	ErrMissingRequired   = errors.New("required property missing")
