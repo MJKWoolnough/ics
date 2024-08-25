@@ -192,7 +192,6 @@ func (t ParamDelegator) encode(w writer) {
 			w.WriteString(",")
 		}
 
-
 		q := CalendarAddress(v)
 
 		q.encode(w)
@@ -242,7 +241,6 @@ func (t ParamDelagatee) encode(w writer) {
 			w.WriteString(",")
 		}
 
-
 		q := CalendarAddress(v)
 
 		q.encode(w)
@@ -287,6 +285,7 @@ func (t ParamDirectoryEntry) encode(w writer) {
 	}
 
 	w.WriteString(";DIR=")
+
 	w.WriteString("\"")
 	w.Write(encode6868(string(t)))
 	w.WriteString("\"")
@@ -643,6 +642,7 @@ func (t *ParamRange) decode(vs []parser.Token) error {
 
 func (t ParamRange) encode(w writer) {
 	w.WriteString(";RANGE=")
+
 	w.WriteString("THISANDFUTURE")
 }
 
@@ -886,6 +886,7 @@ func (t ParamSentBy) encode(w writer) {
 	}
 
 	w.WriteString(";SENT-BY=")
+
 	w.WriteString("\"")
 	w.Write(encode6868(string(t)))
 	w.WriteString("\"")
@@ -1124,6 +1125,7 @@ func (t ParamID) encode(w writer) {
 	}
 
 	w.WriteString(";ID=")
+
 	w.WriteString("\"")
 	w.Write(encode6868(string(t)))
 	w.WriteString("\"")
@@ -1165,6 +1167,7 @@ func (t ParamAgentID) encode(w writer) {
 	}
 
 	w.WriteString(";AGENT-ID=")
+
 	w.WriteString("\"")
 	w.Write(encode6868(string(t)))
 	w.WriteString("\"")
