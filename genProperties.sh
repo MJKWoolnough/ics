@@ -21,7 +21,7 @@ function printProperty {
 	if [ ${#params[@]} -eq 0 ] && ! $valueType; then
 		echo "type Prop$tName uint8";
 		echo;
-		echo "// Prop$tName constant values";
+		echo "// Prop$tName constant values.";
 		echo "const ("
 		local first=true;
 		for value in ${values[@]}; do
@@ -35,7 +35,7 @@ function printProperty {
 		echo ")";
 		echo;
 		echo "// New returns a pointer to the type (used with constants for ease of use with";
-		echo "// optional values)";
+		echo "// optional values).";
 		echo "func (p Prop$tName) New() *Prop$tName {";
 		echo "	return &p";
 		echo "}";
@@ -45,7 +45,7 @@ function printProperty {
 		if [ "${values[0]}" = "Integer" ]; then
 			echo;
 			echo "// New$tName generates a pointer to a constant value.";
-			echo "// Used when manually creating Calendar values";
+			echo "// Used when manually creating Calendar values.";
 			echo "func New$tName(v Prop$tName) *Prop$tName {";
 			echo "	return &v";
 			echo "}";
@@ -109,15 +109,20 @@ function printProperty {
 			echo "	vType := -1";
 		fi;
 		echo "	oParams := make(map[string]string)";
+		echo;
 		echo "	var ts []string";
+		echo;
 		echo "	for len(params) > 0 {";
 		echo "		pName := strings.ToUpper(params[0].Data)";
 		echo "		i := 1";
+		echo;
 		echo "		for i < len(params) && params[i].Type != tokenParamName {";
 		echo "			i++";
 		echo "		}";
+		echo;
 		echo "		pValues := params[1:i]";
 		echo "		params = params[i:]";
+		echo;
 		echo "		switch pName {";
 		for param in ${params[@]}; do
 			local tParam="$(getName "$param")";
@@ -125,8 +130,10 @@ function printProperty {
 			echo "			if p.$tParam != nil {";
 			echo "				return fmt.Errorf(errDecodingProp, c$tName, c$tParam, ErrDuplicateParam)";
 			echo "			}";
+			echo;
 			if [ "$param" != "DELEGATED-FROM" -a "$param" != "DELEGATED-TO" -a "$param" != "MEMBER" ]; then
 				echo "			p.$tParam = new(Param$tParam)";
+				echo;
 			fi;
 			echo "			if err := p.${tParam}.decode(pValues); err != nil {";
 			echo "				return fmt.Errorf(errDecodingProp, c$tName, c$tParam, err)";
@@ -137,9 +144,11 @@ function printProperty {
 			echo "			if len(pValues) != 1 {";
 			echo "				return fmt.Errorf(errDecodingProp, c$tName, cValue, ErrInvalidValue)";
 			echo "			}";
+			echo;
 			echo "			if vType != -1 {";
 			echo "				return fmt.Errorf(errDecodingProp, c$tName, cValue, ErrDuplicateParam)";
 			echo "			}";
+			echo;
 			echo "			switch strings.ToUpper(pValues[0].Data) {";
 			local i=0;
 			for value in ${values[@]}; do
@@ -155,14 +164,17 @@ function printProperty {
 		echo "			for _, v := range pValues {";
 		echo "				ts = append(ts, v.Data)";
 		echo "			}";
+		echo;
 		echo "			oParams[pName] = strings.Join(ts, \",\")";
 		echo "			ts = ts[:0]";
 		echo "		}";
 		echo "	}";
+		echo;
 		if [ ${#values[@]} -gt 1 ]; then
 			echo "	if vType == -1 {";
 			echo "		vType = 0";
 			echo "	}";
+			echo;
 			echo "	switch vType {";
 			local i=0;
 			for value in ${values[@]}; do
@@ -170,6 +182,7 @@ function printProperty {
 				echo "	case $i:";
 				if [ "$value" != "Binary" -a "$value" != "MText" ]; then
 					echo "		p.$tValue = new($tValue)";
+					echo;
 				fi;
 				echo "		if err := p.${tValue}.decode(oParams, value); err != nil {";
 				echo "			return fmt.Errorf(errDecodingProp, c$tName, c$tValue, err)";
@@ -193,26 +206,36 @@ function printProperty {
 		echo "	}";;
 	2)
 		echo "	oParams := make(map[string]string)";
+		echo;
 		echo "	var ts []string";
+		echo;
 		echo "	for len(params) > 0 {";
 		echo "		i := 1";
+		echo;
 		echo "		for i < len(params) && params[i].Type != tokenParamName {";
 		echo "			i++";
 		echo "		}";
+		echo;
 		echo "		pValues := params[1:i]";
+		echo;
 		echo "		for _, v := range pValues {";
 		echo "			ts = append(ts, v.Data)";
 		echo "		}";
+		echo;
 		echo "		oParams[strings.ToUpper(params[0].Data)] = strings.Join(ts, \",\")";
 		echo "		params = params[i:]";
 		echo "		ts = ts[:0]";
 		echo "	}";
+		echo;
 		echo "	var t ${values[0]}";
+		echo;
 		echo "	if err := t.decode(oParams, value); err != nil {";
 		echo "		return fmt.Errorf(errDecodingType, c$tName, err)";
 		echo "	}";
+		echo;
 		echo "	*p = Prop$tName(t)";
 	esac;
+	echo;
 	echo "	return nil";
 	echo "}";
 	echo;
@@ -225,10 +248,12 @@ function printProperty {
 		echo "	w.WriteString(\"$currProperty\")";
 		for param in ${params[@]}; do
 			tParam="$(getName "$param")";
+			echo;
 			echo "	if p.$tParam != nil {";
 			echo "		p.${tParam}.encode(w)";
 			echo "	}";
 		done;
+		echo;
 		if [ ${#values[@]} -gt 1 ]; then
 			for value in ${values[@]}; do
 				tValue="$(getName "$value")";
@@ -238,21 +263,26 @@ function printProperty {
 				fi;
 				echo "		p.${tValue}.aencode(w)";
 				echo "	}";
+				echo;
 			done;
 		else
 			echo "	p.$(getName "${values[0]}").aencode(w)";
 		fi;;
 	1)
 		echo "	w.WriteString(\"$currProperty:\")";
+		echo;
 		echo "	switch *p {";
 		for value in ${values[@]}; do
 			echo "	case $tName$(getName "$value"):";
 			echo "		w.WriteString(\"$value\")";
 		done;
-		echo "	}";;
+		echo "	}";
+		echo;;
 	2)
 		echo "	w.WriteString(\"$currProperty\")";
+		echo;
 		echo "	t := ${values[0]}(*p)";
+		echo;
 		echo "	t.aencode(w)";
 	esac;
 	echo "	w.WriteString(\"\\r\\n\")";
@@ -272,17 +302,21 @@ function printProperty {
 			echo "			return fmt.Errorf(errValidatingProp, c$tName, c$tParam, err)";
 			echo "		}";
 			echo "	}";
+			echo;
 		done;
 		if [ ${#values[@]} -gt 1 ]; then
 			echo "	c := 0";
+			echo;
 			for value in ${values[@]}; do
 				tValue="$(getName "$value")";
 				echo "	if p.$tValue != nil {";
 				echo "		if err := p.${tValue}.valid(); err != nil {";
 				echo "			return fmt.Errorf(errValidatingProp, c$tName, c$tValue, err)";
 				echo "		}";
+				echo;
 				echo "		c++";
 				echo "	}";
+				echo;
 			done;
 			echo "	if c != 1 {";
 			echo "		return fmt.Errorf(errValidatingType, c$tName, ErrInvalidValue)";
@@ -292,6 +326,7 @@ function printProperty {
 			echo "		return fmt.Errorf(errValidatingProp, c$tName, c$(getName "${values[0]}"), err)";
 			echo "	}";
 		fi;
+		echo;
 		echo "	return nil";;
 	1)
 		echo "	switch *p {";
@@ -308,12 +343,15 @@ function printProperty {
 		echo "	default:";
 		echo "		return fmt.Errorf(errValidatingType, c$tName, ErrInvalidValue)";
 		echo "	}";
+		echo;
 		echo "	return nil";;
 	2)
 		echo "	t := ${values[0]}(*p)";
+		echo;
 		echo "	if err := t.valid(); err != nil {";
 		echo "		return fmt.Errorf(errValidatingType, c$tName, err)";
 		echo "	}";
+		echo;
 		echo "	return nil";
 	esac;
 	echo "}";
@@ -359,7 +397,7 @@ function printProperty {
 		done;
 	} < "properties.gen";
 	printProperty;
-	echo "// Errors";
+	echo "// Errors..";
 	echo "var (";
 	echo "	ErrDuplicateParam = errors.New(\"duplicate param\")";
 	echo ")";
