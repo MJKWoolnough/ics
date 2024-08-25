@@ -14,7 +14,7 @@ Range is used to specify the effective range of recurrence instances from the in
 Related is the relationship of the alarm trigger with respect to the start or end of the calendar component
 RelationshipType is the type of hierarchical relationship associated with the calendar component specified by the property
 ParticipationRole is used to specify the participation role for the calendar user specified by the property
-RSVP is used to specify whether there is an expectation of a favor of a reply from the calendar user specified by the property value
+RSVP is used to specify whether there is an expectation of a favour of a reply from the calendar user specified by the property value
 SentBy is used to specify the calendar user that is acting on behalf of the calendar user specified by the property
 TimezoneID is used to specify the identifier for the time zone definition for a time component in the property value
 Value is used to explicitly specify the value type format for a property value
@@ -75,4 +75,4 @@ Journal provides a group of components that describe a journal entry
 Standard represents standard timezone rules
 Timezone provide a group of components that defines a time zone
 Todo provides a group of components that describe a to-do
-AlarmURI provies a group of components that define a URI Alarm
+AlarmURI provides a group of components that define a URI Alarm
