@@ -24,6 +24,6 @@ function getComment {
 			fi;
 			echo -n " $word";
 		done;
-		echo;
+		echo ".";
 	)
 }
