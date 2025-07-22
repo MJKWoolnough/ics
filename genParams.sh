@@ -38,12 +38,12 @@ source "comments.sh";
 			fc="${values:0:1}";
 			if [ "$fc" = "*" ]; then
 				echo -n "[]";
-				multiple=true
+				multiple=true;
 				values="${values:1}";
 				fc="${values:0:1}";
 			fi;
 			if [ "$fc" = "?" ]; then
-				freeChoice=true
+				freeChoice=true;
 				values="${values:1}";
 				fc="${values:0:1}";
 			fi;
@@ -100,7 +100,7 @@ source "comments.sh";
 					echo "// $type constant values.";
 					echo "const (";
 					declare first=true;
-					for choice in ${choices[@]};do
+					for choice in ${choices[@]}; do
 						echo -n "	$type$(getName "$choice")";
 						if $first; then
 							echo -n " Param$type = iota";
@@ -114,14 +114,13 @@ source "comments.sh";
 					echo "// optional values).";
 					echo "func (t Param$type) New() *Param$type {";
 					echo "	return &t";
-					echo "}";
+					echo "}";;
 				esac;
 				choices=( $(echo "$values" | tr "|" " ") );
 			fi;
 			echo;
 
 			# decoder
-
 			echo "func (t *Param$type) decode(vs []parser.Token) error {";
 			declare indent="";
 			declare vName="vs[0]";
@@ -195,14 +194,13 @@ source "comments.sh";
 			fi;
 			if $multiple; then
 				echo "	}";
-			fi; 
+			fi;
 			echo;
 			echo "	return nil";
 			echo "}";
 			echo;
 
 			#encoder
-
 			echo "func (t Param$type) encode(w writer) {";
 			if [ ${#choices} -eq 0 ] || $multiple; then
 				if [ "$vType" = "CALADDRESS" -o "$vType" = "URI" ]; then
@@ -271,7 +269,6 @@ source "comments.sh";
 			echo;
 
 			#validator
-
 			echo "func (t Param$type) valid() error {";
 			if [ "$vType" = "Boolean" ]; then
 				echo "	return nil";
@@ -281,7 +278,7 @@ source "comments.sh";
 				fi;
 				if [ ! -z "$vType" ]; then
 					if $multiple; then
-						echo "		if err := v.valid(); err != nil {"
+						echo "		if err := v.valid(); err != nil {";
 						echo "			return fmt.Errorf(errValidatingType, c$type, err)";
 						echo "		}";
 					else
@@ -330,7 +327,7 @@ source "comments.sh";
 			echo "}";
 			echo;
 		done;
-	} < params.gen
+	} < params.gen;
 
 	cat <<HEREDOC
 func decode6868(s string) string {
@@ -401,7 +398,7 @@ HEREDOC
 	echo "	ErrInvalidValue = errors.New(\"invalid value\")";
 	echo ")";
 	echo;
-	echo "const ("
+	echo "const (";
 	echo "	errDecodingType            = \"error decoding %s: %w\"";
 	echo "	errValidatingType          = \"error decoding %s: %w\"";
 	{
@@ -414,6 +411,6 @@ HEREDOC
 			done;
 			echo "= \"$type\"";
 		done;
-	} < params.gen
+	} < params.gen;
 	echo ")";
-) > params.go
+) > params.go;
