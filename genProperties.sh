@@ -7,7 +7,7 @@ declare currProperty="";
 declare valueType=false;
 declare -a values;
 declare -a params;
-function printProperty {
+function printProperty() {
 	if [ -z "$currProperty" ]; then
 		return;
 	fi;
@@ -15,14 +15,13 @@ function printProperty {
 	local tName="$(getName "${currProperty%#*}")";
 	currProperty="${currProperty##*#}";
 	# typedef
-
 	local mode=0;
 	getComment "Prop$tName";
 	if [ ${#params[@]} -eq 0 ] && ! $valueType; then
 		echo "type Prop$tName uint8";
 		echo;
 		echo "// Prop$tName constant values.";
-		echo "const ("
+		echo "const (";
 		local first=true;
 		for value in ${values[@]}; do
 			echo -n "	$tName$(getName "$value")";
@@ -69,7 +68,7 @@ function printProperty {
 			done;
 		fi;
 		for param in ${params[@]}; do
-			local n=$(getName "$param")
+			local n=$(getName "$param");
 			echo -n "	$n ";
 			for i in $(seq $(( $longest - ${#n} ))); do
 				echo -n " ";
@@ -84,7 +83,7 @@ function printProperty {
 			echo "	${values[0]}";
 		else
 			for value in ${values[@]}; do
-				local n=$(getName "$value")
+				local n=$(getName "$value");
 				echo -n "	$n ";
 				for i in $(seq $(( $longest - ${#n} ))); do
 					echo -n " ";
@@ -101,7 +100,6 @@ function printProperty {
 	echo;
 
 	# decoder
-
 	echo "func (p *Prop$tName) decode(params []parser.Token, value string) error {";
 	case $mode in
 	0)
@@ -233,7 +231,7 @@ function printProperty {
 		echo "		return fmt.Errorf(errDecodingType, c$tName, err)";
 		echo "	}";
 		echo;
-		echo "	*p = Prop$tName(t)";
+		echo "	*p = Prop$tName(t)";;
 	esac;
 	echo;
 	echo "	return nil";
@@ -241,7 +239,6 @@ function printProperty {
 	echo;
 
 	# encoder
-
 	echo "func (p *Prop$tName) encode(w writer) {";
 	case $mode in
 	0)
@@ -283,15 +280,13 @@ function printProperty {
 		echo;
 		echo "	t := ${values[0]}(*p)";
 		echo;
-		echo "	t.aencode(w)";
+		echo "	t.aencode(w)";;
 	esac;
 	echo "	w.WriteString(\"\\r\\n\")";
 	echo "}";
 	echo;
 
-
 	# validator
-
 	echo "func (p *Prop$tName) valid() error {";
 	case $mode in
 	0)
@@ -352,13 +347,12 @@ function printProperty {
 		echo "		return fmt.Errorf(errValidatingType, c$tName, err)";
 		echo "	}";
 		echo;
-		echo "	return nil";
+		echo "	return nil";;
 	esac;
 	echo "}";
 	echo;
 
 	# reset
-
 	currProperty="";
 	valueType=false;
 	values=();
@@ -380,8 +374,8 @@ function printProperty {
 	echo;
 	{
 		IFS="
-";
-		while read line;do
+		";
+		while read line; do
 			if [ "${line:0:1}" != "	" ]; then
 				printProperty;
 				currProperty="$(echo "$line" | cut -d':' -f1)";
