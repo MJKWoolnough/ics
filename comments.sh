@@ -6,7 +6,7 @@ while read line; do
 	comments["$(echo "$line" | cut -d' ' -f1)"]="$line";
 done < "comments.gen";
 
-function getComment {
+function getComment() {
 	(
 		IFS=" ";
 		comment="${comments[$1]}";
