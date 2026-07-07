@@ -21,7 +21,7 @@ func (c Calendar) Error() string {
 func indentWrite(v reflect.Value, indentLevel int, w writer) {
 	w.WriteString(v.Type().String())
 	w.WriteString(" ")
-	if v.Type().Kind() == reflect.Ptr {
+	if v.Type().Kind() == reflect.Pointer {
 		if v.IsNil() {
 			w.WriteString("<nil>\n")
 			return
