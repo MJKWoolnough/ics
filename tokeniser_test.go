@@ -14,7 +14,7 @@ func TestTokeniser(t *testing.T) {
 		Output parser.Phrase
 		Error  error
 	}{
-		{
+		{ // 1
 			Input: "Name:Value\r\n",
 			Output: parser.Phrase{
 				Type: phraseContentLine,
@@ -30,15 +30,15 @@ func TestTokeniser(t *testing.T) {
 				},
 			},
 		},
-		{
+		{ // 2
 			Input: ":Value\r\n",
 			Error: ErrInvalidContentLine,
 		},
-		{
+		{ // 3
 			Input: "Name+:Value\r\n",
 			Error: ErrInvalidContentLineName,
 		},
-		{
+		{ // 4
 			Input: "Name:!Value HERE09	zø\r\n",
 			Output: parser.Phrase{
 				Type: phraseContentLine,
@@ -54,19 +54,19 @@ func TestTokeniser(t *testing.T) {
 				},
 			},
 		},
-		{
+		{ // 5
 			Input: "Name:\nValue\r\n",
 			Error: ErrInvalidContentLineValue,
 		},
-		{
+		{ // 6
 			Input: "Name:Va\x00lue\r\n",
 			Error: ErrInvalidContentLineValue,
 		},
-		{
+		{ // 7
 			Input: "Name:Value\x7f\r\n",
 			Error: ErrInvalidContentLineValue,
 		},
-		{
+		{ // 8
 			Input: "Name;param=paramValue:Value\r\n",
 			Output: parser.Phrase{
 				Type: phraseContentLine,
@@ -90,7 +90,7 @@ func TestTokeniser(t *testing.T) {
 				},
 			},
 		},
-		{
+		{ // 9
 			Input: "Name;param=\"paramValue\":Value\r\n",
 			Output: parser.Phrase{
 				Type: phraseContentLine,
@@ -114,7 +114,7 @@ func TestTokeniser(t *testing.T) {
 				},
 			},
 		},
-		{
+		{ // 10
 			Input: "Name;param=\":;,\":Value\r\n",
 			Output: parser.Phrase{
 				Type: phraseContentLine,
@@ -138,7 +138,7 @@ func TestTokeniser(t *testing.T) {
 				},
 			},
 		},
-		{
+		{ // 11
 			Input: "Name;param=paramValue1,\"paramValue2\":Value\r\n",
 			Output: parser.Phrase{
 				Type: phraseContentLine,
@@ -166,7 +166,7 @@ func TestTokeniser(t *testing.T) {
 				},
 			},
 		},
-		{
+		{ // 12
 			Input: "Name;param1=\"ABC\";param2=DEF:Value\r\n",
 			Output: parser.Phrase{
 				Type: phraseContentLine,
@@ -199,6 +199,7 @@ func TestTokeniser(t *testing.T) {
 			},
 		},
 	}
+
 	for n, test := range tests {
 		p, err := newTokeniser(strings.NewReader(test.Input)).GetPhrase()
 		if !reflect.DeepEqual(err, test.Error) {
