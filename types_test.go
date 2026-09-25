@@ -56,12 +56,12 @@ func testType(t *testing.T, tests []typeTest) {
 
 func TestBinary(t *testing.T) {
 	testType(t, []typeTest{
-		{
+		{ // 1
 			Input: &Binary{},
 			Match: &Binary{},
 			Error: ErrInvalidEncoding,
 		},
-		{
+		{ // 2
 			Params: map[string]string{"ENCODING": "BASE64"},
 			Data:   "MTIzNDU=",
 			Input:  &Binary{},
@@ -76,19 +76,19 @@ func TestBoolean(t *testing.T) {
 	fa := new(Boolean)
 	*tr = true
 	testType(t, []typeTest{
-		{
+		{ // 1
 			Data:   "False",
 			Input:  fa,
 			Match:  fa,
 			Output: "FALSE",
 		},
-		{
+		{ // 2
 			Data:   "true",
 			Input:  tr,
 			Match:  tr,
 			Output: "TRUE",
 		},
-		{
+		{ // 3
 			Data:  "HotDog",
 			Input: fa,
 			Error: ErrInvalidBoolean,
@@ -98,13 +98,13 @@ func TestBoolean(t *testing.T) {
 
 func TestDate(t *testing.T) {
 	testType(t, []typeTest{
-		{
+		{ // 1
 			Data:   "20011225",
 			Input:  &Date{},
 			Match:  &Date{time.Date(2001, 12, 25, 0, 0, 0, 0, time.UTC)},
 			Output: "20011225",
 		},
-		{
+		{ // 2
 			Data:   "20081111",
 			Input:  &Date{},
 			Match:  &Date{time.Date(2008, 11, 11, 0, 0, 0, 0, time.UTC)},
@@ -120,19 +120,19 @@ func TestDateTime(t *testing.T) {
 		return
 	}
 	testType(t, []typeTest{
-		{
+		{ // 1
 			Data:   "20011225T131415",
 			Input:  &DateTime{},
 			Match:  &DateTime{time.Date(2001, 12, 25, 13, 14, 15, 0, time.Local)},
 			Output: "20011225T131415",
 		},
-		{
+		{ // 2
 			Data:   "20011225T131415Z",
 			Input:  &DateTime{},
 			Match:  &DateTime{time.Date(2001, 12, 25, 13, 14, 15, 0, time.UTC)},
 			Output: "20011225T131415Z",
 		},
-		{
+		{ // 3
 			Params: map[string]string{"TZID": "America/New_York"},
 			Data:   "20011225T131415",
 			Input:  &DateTime{},
@@ -144,71 +144,71 @@ func TestDateTime(t *testing.T) {
 
 func TestDuration(t *testing.T) {
 	testType(t, []typeTest{
-		{
+		{ // 1
 			Data:   "P1W",
 			Input:  &Duration{},
 			Match:  &Duration{Weeks: 1},
 			Output: "P1W",
 		},
-		{
+		{ // 2
 			Data:   "P1D",
 			Input:  &Duration{},
 			Match:  &Duration{Days: 1},
 			Output: "P1D",
 		},
-		{
+		{ // 3
 			Data:   "PT1H",
 			Input:  &Duration{},
 			Match:  &Duration{Hours: 1},
 			Output: "PT1H",
 		},
-		{
+		{ // 4
 			Data:   "PT1M",
 			Input:  &Duration{},
 			Match:  &Duration{Minutes: 1},
 			Output: "PT1M",
 		},
-		{
+		{ // 5
 			Data:   "PT1S",
 			Input:  &Duration{},
 			Match:  &Duration{Seconds: 1},
 			Output: "PT1S",
 		},
-		{
+		{ // 6
 			Data:   "P25W",
 			Input:  &Duration{},
 			Match:  &Duration{Weeks: 25},
 			Output: "P25W",
 		},
-		{
+		{ // 7
 			Data:  "P25W1D",
 			Input: &Duration{},
 			Error: ErrInvalidDuration,
 		},
-		{
+		{ // 8
 			Data:  "P25G",
 			Input: &Duration{},
 			Error: ErrInvalidDuration,
 		},
-		{
+		{ // 9
 			Data:   "P1DT2H3M4S",
 			Input:  &Duration{},
 			Match:  &Duration{Days: 1, Hours: 2, Minutes: 3, Seconds: 4},
 			Output: "P1DT2H3M4S",
 		},
-		{
+		{ // 10
 			Data:   "PT0S",
 			Input:  &Duration{},
 			Match:  &Duration{},
 			Output: "PT0S",
 		},
-		{
+		{ // 11
 			Data:   "+P1DT2H3M4S",
 			Input:  &Duration{},
 			Match:  &Duration{Days: 1, Hours: 2, Minutes: 3, Seconds: 4},
 			Output: "P1DT2H3M4S",
 		},
-		{
+		{ // 12
 			Data:   "-P1DT2H3M4S",
 			Input:  &Duration{},
 			Match:  &Duration{Negative: true, Days: 1, Hours: 2, Minutes: 3, Seconds: 4},
@@ -219,7 +219,7 @@ func TestDuration(t *testing.T) {
 
 func TestPeriod(t *testing.T) {
 	testType(t, []typeTest{
-		{
+		{ // 1
 			Data:  "19970101T180000Z/19970102T070000Z",
 			Input: &Period{},
 			Match: &Period{
@@ -228,7 +228,7 @@ func TestPeriod(t *testing.T) {
 			},
 			Output: "19970101T180000Z/19970102T070000Z",
 		},
-		{
+		{ // 2
 			Data:  "19970101T180000Z/PT5H30M",
 			Input: &Period{},
 			Match: &Period{
@@ -669,36 +669,36 @@ func TestText(t *testing.T) {
 		return &nt
 	}
 	testType(t, []typeTest{
-		{
+		{ // 1
 			Data:   "",
 			Input:  new(Text),
 			Match:  newText(""),
 			Output: "",
 		},
-		{
+		{ // 2
 			Data:   "Jackdaws love my big Sphinx of quartz",
 			Input:  new(Text),
 			Match:  newText("Jackdaws love my big Sphinx of quartz"),
 			Output: "Jackdaws love my big Sphinx of quartz",
 		},
-		{
+		{ // 3
 			Data:   "Project XYZ Final Review\\nConference Room - 3B\\nCome Prepared.",
 			Input:  new(Text),
 			Match:  newText("Project XYZ Final Review\nConference Room - 3B\nCome Prepared."),
 			Output: "Project XYZ Final Review\\nConference Room - 3B\\nCome Prepared.",
 		},
-		{
+		{ // 4
 			Data:   "\\\\\\;\\,\\N\\n",
 			Input:  new(Text),
 			Match:  newText("\\;,\n\n"),
 			Output: "\\\\\\;\\,\\n\\n",
 		},
-		{
+		{ // 5
 			Data:  ";",
 			Input: new(Text),
 			Error: ErrInvalidText,
 		},
-		{
+		{ // 6
 			Data:  ",",
 			Input: new(Text),
 			Error: ErrInvalidText,
@@ -713,19 +713,19 @@ func TestTime(t *testing.T) {
 		return
 	}
 	testType(t, []typeTest{
-		{
+		{ // 1
 			Data:   "010203",
 			Input:  &Time{},
 			Match:  &Time{Time: time.Date(0, 1, 1, 1, 2, 3, 0, time.Local)},
 			Output: "010203",
 		},
-		{
+		{ // 2
 			Data:   "010203Z",
 			Input:  &Time{},
 			Match:  &Time{Time: time.Date(0, 1, 1, 1, 2, 3, 0, time.UTC)},
 			Output: "010203Z",
 		},
-		{
+		{ // 3
 			Params: map[string]string{"TZID": "America/New_York"},
 			Data:   "010203",
 			Input:  &Time{},
@@ -741,97 +741,97 @@ func TestUTCOffset(t *testing.T) {
 		return &u
 	}
 	testType(t, []typeTest{
-		{
+		{ // 1
 			Data:   "0100",
 			Input:  new(UTCOffset),
 			Match:  newUTC(3600),
 			Output: "0100",
 		},
-		{
+		{ // 2
 			Data:   "0230",
 			Input:  new(UTCOffset),
 			Match:  newUTC(9000),
 			Output: "0230",
 		},
-		{
+		{ // 3
 			Data:   "023045",
 			Input:  new(UTCOffset),
 			Match:  newUTC(9045),
 			Output: "023045",
 		},
-		{
+		{ // 4
 			Data:   "+0230",
 			Input:  new(UTCOffset),
 			Match:  newUTC(9000),
 			Output: "0230",
 		},
-		{
+		{ // 5
 			Data:   "-0230",
 			Input:  new(UTCOffset),
 			Match:  newUTC(-9000),
 			Output: "-0230",
 		},
-		{
+		{ // 6
 			Data:  "0260",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 7
 			Data:  "020060",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 8
 			Data:  "0261",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 9
 			Data:  "020061",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 10
 			Data:  "0",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 11
 			Data:  "00",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 12
 			Data:  "000",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 13
 			Data:  "00000",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 14
 			Data:  "T",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 15
 			Data:  "0000T",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 16
 			Data:  "000000T",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 17
 			Data:  "-0000",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
 		},
-		{
+		{ // 18
 			Data:  "-000000",
 			Input: new(UTCOffset),
 			Error: ErrInvalidOffset,
