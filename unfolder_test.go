@@ -11,12 +11,12 @@ func TestUnfolder(t *testing.T) {
 	tests := []struct {
 		Input, Output string
 	}{
-		{"A", "A"},
-		{"A\nB", "A\nB"},
-		{"A\r\n B", "AB"},
-		{"ABCDEFGHIJKL\r\n MNOP\r\n QRSTUV\r\nWXY\r\n Z", "ABCDEFGHIJKLMNOPQRSTUV\r\nWXYZ"},
-		{"\xe2\r\n \x82\r\n \xac", "€"},
-		{"BEGIN:VCALENDAR\r\nPRODID:TestDecode\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n", "BEGIN:VCALENDAR\r\nPRODID:TestDecode\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n"},
+		{"A", "A"},        // 1
+		{"A\nB", "A\nB"},  // 2
+		{"A\r\n B", "AB"}, // 3
+		{"ABCDEFGHIJKL\r\n MNOP\r\n QRSTUV\r\nWXY\r\n Z", "ABCDEFGHIJKLMNOPQRSTUV\r\nWXYZ"}, // 4
+		{"\xe2\r\n \x82\r\n \xac", "€"}, // 5
+		{"BEGIN:VCALENDAR\r\nPRODID:TestDecode\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n", "BEGIN:VCALENDAR\r\nPRODID:TestDecode\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n"}, // 6
 	}
 	var buf bytes.Buffer
 	for n, test := range tests {
