@@ -2,6 +2,7 @@ package ics
 
 import (
 	"bytes"
+	"encoding/base64"
 	"errors"
 	"reflect"
 	"testing"
@@ -77,6 +78,12 @@ func TestBinary(t *testing.T) {
 			Input:  &Binary{},
 			Match:  &Binary{'1', '2', '3', '4', '5'},
 			Output: "MTIzNDU=",
+		},
+		{ // 3
+			Params: map[string]string{"ENCODING": "BASE64"},
+			Data:   "MTIzNDU",
+			Error:  base64.CorruptInputError(4),
+			Input:  &Binary{},
 		},
 	})
 }
