@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"errors"
+	"net/url"
 	"reflect"
 	"testing"
 	"time"
@@ -110,6 +111,28 @@ func TestBoolean(t *testing.T) {
 			Data:  "HotDog",
 			Input: fa,
 			Error: ErrInvalidBoolean,
+		},
+	})
+}
+
+func TestCalendarAddress(t *testing.T) {
+	u, _ := url.Parse("http://addr")
+
+	testType(t, []typeTest{
+		{ // 1
+			Input: &CalendarAddress{},
+			Match: &CalendarAddress{},
+		},
+		{ // 2
+			Data:  "http://a%@b",
+			Input: &CalendarAddress{},
+			Error: url.EscapeError("%"),
+		},
+		{ // 3
+			Data:   "http://addr",
+			Input:  &CalendarAddress{*u},
+			Match:  &CalendarAddress{*u},
+			Output: "http://addr",
 		},
 	})
 }
