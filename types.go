@@ -295,10 +295,6 @@ func (d *Duration) decode(_ map[string]string, data string) error {
 			d.Minutes = num
 			level = 3
 		case 'S':
-			if level > 3 {
-				return ErrInvalidDuration
-			}
-
 			t.Accept("S")
 
 			if t.Peek() != -1 {
