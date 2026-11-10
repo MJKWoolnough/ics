@@ -303,6 +303,19 @@ func TestDuration(t *testing.T) {
 	})
 }
 
+func TestFloat(t *testing.T) {
+	f := Float(1)
+
+	testType(t, []typeTest{
+		{ // 1
+			Data:   "1",
+			Input:  new(Float),
+			Match:  &f,
+			Output: "1",
+		},
+	})
+}
+
 func TestPeriod(t *testing.T) {
 	testType(t, []typeTest{
 		{ // 1
