@@ -417,7 +417,7 @@ func (f Float) encode(w writer) {
 func (f Float) valid() error {
 	d := float64(f)
 
-	if !math.IsNaN(d) && !math.IsInf(d, 0) {
+	if math.IsNaN(d) || math.IsInf(d, 0) {
 		return ErrInvalidFloat
 	}
 
