@@ -459,13 +459,13 @@ func (t TFloat) encode(w writer) {
 func (t TFloat) valid() error {
 	d := float64(t[0])
 
-	if !math.IsNaN(d) && !math.IsInf(d, 0) {
+	if math.IsNaN(d) || math.IsInf(d, 0) {
 		return ErrInvalidFloat
 	}
 
 	d = float64(t[1])
 
-	if !math.IsNaN(d) && !math.IsInf(d, 0) {
+	if math.IsNaN(d) || math.IsInf(d, 0) {
 		return ErrInvalidFloat
 	}
 
