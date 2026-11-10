@@ -265,6 +265,41 @@ func TestDuration(t *testing.T) {
 			Match:  &Duration{Negative: true, Days: 1, Hours: 2, Minutes: 3, Seconds: 4},
 			Output: "-P1DT2H3M4S",
 		},
+		{ // 13
+			Data:  "1DT2H3M4S",
+			Input: &Duration{},
+			Error: ErrInvalidDuration,
+		},
+		{ // 14
+			Data:  "PT2W3M4S",
+			Input: &Duration{},
+			Error: ErrInvalidDuration,
+		},
+		{ // 15
+			Data:  "PT2D3M4S",
+			Input: &Duration{},
+			Error: ErrInvalidDuration,
+		},
+		{ // 16
+			Data:  "PT1M2H3M",
+			Input: &Duration{},
+			Error: ErrInvalidDuration,
+		},
+		{ // 17
+			Data:  "PT1M3M",
+			Input: &Duration{},
+			Error: ErrInvalidDuration,
+		},
+		{ // 18
+			Data:  "PT1S3S",
+			Input: &Duration{},
+			Error: ErrInvalidDuration,
+		},
+		{ // 19
+			Data:  "P",
+			Input: &Duration{},
+			Error: ErrInvalidDuration,
+		},
 	})
 }
 
