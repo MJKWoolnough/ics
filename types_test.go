@@ -316,6 +316,22 @@ func TestFloat(t *testing.T) {
 	})
 }
 
+func TestTFloat(t *testing.T) {
+	testType(t, []typeTest{
+		{ // 1
+			Data:   "1;2",
+			Input:  new(TFloat),
+			Match:  &TFloat{1, 2},
+			Output: "1;2",
+		},
+		{ // 2
+			Data:  "1",
+			Input: new(TFloat),
+			Error: ErrInvalidTFloat,
+		},
+	})
+}
+
 func TestPeriod(t *testing.T) {
 	testType(t, []typeTest{
 		{ // 1
