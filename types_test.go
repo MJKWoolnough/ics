@@ -2,6 +2,7 @@ package ics
 
 import (
 	"bytes"
+	"errors"
 	"reflect"
 	"testing"
 	"time"
@@ -25,30 +26,39 @@ var emptyMap = make(map[string]string)
 
 func testType(t *testing.T, tests []typeTest) {
 	var buf bytes.Buffer
+
 	for n, test := range tests {
 		if test.Params == nil {
 			test.Params = emptyMap
 		}
-		err := test.Input.decode(test.Params, test.Data)
-		if err != test.Error {
-			if !reflect.DeepEqual(err, test.Error) {
+
+		if err := test.Input.decode(test.Params, test.Data); err != test.Error {
+			if !errors.Is(err, test.Error) {
 				t.Errorf("test %d: expecting error %s, got %s", n+1, test.Error, err)
+
 				continue
 			}
 		}
+
 		if test.Error == nil {
 			if !reflect.DeepEqual(test.Input, test.Match) {
 				t.Errorf("test %d: input does not match expected", n+1)
+
 				continue
 			}
+
 			if err := test.Match.valid(); err != nil {
 				t.Errorf("test %d: unexpected validation error: %s", n+1, err)
+
 				continue
 			}
+
 			test.Match.encode(&buf)
+
 			if str := buf.String(); str != test.Output {
 				t.Errorf("test %d: expecting output string %q, got %q", n+1, test.Output, str)
 			}
+
 			buf.Reset()
 		}
 	}
@@ -75,6 +85,7 @@ func TestBoolean(t *testing.T) {
 	tr := new(Boolean)
 	fa := new(Boolean)
 	*tr = true
+
 	testType(t, []typeTest{
 		{ // 1
 			Data:   "False",
@@ -119,6 +130,7 @@ func TestDateTime(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 		return
 	}
+
 	testType(t, []typeTest{
 		{ // 1
 			Data:   "20011225T131415",
@@ -666,8 +678,10 @@ func TestRecur(t *testing.T) {
 func TestText(t *testing.T) {
 	newText := func(s string) *Text {
 		nt := Text(s)
+
 		return &nt
 	}
+
 	testType(t, []typeTest{
 		{ // 1
 			Data:   "",
@@ -712,6 +726,7 @@ func TestTime(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 		return
 	}
+
 	testType(t, []typeTest{
 		{ // 1
 			Data:   "010203",
@@ -738,8 +753,10 @@ func TestTime(t *testing.T) {
 func TestUTCOffset(t *testing.T) {
 	newUTC := func(i int) *UTCOffset {
 		u := UTCOffset(i)
+
 		return &u
 	}
+
 	testType(t, []typeTest{
 		{ // 1
 			Data:   "0100",
