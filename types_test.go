@@ -190,6 +190,34 @@ func TestDateTime(t *testing.T) {
 			Input:  &DateTime{},
 			Error:  errLocation,
 		},
+		{ // 5
+			Params: map[string]string{"TZID": "America/New_York"},
+			Data:   "20011240T131415",
+			Input:  &DateTime{},
+			Error: &time.ParseError{
+				Layout:  "20060102T150405",
+				Value:   "20011240T131415",
+				Message: ": day out of range",
+			},
+		},
+		{ // 6
+			Data:  "20011240T131415",
+			Input: &DateTime{},
+			Error: &time.ParseError{
+				Layout:  "20060102T150405",
+				Value:   "20011240T131415",
+				Message: ": day out of range",
+			},
+		},
+		{ // 7
+			Data:  "20011240T131415Z",
+			Input: &DateTime{},
+			Error: &time.ParseError{
+				Layout:  "20060102T150405Z",
+				Value:   "20011240T131415",
+				Message: ": day out of range",
+			},
+		},
 	})
 }
 
