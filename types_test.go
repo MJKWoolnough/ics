@@ -357,6 +357,15 @@ func TestFloat(t *testing.T) {
 			Match:  &f,
 			Output: "1",
 		},
+		{ // 2
+			Data:  "z",
+			Input: new(Float),
+			Error: &strconv.NumError{
+				Func: "ParseFloat",
+				Num:  "z",
+				Err:  strconv.ErrSyntax,
+			},
+		},
 	})
 }
 
