@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/url"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -327,6 +328,15 @@ func TestDuration(t *testing.T) {
 			Data:  "P",
 			Input: &Duration{},
 			Error: ErrInvalidDuration,
+		},
+		{ // 20
+			Data:  "P18446744073709551616W",
+			Input: &Duration{},
+			Error: &strconv.NumError{
+				Func: "ParseInt",
+				Num:  "18446744073709551616",
+				Err:  strconv.ErrSyntax,
+			},
 		},
 	})
 }
