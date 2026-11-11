@@ -354,8 +354,9 @@ func (d Duration) encode(w writer) {
 			data = append(data, 'D')
 		}
 
-		if d.Days == 0 || (d.Hours != 0 || d.Minutes != 0 || d.Seconds != 0) {
+		if d.Days == 0 || d.Hours != 0 || d.Minutes != 0 || d.Seconds != 0 {
 			data = append(data, 'T')
+
 			if d.Hours != 0 {
 				data = append(data, itoa(d.Hours)...)
 				data = append(data, 'H')
