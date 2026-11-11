@@ -403,6 +403,28 @@ func TestTFloat(t *testing.T) {
 	})
 }
 
+func TestInteger(t *testing.T) {
+	i := Integer(1)
+
+	testType(t, []typeTest{
+		{ // 1
+			Data:   "1",
+			Input:  new(Integer),
+			Match:  &i,
+			Output: "1",
+		},
+		{ // 2
+			Data:  "x",
+			Input: new(Integer),
+			Error: &strconv.NumError{
+				Func: "ParseInt",
+				Num:  "x",
+				Err:  strconv.ErrSyntax,
+			},
+		},
+	})
+}
+
 func TestPeriod(t *testing.T) {
 	testType(t, []typeTest{
 		{ // 1
