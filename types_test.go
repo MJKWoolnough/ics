@@ -34,8 +34,8 @@ func testType(t *testing.T, tests []typeTest) {
 			test.Params = emptyMap
 		}
 
-		if err := test.Input.decode(test.Params, test.Data); err != test.Error {
-			if !errors.Is(err, test.Error) {
+		if err := test.Input.decode(test.Params, test.Data); !errors.Is(err, test.Error) {
+			if errv := reflect.New(reflect.TypeOf(test.Error)); !errors.As(err, errv.Interface()) || !errors.Is(err, errv.Elem().Interface().(error)) {
 				t.Errorf("test %d: expecting error %s, got %s", n+1, test.Error, err)
 
 				continue
