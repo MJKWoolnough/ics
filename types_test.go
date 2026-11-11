@@ -338,6 +338,12 @@ func TestDuration(t *testing.T) {
 				Err:  strconv.ErrSyntax,
 			},
 		},
+		{ // 21
+			Data:   "PT3M4S",
+			Input:  &Duration{},
+			Match:  &Duration{Minutes: 3, Seconds: 4},
+			Output: "PT3M4S",
+		},
 	})
 }
 
