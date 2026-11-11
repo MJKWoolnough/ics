@@ -382,6 +382,24 @@ func TestTFloat(t *testing.T) {
 			Input: new(TFloat),
 			Error: ErrInvalidTFloat,
 		},
+		{ // 3
+			Data:  "z;1",
+			Input: new(Float),
+			Error: &strconv.NumError{
+				Func: "ParseFloat",
+				Num:  "z",
+				Err:  strconv.ErrSyntax,
+			},
+		},
+		{ // 4
+			Data:  "1;y",
+			Input: new(Float),
+			Error: &strconv.NumError{
+				Func: "ParseFloat",
+				Num:  "y",
+				Err:  strconv.ErrSyntax,
+			},
+		},
 	})
 }
 
