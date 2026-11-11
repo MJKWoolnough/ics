@@ -901,6 +901,106 @@ func TestRecur(t *testing.T) {
 			Input: &Recur{},
 			Error: ErrInvalidRecur,
 		},
+		{ // 68
+			Data:  "FREQ=HOURLY;COUNT=10;UNTIL=20011125",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 69
+			Data:  "FREQ=WEEKLY;UNTIL=20011125A131415",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 70
+			Data:  "FREQ=HOURLY;UNTIL=20011125;COUNT=10",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 71
+			Data:  "FREQ=SECONDLY;INTERVAL=10;INTERVAL=11",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 72
+			Data:  "FREQ=SECONDLY;INTERVAL=a",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 73
+			Data:  "FREQ=SECONDLY;BYSECOND=1;BYSECOND=2",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 74
+			Data:  "FREQ=SECONDLY;BYMINUTE=1;BYMINUTE=2",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 75
+			Data:  "FREQ=SECONDLY;BYHOUR=1;BYHOUR=2",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 76
+			Data:  "FREQ=SECONDLY;BYDAY=TH;BYDAY=SA",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 77
+			Data:  "FREQ=SECONDLY;BYDAY=-A",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 78
+			Data:  "FREQ=SECONDLY;BYDAY=SA",
+			Input: &Recur{},
+			Match: &Recur{
+				ByDay: []DayRecur{
+					{Day: Saturday},
+				},
+			},
+			Output: "FREQ=SECONDLY;BYDAY=SA",
+		},
+		{ // 79
+			Data:  "FREQ=SECONDLY;BYMONTHDAY=1;BYMONTHDAY=2",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 80
+			Data:  "FREQ=SECONDLY;BYYEARDAY=1;BYYEARDAY=2",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 81
+			Data:  "FREQ=SECONDLY;BYWEEKNO=1;BYWEEKNO=2",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 82
+			Data:  "FREQ=SECONDLY;BYWEEKNO=A",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 83
+			Data:  "FREQ=SECONDLY;BYMONTH=1;BYMONTH=2",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 84
+			Data:  "FREQ=SECONDLY;BYSETPOS=1;BYSETPOS=2",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 85
+			Data:  "FREQ=SECONDLY;WKST=SU;WKST=MO",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
+		{ // 86
+			Data:  "WKST=SU",
+			Input: &Recur{},
+			Error: ErrInvalidRecur,
+		},
 	})
 }
 
