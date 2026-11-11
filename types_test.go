@@ -445,6 +445,39 @@ func TestPeriod(t *testing.T) {
 			},
 			Output: "19970101T180000Z/PT5H30M",
 		},
+		{ // 3
+			Data:  "19970101T180000Z",
+			Input: &Period{},
+			Error: ErrInvalidPeriod,
+		},
+		{ // 4
+			Data:  "19970101T180000Z/",
+			Input: &Period{},
+			Error: ErrInvalidPeriod,
+		},
+		{ // 5
+			Data:  "20011240T131415/PT2W3M4S",
+			Input: &Period{},
+			Error: &time.ParseError{
+				Layout:  "20060102T150405",
+				Value:   "20011240T131415",
+				Message: ": day out of range",
+			},
+		},
+		{ // 6
+			Data:  "19970101T180000/PH30M",
+			Input: &Period{},
+			Error: ErrInvalidDuration,
+		},
+		{ // 7
+			Data:  "19970101T180000Z/19970132T070000Z",
+			Input: &Period{},
+			Error: &time.ParseError{
+				Layout:  "20060102T150405",
+				Value:   "19970132T070000",
+				Message: ": day out of range",
+			},
+		},
 	})
 }
 
