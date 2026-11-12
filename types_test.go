@@ -36,8 +36,8 @@ func testType(t *testing.T, tests []typeTest) {
 		}
 
 		if err := test.Input.decode(test.Params, test.Data); !errors.Is(err, test.Error) {
-			if errv := reflect.New(reflect.TypeOf(test.Error)); !errors.As(err, errv.Interface()) || !errors.Is(err, errv.Elem().Interface().(error)) {
-				t.Errorf("test %d: expecting error %s, got %s", n+1, test.Error, err)
+			if errv := reflect.New(reflect.TypeOf(test.Error)); !errors.As(err, errv.Interface()) || !reflect.DeepEqual(test.Error, errv.Elem().Interface().(error)) {
+				t.Errorf("test %d: expecting error %#v, got %#v", n+1, test.Error, errv.Elem().Interface())
 
 				continue
 			}
@@ -215,7 +215,7 @@ func TestDateTime(t *testing.T) {
 			Input: &DateTime{},
 			Error: &time.ParseError{
 				Layout:  "20060102T150405Z",
-				Value:   "20011240T131415",
+				Value:   "20011240T131415Z",
 				Message: ": day out of range",
 			},
 		},
@@ -333,9 +333,9 @@ func TestDuration(t *testing.T) {
 			Data:  "P18446744073709551616W",
 			Input: &Duration{},
 			Error: &strconv.NumError{
-				Func: "ParseInt",
+				Func: "ParseUint",
 				Num:  "18446744073709551616",
-				Err:  strconv.ErrSyntax,
+				Err:  strconv.ErrRange,
 			},
 		},
 		{ // 21
@@ -387,7 +387,7 @@ func TestTFloat(t *testing.T) {
 			Input: new(Float),
 			Error: &strconv.NumError{
 				Func: "ParseFloat",
-				Num:  "z",
+				Num:  "z;1",
 				Err:  strconv.ErrSyntax,
 			},
 		},
@@ -396,7 +396,7 @@ func TestTFloat(t *testing.T) {
 			Input: new(Float),
 			Error: &strconv.NumError{
 				Func: "ParseFloat",
-				Num:  "y",
+				Num:  "1;y",
 				Err:  strconv.ErrSyntax,
 			},
 		},
@@ -467,14 +467,14 @@ func TestPeriod(t *testing.T) {
 		{ // 6
 			Data:  "19970101T180000/PH30M",
 			Input: &Period{},
-			Error: ErrInvalidDuration,
+			Error: strconv.ErrSyntax,
 		},
 		{ // 7
 			Data:  "19970101T180000Z/19970132T070000Z",
 			Input: &Period{},
 			Error: &time.ParseError{
-				Layout:  "20060102T150405",
-				Value:   "19970132T070000",
+				Layout:  "20060102T150405Z",
+				Value:   "19970132T070000Z",
 				Message: ": day out of range",
 			},
 		},
@@ -1130,27 +1130,31 @@ func TestTime(t *testing.T) {
 			Data:   "131465",
 			Input:  &Time{},
 			Error: &time.ParseError{
-				Layout:  "150405",
-				Value:   "131415",
-				Message: ": day out of range",
+				Layout:     "150405",
+				Value:      "131465",
+				LayoutElem: "05",
+				Message:    ": second out of range",
 			},
 		},
 		{ // 6
 			Data:  "131465",
 			Input: &Time{},
 			Error: &time.ParseError{
-				Layout:  "150405",
-				Value:   "131415",
-				Message: ": day out of range",
+				Layout:     "150405",
+				Value:      "131465",
+				LayoutElem: "05",
+				Message:    ": second out of range",
 			},
 		},
 		{ // 7
 			Data:  "131465Z",
 			Input: &Time{},
 			Error: &time.ParseError{
-				Layout:  "150405Z",
-				Value:   "131415",
-				Message: ": day out of range",
+				Layout:     "150405Z",
+				Value:      "131465Z",
+				LayoutElem: "05",
+				ValueElem:  "Z",
+				Message:    ": second out of range",
 			},
 		},
 	})
