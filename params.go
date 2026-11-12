@@ -1189,6 +1189,7 @@ Loop:
 	for {
 		c := t.ExceptRun("^")
 		d = append(d, t.Get()...)
+
 		switch c {
 		case -1:
 			break Loop
@@ -1211,16 +1212,19 @@ Loop:
 			}
 		}
 	}
+
 	return string(d)
 }
 
 func encode6868(s string) []byte {
 	t := parser.NewStringTokeniser(s)
 	d := make([]byte, 0, len(s))
+
 Loop:
 	for {
 		c := t.ExceptRun("\n^\"")
 		d = append(d, t.Get()...)
+
 		switch c {
 		case -1:
 			break Loop
@@ -1232,6 +1236,7 @@ Loop:
 			d = append(d, '^', '\'')
 		}
 	}
+
 	return d
 }
 
