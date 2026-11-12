@@ -1097,6 +1097,8 @@ func TestTime(t *testing.T) {
 		return
 	}
 
+	_, errLocation := time.LoadLocation(".")
+
 	testType(t, []typeTest{
 		{ // 1
 			Data:   "010203",
@@ -1116,6 +1118,40 @@ func TestTime(t *testing.T) {
 			Input:  &Time{},
 			Match:  &Time{Time: time.Date(0, 1, 1, 1, 2, 3, 0, l)},
 			Output: "010203",
+		},
+		{ // 4
+			Params: map[string]string{"TZID": "."},
+			Data:   "131415",
+			Input:  &Time{},
+			Error:  errLocation,
+		},
+		{ // 5
+			Params: map[string]string{"TZID": "America/New_York"},
+			Data:   "131465",
+			Input:  &Time{},
+			Error: &time.ParseError{
+				Layout:  "150405",
+				Value:   "131415",
+				Message: ": day out of range",
+			},
+		},
+		{ // 6
+			Data:  "131465",
+			Input: &Time{},
+			Error: &time.ParseError{
+				Layout:  "150405",
+				Value:   "131415",
+				Message: ": day out of range",
+			},
+		},
+		{ // 7
+			Data:  "131465Z",
+			Input: &Time{},
+			Error: &time.ParseError{
+				Layout:  "150405Z",
+				Value:   "131415",
+				Message: ": day out of range",
+			},
 		},
 	})
 }
