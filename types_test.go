@@ -1047,6 +1047,12 @@ func TestText(t *testing.T) {
 			Input: new(Text),
 			Error: ErrInvalidText,
 		},
+		{ // 7
+			Data:   "\\x",
+			Input:  new(Text),
+			Match:  newText("\\x"),
+			Output: "\\\\x",
+		},
 	})
 }
 
