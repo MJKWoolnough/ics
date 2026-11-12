@@ -1056,6 +1056,40 @@ func TestText(t *testing.T) {
 	})
 }
 
+func TestMText(t *testing.T) {
+	newMText := func(s ...Text) *MText {
+		nt := MText(s)
+
+		return &nt
+	}
+
+	testType(t, []typeTest{
+		{ // 1
+			Data:   "",
+			Input:  new(MText),
+			Match:  newMText(""),
+			Output: "",
+		},
+		{ // 2
+			Data:   "a",
+			Input:  new(MText),
+			Match:  newMText("a"),
+			Output: "a",
+		},
+		{ // 3
+			Data:   "a,b",
+			Input:  new(MText),
+			Match:  newMText("a", "b"),
+			Output: "a,b",
+		},
+		{ // 4
+			Data:  "a;b",
+			Input: new(MText),
+			Error: ErrInvalidText,
+		},
+	})
+}
+
 func TestTime(t *testing.T) {
 	l, err := time.LoadLocation("America/New_York")
 	if err != nil {
