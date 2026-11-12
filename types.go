@@ -779,9 +779,10 @@ func (r *Recur) decode(params map[string]string, data string) error {
 					return ErrInvalidRecur
 				}
 
-				if day[0] == '+' {
+				switch day[0] {
+				case '+':
 					day = day[1:]
-				} else if day[0] == '-' {
+				case '-':
 					neg = true
 					numCheck = false
 					day = day[1:]
@@ -810,6 +811,7 @@ func (r *Recur) decode(params map[string]string, data string) error {
 						num = -num
 					}
 				}
+
 				if !numCheck || len(day) != 2 {
 					return ErrInvalidRecur
 				}
@@ -835,6 +837,7 @@ func (r *Recur) decode(params map[string]string, data string) error {
 
 				dayList[n].Occurrence = num
 			}
+
 			r.ByDay = dayList
 		case "BYMONTHDAY":
 			if r.ByMonthDay != nil {
