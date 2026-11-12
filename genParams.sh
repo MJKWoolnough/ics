@@ -35,18 +35,23 @@ source "comments.sh";
 			declare vType="";
 			declare string=false;
 			declare -a choices=();
+
 			fc="${values:0:1}";
+
 			if [ "$fc" = "*" ]; then
 				echo -n "[]";
+
 				multiple=true;
 				values="${values:1}";
 				fc="${values:0:1}";
 			fi;
+
 			if [ "$fc" = "?" ]; then
 				freeChoice=true;
 				values="${values:1}";
 				fc="${values:0:1}";
 			fi;
+
 			if [ "$fc" = '"' ]; then
 				doubleQuote=true;
 				values="${values:1}";
@@ -62,10 +67,14 @@ source "comments.sh";
 				values="${values:1}";
 				fc="${values:0:1}";
 			fi;
+
 			if [ "$fc" = "!" ]; then
 				values="${values:1}";
+
 				echo "$values";
+
 				vType="$values";
+
 				if [ "$vType" = "Boolean" ]; then
 					echo;
 					echo "// New$type returns a *Param$type for ease of use with optional values.";
@@ -80,6 +89,7 @@ source "comments.sh";
 				echo "func New$type(v Param$type) *Param$type {";
 				echo "	return &v";
 				echo "}";
+
 				if [ ! -z "$regex" ]; then
 					echo;
 					echo "var regex$type *regexp.Regexp";
@@ -91,6 +101,7 @@ source "comments.sh";
 				else
 					choices=( $(echo "$values" | tr "|" " ") );
 				fi;
+
 				case ${#choices[@]} in
 				1)
 					echo "struct{}";;
@@ -99,15 +110,21 @@ source "comments.sh";
 					echo;
 					echo "// $type constant values.";
 					echo "const (";
+
 					declare first=true;
+
 					for choice in ${choices[@]}; do
 						echo -n "	$type$(getName "$choice")";
+
 						if $first; then
 							echo -n " Param$type = iota";
+
 							first=false;
 						fi;
+
 						echo;
 					done;
+
 					echo ")";
 					echo;
 					echo "// New returns a pointer to the type (used with constants for ease of use with";
@@ -116,16 +133,21 @@ source "comments.sh";
 					echo "	return &t";
 					echo "}";;
 				esac;
+
 				choices=( $(echo "$values" | tr "|" " ") );
 			fi;
+
 			echo;
 
 			# decoder
 			echo "func (t *Param$type) decode(vs []parser.Token) error {";
+
 			declare indent="";
 			declare vName="vs[0]";
+
 			if $multiple; then
 				echo "	for _, v := range vs {";
+
 				indent="	";
 				vName="v";
 			else
@@ -134,12 +156,14 @@ source "comments.sh";
 				echo "	}";
 				echo;
 			fi;
+
 			if $doubleQuote; then
 				echo "$indent	if ${vName}.Type != tokenParamQuotedValue {";
 				echo "$indent		return fmt.Errorf(errDecodingType, c$type, ErrInvalidParam)";
 				echo "$indent	}";
 				echo;
 			fi;
+
 			if [ ! -z "$vType" ]; then
 				echo "$indent	var q $vType";
 				echo;
@@ -147,6 +171,7 @@ source "comments.sh";
 				echo "$indent		return fmt.Errorf(errDecodingType, c$type, err)";
 				echo "$indent	}";
 				echo;
+
 				if $multiple; then
 					echo "		*t = append(*t, q)";
 				else
@@ -158,15 +183,19 @@ source "comments.sh";
 				echo "	}";
 			elif [ ${#choices[@]} -gt 1 ]; then
 				echo "$indent	switch strings.ToUpper(${vName}.Data) {";
+
 				for choice in ${choices[@]}; do
 					echo "$indent	case \"$choice\":";
+
 					if $multiple; then
 						echo "		*t = append(*t, $type$(getName "$choice")";
 					else
 						echo "		*t = $type$(getName "$choice")";
 					fi;
 				done;
+
 				echo "$indent	default:";
+
 				if $freeChoice; then
 					if $multiple; then
 						echo "		*t = append(*t, {$type}Unknown)";
@@ -176,6 +205,7 @@ source "comments.sh";
 				else
 					echo "$indent		return fmt.Errorf(errDecodingType, c$type, ErrInvalidParam)";
 				fi;
+
 				echo "$indent	}";
 			else
 				if [ -z "$regex" ]; then
@@ -192,9 +222,11 @@ source "comments.sh";
 					echo "$indent	*t = Param$type(${vName}.Data)";
 				fi;
 			fi;
+
 			if $multiple; then
 				echo "	}";
 			fi;
+
 			echo;
 			echo "	return nil";
 			echo "}";
@@ -202,6 +234,7 @@ source "comments.sh";
 
 			#encoder
 			echo "func (t Param$type) encode(w writer) {";
+
 			if [ ${#choices} -eq 0 ] || $multiple; then
 				if [ "$vType" = "CALADDRESS" -o "$vType" = "URI" ]; then
 					echo "	if len(t.String()) == 0 {";
@@ -216,10 +249,13 @@ source "comments.sh";
 					echo "		return";
 					echo "	}";
 				fi;
+
 				echo;
 			fi;
+
 			echo "	w.WriteString(\";${keyword}=\")";
 			echo;
+
 			if $multiple; then
 				echo "	for n, v := range t {";
 				echo "		if n > 0 {";
@@ -229,6 +265,7 @@ source "comments.sh";
 			else
 				vName="t";
 			fi;
+
 			if [ ! -z "$vType" ]; then
 				echo "$indent	q := $vType($vName)";
 				echo;
@@ -238,14 +275,17 @@ source "comments.sh";
 				freeChoice=true;
 			elif [ ${#choices[@]} -gt 1 ]; then
 				echo "$indent	switch $vName {";
+
 				for choice in ${choices[@]}; do
 					echo "$indent	case $type$(getName "$choice"):";
 					echo "$indent		w.WriteString(\"$choice\")";
 				done;
+
 				if $freeChoice; then
 					echo "$indent	default:";
 					echo "$indent		w.WriteString(\"UNKNOWN\")";
 				fi;
+
 				echo "$indent	}";
 			else
 				if $doubleQuote; then
@@ -262,20 +302,24 @@ source "comments.sh";
 					echo "$indent	}";
 				fi;
 			fi;
+
 			if $multiple; then
 				echo "	}";
 			fi;
+
 			echo "}";
 			echo;
 
 			#validator
 			echo "func (t Param$type) valid() error {";
+
 			if [ "$vType" = "Boolean" ]; then
 				echo "	return nil";
 			elif [ ${#choices[@]} -eq 0 ] || ! $freeChoice; then
 				if $multiple; then
 					echo "	for _, v := range t {";
 				fi;
+
 				if [ ! -z "$vType" ]; then
 					if $multiple; then
 						echo "		if err := v.valid(); err != nil {";
@@ -293,14 +337,19 @@ source "comments.sh";
 				elif [ ${#choices[@]} -gt 0 ]; then
 					echo "$indent	switch $vName {";
 					echo -n "$indent	case ";
+
 					first=false;
+
 					for choice in ${choices[@]}; do
 						if $first; then
 							echo -n ", ";
 						fi;
+
 						first=true;
+
 						echo -n "$type$(getName "$choice")";
 					done;
+
 					echo ":";
 					echo "$indent	default:";
 					echo "$indent		return fmt.Errorf(errValidatingType, c$type, ErrInvalidValue)";
@@ -314,9 +363,11 @@ source "comments.sh";
 					echo "$indent		return fmt.Errorf(errValidatingType, c$type, ErrInvalidText)";
 					echo "$indent	}";
 				fi;
+
 				if $multiple; then
 					echo "	}";
 				fi;
+
 				if [ -z "$vType" ] || $multiple; then
 					echo;
 					echo "	return nil";
@@ -324,6 +375,7 @@ source "comments.sh";
 			else
 				echo "	return nil";
 			fi;
+
 			echo "}";
 			echo;
 		done;
@@ -338,6 +390,7 @@ Loop:
 	for {
 		c := t.ExceptRun("^")
 		d = append(d, t.Get()...)
+
 		switch c {
 		case -1:
 			break Loop
@@ -360,16 +413,19 @@ Loop:
 			}
 		}
 	}
+
 	return string(d)
 }
 
 func encode6868(s string) []byte {
 	t := parser.NewStringTokeniser(s)
 	d := make([]byte, 0, len(s))
+
 Loop:
 	for {
 		c := t.ExceptRun("\n^\"")
 		d = append(d, t.Get()...)
+
 		switch c {
 		case -1:
 			break Loop
@@ -381,15 +437,18 @@ Loop:
 			d = append(d, '^', '\'')
 		}
 	}
+
 	return d
 }
 
 HEREDOC
 
 	echo "func init() {";
+
 	for key in ${!regexes[@]}; do
 		echo "	regex$key = regexp.MustCompile(\"${regexes[$key]}\")";
 	done;
+
 	echo "}";
 	echo;
 	echo "// Errors.";
@@ -401,16 +460,21 @@ HEREDOC
 	echo "const (";
 	echo "	errDecodingType            = \"error decoding %s: %w\"";
 	echo "	errValidatingType          = \"error decoding %s: %w\"";
+
 	{
 		while read line; do
 			keyword="$(echo "$line" | cut -d'=' -f1)";
 			type="$(getName "$keyword")";
+
 			echo -n "	c$type";
+
 			for i in $(seq $(( 26 - ${#type} ))); do
 				echo -n " ";
 			done;
+
 			echo "= \"$type\"";
 		done;
 	} < params.gen;
+
 	echo ")";
 ) > params.go;
