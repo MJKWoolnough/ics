@@ -637,7 +637,7 @@ func TestRecur(t *testing.T) {
 			Error: ErrInvalidRecur,
 		},
 		{ // 24
-			Data:  "FREQ=SECONDLY;BYDAY=WE,+2FR,53MO,-53SU,-9TU",
+			Data:  "FREQ=SECONDLY;BYDAY=WE,+2FR,53MO,-53SU,-9TU,-7TH",
 			Input: &Recur{},
 			Match: &Recur{
 				ByDay: []DayRecur{
@@ -646,9 +646,10 @@ func TestRecur(t *testing.T) {
 					{Day: Monday, Occurrence: 53},
 					{Day: Sunday, Occurrence: -53},
 					{Day: Tuesday, Occurrence: -9},
+					{Day: Thursday, Occurrence: -7},
 				},
 			},
-			Output: "FREQ=SECONDLY;BYDAY=WE,2FR,53MO,-53SU,-9TU",
+			Output: "FREQ=SECONDLY;BYDAY=WE,2FR,53MO,-53SU,-9TU,-7TH",
 		},
 		{ // 25
 			Data:  "FREQ=SECONDLY;BYDAY=UN",
