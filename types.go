@@ -974,8 +974,6 @@ func (r *Recur) encode(w writer) {
 	comma := []byte{','}
 
 	switch r.Frequency {
-	case Secondly:
-		w.WriteString("FREQ=SECONDLY")
 	case Minutely:
 		w.WriteString("FREQ=MINUTELY")
 	case Hourly:
