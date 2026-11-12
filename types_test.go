@@ -1160,6 +1160,24 @@ func TestTime(t *testing.T) {
 	})
 }
 
+func TestURI(t *testing.T) {
+	u, _ := url.Parse("http://example.com")
+
+	testType(t, []typeTest{
+		{ // 1
+			Data:   "http://example.com",
+			Input:  new(URI),
+			Match:  &URI{*u},
+			Output: "http://example.com",
+		},
+		{ // 1
+			Data:  "http://a%:b@example.com",
+			Input: new(URI),
+			Error: url.EscapeError("%"),
+		},
+	})
+}
+
 func TestUTCOffset(t *testing.T) {
 	newUTC := func(i int) *UTCOffset {
 		u := UTCOffset(i)
