@@ -22,6 +22,7 @@ func Decode(r io.Reader) (*Calendar, error) {
 		if t.Err == io.EOF {
 			return nil, io.ErrUnexpectedEOF
 		}
+
 		return nil, t.Err
 	} else if strings.ToUpper(p.Data[0].Data) != "BEGIN" || strings.ToUpper(p.Data[len(p.Data)-1].Data) != "VCALENDAR" {
 		return nil, ErrInvalidCalendar
