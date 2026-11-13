@@ -15,6 +15,7 @@ func TestEncode(t *testing.T) {
 		t.Errorf("unexpected error: %s", err)
 		return
 	}
+
 	tests := []struct {
 		Input  *Calendar
 		Output string
@@ -468,21 +469,17 @@ func TestEncode(t *testing.T) {
 		},
 	}
 
-	var buf bytes.Buffer
 	for n, test := range tests {
-		err := Encode(&buf, test.Input)
-		if err != test.Error {
+		var buf bytes.Buffer
+
+		if err := Encode(&buf, test.Input); err != test.Error {
 			t.Errorf("test %d: expecting error %q, got %q", n+1, test.Error, err)
 		} else if str := buf.String(); str != test.Output {
 			t.Errorf("test %d: expecting calendar %s, got %s", n+1, test.Output, str)
-		} else {
-			c, err := Decode(strings.NewReader(str))
-			if err != nil {
-				t.Errorf("test %d: unexpected error decoding encoded string: %s", n+1, err)
-			} else if !reflect.DeepEqual(c, test.Input) {
-				t.Errorf("test %d: expecting calendar %s, got %s", n+1, test.Input, c)
-			}
+		} else if c, err := Decode(strings.NewReader(str)); err != nil {
+			t.Errorf("test %d: unexpected error decoding encoded string: %s", n+1, err)
+		} else if !reflect.DeepEqual(c, test.Input) {
+			t.Errorf("test %d: expecting calendar %s, got %s", n+1, test.Input, c)
 		}
-		buf.Reset()
 	}
 }
