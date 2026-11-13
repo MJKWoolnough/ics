@@ -16,19 +16,19 @@ func TestEncode(t *testing.T) {
 		return
 	}
 
-	tests := []struct {
+	for n, test := range [...]struct {
 		Input  *Calendar
 		Output string
 		Error  error
 	}{
-		{
+		{ // 1
 			Input: &Calendar{
 				ProductID: "TestDecode",
 				Version:   "2.0",
 			},
 			Output: "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:TestDecode\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 2
 			Input: &Calendar{
 				ProductID: "-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN",
 				Version:   "2.0",
@@ -88,7 +88,7 @@ func TestEncode(t *testing.T) {
 				"END:VEVENT\r\n" +
 				"END:VCALENDAR\r\n",
 		},
-		{
+		{ // 3
 			Input: &Calendar{
 				ProductID: "-//RDU Software//NONSGML HandCal//EN",
 				Version:   "2.0",
@@ -222,7 +222,7 @@ func TestEncode(t *testing.T) {
 				"END:VTIMEZONE\r\n" +
 				"END:VCALENDAR\r\n",
 		},
-		{
+		{ // 4
 			Input: &Calendar{
 				Version:   "2.0",
 				ProductID: "-//ABC Corporation//NONSGML My Product//EN",
@@ -313,7 +313,7 @@ func TestEncode(t *testing.T) {
 				"END:VTODO\r\n" +
 				"END:VCALENDAR\r\n",
 		},
-		{
+		{ // 5
 			Input: &Calendar{
 				Version:   "2.0",
 				ProductID: "-//ABC Corporation//NONSGML My Product//EN",
@@ -381,7 +381,7 @@ func TestEncode(t *testing.T) {
 				"END:VJOURNAL\r\n" +
 				"END:VCALENDAR\r\n",
 		},
-		{
+		{ // 6
 			Input: &Calendar{
 				Version:   "2.0",
 				ProductID: "-//RDU Software//NONSGML HandCal//EN",
@@ -467,9 +467,7 @@ func TestEncode(t *testing.T) {
 				"END:VFREEBUSY\r\n" +
 				"END:VCALENDAR\r\n",
 		},
-	}
-
-	for n, test := range tests {
+	} {
 		var buf bytes.Buffer
 
 		if err := Encode(&buf, test.Input); err != test.Error {
