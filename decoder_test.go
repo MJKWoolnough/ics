@@ -13,19 +13,23 @@ import (
 
 func (c Calendar) Error() string {
 	var buf bytes.Buffer
+
 	buf.WriteString("Calendar: ")
 	indentWrite(reflect.ValueOf(&c), 1, &buf)
+
 	return buf.String()
 }
 
 func indentWrite(v reflect.Value, indentLevel int, w writer) {
 	w.WriteString(v.Type().String())
 	w.WriteString(" ")
+
 	if v.Type().Kind() == reflect.Pointer {
 		if v.IsNil() {
 			w.WriteString("<nil>\n")
 			return
 		}
+
 		v = v.Elem()
 	}
 	if s, ok := v.Interface().(interface {
@@ -36,28 +40,34 @@ func indentWrite(v reflect.Value, indentLevel int, w writer) {
 		switch v.Type().Kind() {
 		case reflect.Struct:
 			w.WriteString("{\n")
+
 			for i := 0; i < v.Type().NumField(); i++ {
 				indent(w, indentLevel)
 				w.WriteString(v.Type().Field(i).Name)
 				w.WriteString(": ")
 				indentWrite(v.Field(i), indentLevel+1, w)
 			}
+
 			indent(w, indentLevel-1)
 			w.WriteString("}")
 		case reflect.String:
 			fmt.Fprintf(w, "%q", v.String())
 		case reflect.Slice:
 			w.WriteString("{")
+
 			if v.Len() > 0 {
 				w.WriteString("\n")
+
 				for i := 0; i < v.Len(); i++ {
 					indent(w, indentLevel)
 					fmt.Fprintf(w, "%d", i)
 					w.WriteString(": ")
 					indentWrite(v.Index(i), indentLevel+1, w)
 				}
+
 				indent(w, indentLevel-1)
 			}
+
 			w.WriteString("}")
 		case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int:
 			w.WriteString(v.Kind().String())
@@ -79,11 +89,13 @@ func indentWrite(v reflect.Value, indentLevel int, w writer) {
 			w.WriteString(v.Kind().String())
 		}
 	}
+
 	w.WriteString("\n")
 }
 
 func indent(w io.Writer, indentLevel int) {
 	in := [1]byte{'	'}
+
 	for i := 0; i < indentLevel; i++ {
 		w.Write(in[:])
 	}
@@ -93,8 +105,10 @@ func TestDecode(t *testing.T) {
 	tzny, err := time.LoadLocation("America/New_York")
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
+
 		return
 	}
+
 	tests := []struct {
 		Input  string
 		Output *Calendar
@@ -554,8 +568,7 @@ func TestDecode(t *testing.T) {
 	}
 
 	for n, test := range tests {
-		c, err := Decode(strings.NewReader(test.Input))
-		if err != test.Error {
+		if c, err := Decode(strings.NewReader(test.Input)); err != test.Error {
 			t.Errorf("test %d: expecting error %q, got %q", n+1, test.Error, err)
 		} else if !reflect.DeepEqual(c, test.Output) {
 			t.Errorf("test %d: expecting calendar %s, got %s", n+1, test.Output, c)
