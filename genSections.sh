@@ -10,8 +10,11 @@ declare longest=0;
 
 function addToSection() {
 	declare name="$(getName "${1%#*}")";
+
 	currSection[${#currSection[@]}]="$name ${1##*#} $2 $3 $4";
+
 	local l=${#name};
+
 	if [ $l -gt $longest ]; then
 		longest=$l;
 	fi;
@@ -22,37 +25,49 @@ function printSection() {
 
 	# type declaration
 	getComment "$sName";
+
 	declare checkRequired=false;
+
 	if [ ${#currSection[@]} -eq 0 ]; then
 		echo "type $sName struct{}";
 	else
 		echo "type $sName struct {";
+
 		IFS="$OFS";
+
 		for tline in "${currSection[@]}"; do
 			aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
 			name="${aline[0]}";
 			required=${aline[2]};
 			multiple=${aline[3]};
 			section=${aline[4]};
+
 			if $required; then
 				checkRequired=true;
 			fi;
+
 			echo -n "	$name ";
+
 			for i in $(seq $(( $longest - ${#name} ))); do
 				echo -n " ";
 			done;
+
 			if $multiple; then
 				echo -n "[]";
 			elif ! $required; then
 				echo -n "*";
 			fi;
+
 			if ! $section; then
 				echo -n "Prop";
 			fi;
+
 			echo "$name";
 		done;
+
 		echo "}";
 	fi;
+
 	echo;
 
 	# decoder
@@ -61,20 +76,26 @@ function printSection() {
 	# required bools
 	if [ ${#currSection[@]} -gt 0 ]; then
 		echo -n "	var";
+
 		declare first=false;
+
 		for tline in "${currSection[@]}"; do
 			aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
 			name="${aline[0]}";
 			required=${aline[2]};
 			multiple=${aline[3]};
+
 			if $required && ! $multiple; then
 				if $first; then
 					echo -n ",";
 				fi;
+
 				first=true;
+
 				echo -n " required$name";
 			fi;
 		done;
+
 		echo " bool";
 		echo;
 	fi;
@@ -89,9 +110,11 @@ function printSection() {
 	echo "			return fmt.Errorf(errDecodingType, c$sName, io.ErrUnexpectedEOF)";
 	echo "		}";
 	echo;
+
 	if [ ${#currSection[@]} -gt 0 ]; then
 		echo "		params := p.Data[1 : len(p.Data)-1]";
 	fi;
+
 	echo "		value := p.Data[len(p.Data)-1].Data";
 	echo;
 	echo "		switch strings.ToUpper(p.Data[0].Data) {";
@@ -106,10 +129,13 @@ function printSection() {
 		required=${aline[2]};
 		multiple=${aline[3]};
 		section=${aline[4]};
+
 		if ! $section; then
 			continue;
 		fi;
+
 		echo "			case \"$keyword\":";
+
 		if $required && ! $multiple; then
 			echo "				if required$name {";
 			echo "					return fmt.Errorf(errMultiple, c$sName, c$name)";
@@ -140,6 +166,7 @@ function printSection() {
 			echo "				}";
 		fi;
 	done;
+
 	echo "			default:";
 	echo "				if err := decodeDummy(t, n); err != nil {";
 	echo "					return fmt.Errorf(errDecodingType, c$sName, err)";
@@ -154,10 +181,13 @@ function printSection() {
 		required=${aline[2]};
 		multiple=${aline[3]};
 		section=${aline[4]};
+
 		if $section; then
 			continue;
 		fi;
+
 		echo "		case \"$keyword\":";
+
 		if $required && ! $multiple; then
 			echo "			if required$name {";
 			echo "				return fmt.Errorf(errMultiple, c$sName, c$name)";
@@ -188,12 +218,15 @@ function printSection() {
 			echo "			}";
 		fi;
 	done;
+
 	echo "		case \"END\":";
+
 	if [ "${sectionName:0:6}" = "VALARM" ]; then
 		echo "			if value != \"VALARM\" {";
 	else
 		echo "			if value != \"$sectionName\" {";
 	fi;
+
 	echo "				return fmt.Errorf(errDecodingType, c$sName, ErrInvalidEnd)";
 	echo "			}";
 	echo;
@@ -204,18 +237,23 @@ function printSection() {
 	# check required bools
 	if $checkRequired; then
 		first=false;
+
 		echo;
 		echo -n "	if";
+
 		for tline in "${currSection[@]}"; do
 			aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
 			name="${aline[0]}";
 			required=${aline[2]};
 			multiple=${aline[3]};
+
 			if $required; then
 				if $first; then
 					echo -n " ||";
 				fi;
+
 				first=true;
+
 				if $multiple; then
 					echo -n " len(s.$name) == 0";
 				else
@@ -223,6 +261,7 @@ function printSection() {
 				fi;
 			fi;
 		done;
+
 		echo " {";
 		echo "		return fmt.Errorf(errDecodingType, c$sName, ErrMissingRequired)";
 		echo "	}";
@@ -232,17 +271,22 @@ function printSection() {
 	# check other requirements
 	for req in "${requirements[@]}"; do
 		first=false;
+
 		declare second=false;
+
 		echo -n "	if";
+
 		reqs=( $req );
 		typ=${reqs[0]};
 		reqs[0]="";
 		reqs=( ${reqs[@]} );
+
 		if [ "$typ" = "AND" ]; then
 			for r in ${reqs[@]}; do
 				if $second; then
 					echo -n " &&";
 				fi;
+
 				if $first; then
 					echo -n " t == (s.$(getName "$r") == nil)";
 					second=true;
@@ -256,7 +300,9 @@ function printSection() {
 				if $first; then
 					echo -n " &&";
 				fi;
+
 				first=true;
+
 				echo -n " s.$(getName "$r") == nil";
 			done;
 		elif [ "$typ" = "ONE" ]; then
@@ -264,7 +310,9 @@ function printSection() {
 				if $first; then
 					echo -n " &&";
 				fi;
+
 				first=true;
+
 				echo -n " s.$(getName "$r") != nil";
 			done;
 		elif [ "$typ" = "ERGO" ]; then
@@ -272,6 +320,7 @@ function printSection() {
 				if $second; then
 					echo -n " || ";
 				fi;
+
 				if $first; then
 					echo -n "s.$(getName "$r") == nil";
 					second=true;
@@ -280,8 +329,10 @@ function printSection() {
 					first=true;
 				fi;
 			done;
+
 			echo -n ")";
 		fi;
+
 		echo " {";
 		echo "		return fmt.Errorf(errDecodingType, c$sName, ErrRequirementNotMet)";
 		echo "	}";
@@ -295,48 +346,60 @@ function printSection() {
 
 	# encoder
 	echo "func (s *$sName) encode(w writer) {";
+
 	if [ "${sectionName:0:6}" != "VALARM" ]; then
 		echo "	w.WriteString(\"BEGIN:$sectionName\r\n\")";
 	fi;
+
 	declare nl=false;
+
 	for tline in "${currSection[@]}"; do
 		aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
 		name="${aline[0]}";
 		required=${aline[2]};
 		multiple=${aline[3]};
+
 		if $multiple; then
 			echo;
 			echo "	for n := range s.$name {";
 			echo "		s.$name[n].encode(w)";
 			echo "	}";
+
 			nl=true;
 		elif $required; then
 			echo "	s.${name}.encode(w)";
+
 			nl=false;
 		else
 			echo;
 			echo "	if s.$name != nil {";
 			echo "		s.${name}.encode(w)";
 			echo "	}";
+
 			nl=true;
 		fi;
 	done;
+
 	if $nl; then
 		echo;
 	fi;
+
 	if [ "${sectionName:0:6}" != "VALARM" ]; then
 		echo "	w.WriteString(\"END:$sectionName\r\n\")";
 	fi;
+
 	echo "}";
 	echo;
 
 	# validator
 	echo "func (s *$sName) valid() error {";
+
 	for tline in "${currSection[@]}"; do
 		aline=( $tline ); # 0:name 1:KEYWORD 2:required 3:multiple 4:section 5:requiredAlso 6:requiredInstead
 		name="${aline[0]}";
 		required=${aline[2]};
 		multiple=${aline[3]};
+
 		if $multiple; then
 			echo "	for n := range s.$name {";
 			echo "		if err := s.$name[n].valid(); err != nil {";
@@ -356,18 +419,23 @@ function printSection() {
 				echo "	}";
 			fi;
 		fi;
+
 		echo;
 	done;
+
 	echo "	return nil";
 	echo "}";
 	echo;
+
 	currSection=();
 	requirements=();
-	IFS=$(echo);
 	longest=0;
+
+	IFS=$(echo);
 }
 
 OFS="$IFS";
+
 (
 	echo "package ics";
 	echo;
@@ -385,21 +453,28 @@ OFS="$IFS";
 
 	{
 		read sectionName;
+
 		OFS="$IFS";
 		IFS=$(echo);
+
 		while read line; do
 			if [ "${line:0:1}" != "	" ]; then
 				printSection;
+
 				sectionName="$line";
+
 				continue;
 			fi;
+
 			field="${line:1}";
 			required=false;
 			multiple=false;
 			section=false;
 			fc="${field:0:1}";
+
 			if [ "$fc" = "?" ]; then
 				field="${field:1}";
+
 				if [ ! -z "$(echo "$field" | grep "!")" ]; then
 					requirements[${#requirements}]="ONE $(echo "$field" | tr "!" " ")";
 				elif [ ! -z "$(echo "$field" | grep "+")" ]; then
@@ -409,6 +484,7 @@ OFS="$IFS";
 				elif [ ! -z "$(echo "$field" | grep "|")" ]; then
 					requirements[${#requirements}]="OR $(echo "$field" | tr "|" " ")";
 				fi;
+
 				continue;
 			elif [ "$fc" = "!" ]; then
 				required=true;
@@ -421,16 +497,20 @@ OFS="$IFS";
 				multiple=true;
 				field="${field:1}";
 			fi;
+
 			if [ "${field:0:6}" = "BEGIN:" ]; then
 				section=true;
 				field="${field:6}";
 			else
 				section=false;
 			fi;
+
 			addToSection $field $required $multiple $section;
 		done;
 	} < sections.gen;
+
 	printSection;
+
 	cat <<HEREDOC
 // decodeDummy reads unknown sections, discarding the data.
 func decodeDummy(t tokeniser, n string) error {
@@ -471,14 +551,21 @@ HEREDOC
 		if [ "${line:0:1}" = "	" -o "$line" = "VFREEBUSY" ]; then
 			continue;
 		fi;
+
 		type="$(getName $line)";
+
 		echo -n "	c$type";
+
 		IFS="$OFS";
+
 		for i in $(seq $(( 13 - ${#type} ))); do
 			echo -n " ";
 		done;
+
 		IFS="$(echo)";
+
 		echo "= \"$type\"";
 	done < sections.gen;
+
 	echo ")";
 ) > sections.go;
