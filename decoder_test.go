@@ -109,22 +109,22 @@ func TestDecode(t *testing.T) {
 		return
 	}
 
-	tests := []struct {
+	for n, test := range [...]struct {
 		Input  string
 		Output *Calendar
 		Error  error
 	}{
-		{
+		{ // 1
 			Error: io.ErrUnexpectedEOF,
 		},
-		{
+		{ // 2
 			Input: "BEGIN:VCALENDAR\r\nPRODID:TestDecode\r\nVERSION:2.0\r\nEND:VCALENDAR\r\n",
 			Output: &Calendar{
 				ProductID: "TestDecode",
 				Version:   "2.0",
 			},
 		},
-		{
+		{ // 3
 			Input: "BEGIN:VCALENDAR\r\n" +
 				"PRODID:-//xyz Corp//NONSGML PDA Calendar Version 1.0//EN\r\n" +
 				"VERSION:2.0\r\n" +
@@ -183,7 +183,7 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-		{
+		{ // 4
 			Input: "BEGIN:VCALENDAR\r\n" +
 				"PRODID:-//RDU Software//NONSGML HandCal//EN\r\n" +
 				"VERSION:2.0\r\n" +
@@ -317,7 +317,7 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-		{
+		{ // 5
 			Input: "BEGIN:VCALENDAR\r\n" +
 				"VERSION:2.0\r\n" +
 				"PRODID:-//ABC Corporation//NONSGML My Product//EN\r\n" +
@@ -409,7 +409,7 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-		{
+		{ // 6
 			Input: "BEGIN:VCALENDAR\r\n" +
 				"VERSION:2.0\r\n" +
 				"PRODID:-//ABC Corporation//NONSGML My Product//EN\r\n" +
@@ -479,7 +479,7 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-		{
+		{ // 7
 			Input: "BEGIN:VCALENDAR\r\n" +
 				"VERSION:2.0\r\n" +
 				"PRODID:-//RDU Software//NONSGML HandCal//EN\r\n" +
@@ -565,9 +565,7 @@ func TestDecode(t *testing.T) {
 				},
 			},
 		},
-	}
-
-	for n, test := range tests {
+	} {
 		if c, err := Decode(strings.NewReader(test.Input)); err != test.Error {
 			t.Errorf("test %d: expecting error %q, got %q", n+1, test.Error, err)
 		} else if !reflect.DeepEqual(c, test.Output) {
