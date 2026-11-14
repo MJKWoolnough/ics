@@ -50,6 +50,47 @@ func testParams[T params](t *testing.T, tests []paramTests[T]) {
 	}
 }
 
+func testOptions[T params](t *testing.T, outputPrefix string, options map[string]T) {
+	tests := []paramTests[T]{
+		{ // 1
+			Input: []parser.Token{},
+			Error: ErrInvalidParam,
+		},
+		{ // 2
+			Input: []parser.Token{{}, {}},
+			Error: ErrInvalidParam,
+		},
+	}
+
+	for opt, v := range options {
+		for i := range 1 << len(opt) {
+			var sb strings.Builder
+
+			for n, c := range opt {
+				if c < 'A' || c > 'Z' {
+					sb.WriteByte(byte(c))
+
+					continue
+				}
+
+				if i&(1<<n) == 0 {
+					sb.WriteByte(byte(c) | 0x20)
+				} else {
+					sb.WriteByte(byte(c) & 0xDF)
+				}
+			}
+
+			tests = append(tests, paramTests[T]{
+				Input:  []parser.Token{{Data: sb.String()}},
+				Param:  v,
+				Output: outputPrefix + string(opt),
+			})
+		}
+	}
+
+	testParams(t, tests)
+}
+
 func TestParamAlternativeRepresentation(t *testing.T) {
 	u, _ := url.Parse("http://www.example.com")
 
