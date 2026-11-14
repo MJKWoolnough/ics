@@ -163,3 +163,13 @@ func TestParamCommonName(t *testing.T) {
 		},
 	})
 }
+
+func TestParamCalendarUserType(t *testing.T) {
+	testOptions(t, ";CUTYPE=", map[string]*ParamCalendarUserType{
+		"INDIVIDUAL": new(CalendarUserTypeIndividual),
+		"GROUP":      new(CalendarUserTypeGroup),
+		"RESOURCE":   new(CalendarUserTypeResource),
+		"ROOM":       new(CalendarUserTypeRoom),
+		"UNKNOWN":    new(CalendarUserTypeUnknown),
+	})
+}
