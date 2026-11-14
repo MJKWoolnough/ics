@@ -1170,7 +1170,7 @@ func TestURI(t *testing.T) {
 			Match:  &URI{*u},
 			Output: "http://example.com",
 		},
-		{ // 1
+		{ // 2
 			Data:  "http://a%:b@example.com",
 			Input: new(URI),
 			Error: url.EscapeError("%"),
