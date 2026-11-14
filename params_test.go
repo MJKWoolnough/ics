@@ -86,3 +86,39 @@ func TestParamAlternativeRepresentation(t *testing.T) {
 		},
 	})
 }
+
+func TestParamCommonName(t *testing.T) {
+	testParams(t, []paramTests[*ParamCommonName]{
+		{
+			Input: []parser.Token{},
+			Error: ErrInvalidParam,
+		},
+		{
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: ""},
+			},
+			Param: NewCommonName(""),
+		},
+		{
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: "abc"},
+				{Type: tokenParamValue, Data: "def"},
+			},
+			Error: ErrInvalidParam,
+		},
+		{
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: "abc"},
+			},
+			Param:  NewCommonName("abc"),
+			Output: ";CN=abc",
+		},
+		{
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: "abc;"},
+			},
+			Param:  NewCommonName("abc;"),
+			Output: ";CN=\"abc;\"",
+		},
+	})
+}
