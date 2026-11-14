@@ -88,6 +88,13 @@ func testOptions[T params](t *testing.T, outputPrefix string, options map[string
 		}
 	}
 
+	if _, ok := options["UNKNOWN"]; !ok {
+		tests = append(tests, paramTests[T]{
+			Input: []parser.Token{{Data: "UnKnOwN"}},
+			Error: ErrInvalidParam,
+		})
+	}
+
 	testParams(t, tests)
 }
 
