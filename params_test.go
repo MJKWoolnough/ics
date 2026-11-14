@@ -2,6 +2,7 @@ package ics
 
 import (
 	"errors"
+	"net/url"
 	"reflect"
 	"strings"
 	"testing"
@@ -47,4 +48,41 @@ func testParams[T params](t *testing.T, tests []paramTests[T]) {
 			}
 		}
 	}
+}
+
+func TestParamAlternativeRepresentation(t *testing.T) {
+	u, _ := url.Parse("http://www.example.com")
+
+	testParams(t, []paramTests[*ParamAlternativeRepresentation]{
+		{
+			Input: []parser.Token{},
+			Error: ErrInvalidParam,
+		},
+		{
+			Input: []parser.Token{
+				{Type: tokenParamName, Data: "http://www.example.com"},
+			},
+			Error: ErrInvalidParam,
+		},
+		{
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "http://www.example.com"},
+			},
+			Param:  &ParamAlternativeRepresentation{*u},
+			Output: ";ALTREP=http://www.example.com",
+		},
+		{
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "http://www.example.com"},
+				{Type: tokenParamQuotedValue, Data: "http://www.example2.com"},
+			},
+			Error: ErrInvalidParam,
+		},
+		{
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "http://a%:b@example.com"},
+			},
+			Error: url.EscapeError("%"),
+		},
+	})
 }
