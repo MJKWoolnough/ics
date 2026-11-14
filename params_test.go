@@ -54,31 +54,31 @@ func TestParamAlternativeRepresentation(t *testing.T) {
 	u, _ := url.Parse("http://www.example.com")
 
 	testParams(t, []paramTests[*ParamAlternativeRepresentation]{
-		{
+		{ // 1
 			Input: []parser.Token{},
 			Error: ErrInvalidParam,
 		},
-		{
+		{ // 2
 			Input: []parser.Token{
 				{Type: tokenParamName, Data: "http://www.example.com"},
 			},
 			Error: ErrInvalidParam,
 		},
-		{
+		{ // 3
 			Input: []parser.Token{
 				{Type: tokenParamQuotedValue, Data: "http://www.example.com"},
 			},
 			Param:  &ParamAlternativeRepresentation{*u},
 			Output: ";ALTREP=http://www.example.com",
 		},
-		{
+		{ // 4
 			Input: []parser.Token{
 				{Type: tokenParamQuotedValue, Data: "http://www.example.com"},
 				{Type: tokenParamQuotedValue, Data: "http://www.example2.com"},
 			},
 			Error: ErrInvalidParam,
 		},
-		{
+		{ // 5
 			Input: []parser.Token{
 				{Type: tokenParamQuotedValue, Data: "http://a%:b@example.com"},
 			},
@@ -89,31 +89,31 @@ func TestParamAlternativeRepresentation(t *testing.T) {
 
 func TestParamCommonName(t *testing.T) {
 	testParams(t, []paramTests[*ParamCommonName]{
-		{
+		{ // 1
 			Input: []parser.Token{},
 			Error: ErrInvalidParam,
 		},
-		{
+		{ // 2
 			Input: []parser.Token{
 				{Type: tokenParamValue, Data: ""},
 			},
 			Param: NewCommonName(""),
 		},
-		{
+		{ // 3
 			Input: []parser.Token{
 				{Type: tokenParamValue, Data: "abc"},
 				{Type: tokenParamValue, Data: "def"},
 			},
 			Error: ErrInvalidParam,
 		},
-		{
+		{ // 4
 			Input: []parser.Token{
 				{Type: tokenParamValue, Data: "abc"},
 			},
 			Param:  NewCommonName("abc"),
 			Output: ";CN=abc",
 		},
-		{
+		{ // 5
 			Input: []parser.Token{
 				{Type: tokenParamValue, Data: "abc;"},
 			},
