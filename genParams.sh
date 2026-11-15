@@ -78,7 +78,7 @@ source "comments.sh";
 					echo;
 					echo "// New$type returns a *Param$type for ease of use with optional values.";
 					echo "func New$type(v Param$type) *Param$type {";
-					echo "	return &v";
+					echo "	return new(v)";
 					echo "}";
 				fi;
 			elif $string; then
@@ -86,7 +86,7 @@ source "comments.sh";
 				echo;
 				echo "// New$type returns a *Param$type for ease of use with optional values.";
 				echo "func New$type(v Param$type) *Param$type {";
-				echo "	return &v";
+				echo "	return new(v)";
 				echo "}";
 
 				if [ ! -z "$regex" ]; then
@@ -128,7 +128,7 @@ source "comments.sh";
 					echo "// New returns a pointer to the type (used with constants for ease of use with";
 					echo "// optional values).";
 					echo "func (t Param$type) New() *Param$type {";
-					echo "	return &t";
+					echo "	return new(t)";
 					echo "}";;
 				esac;
 
