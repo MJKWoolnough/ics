@@ -282,3 +282,38 @@ func TestParamDelagatee(t *testing.T) {
 		},
 	})
 }
+
+func TestParamDirectoryEntry(t *testing.T) {
+	testParams(t, []paramTests[*ParamDirectoryEntry]{
+		{ // 1
+			Input: []parser.Token{},
+			Error: ErrInvalidParam,
+		},
+		{ // 2
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: ""},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 3
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: ""},
+			},
+			Param: NewDirectoryEntry(""),
+		},
+		{ // 4
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "abc"},
+				{Type: tokenParamQuotedValue, Data: "def"},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 5
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "abc"},
+			},
+			Param:  NewDirectoryEntry("abc"),
+			Output: ";DIR=\"abc\"",
+		},
+	})
+}
