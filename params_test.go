@@ -231,3 +231,54 @@ func TestParamDelegator(t *testing.T) {
 		},
 	})
 }
+
+func TestParamDelagatee(t *testing.T) {
+	u1, _ := url.Parse("http://www.example.com")
+	u2, _ := url.Parse("http://www.another.com")
+
+	testParams(t, []paramTests[*ParamDelagatee]{
+		{ // 1
+			Input: []parser.Token{},
+			Param: new(ParamDelagatee),
+		},
+		{ // 2
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: ""},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 3
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "http://www.example.com"},
+				{Type: tokenParamValue, Data: ""},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 4
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "http://www.example.com"},
+			},
+			Param: &ParamDelagatee{
+				{*u1},
+			},
+			Output: ";DELEGATED-TO=http://www.example.com",
+		},
+		{ // 5
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "http://a%:@www.example.com"},
+			},
+			Error: url.EscapeError("%"),
+		},
+		{ // 6
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "http://www.example.com"},
+				{Type: tokenParamQuotedValue, Data: "http://www.another.com"},
+			},
+			Param: &ParamDelagatee{
+				{*u1},
+				{*u2},
+			},
+			Output: ";DELEGATED-TO=http://www.example.com,http://www.another.com",
+		},
+	})
+}
