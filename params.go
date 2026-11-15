@@ -62,7 +62,7 @@ type ParamCommonName string
 
 // NewCommonName returns a *ParamCommonName for ease of use with optional values.
 func NewCommonName(v ParamCommonName) *ParamCommonName {
-	return &v
+	return new(v)
 }
 
 func (t *ParamCommonName) decode(vs []parser.Token) error {
@@ -114,7 +114,7 @@ const (
 // New returns a pointer to the type (used with constants for ease of use with
 // optional values).
 func (t ParamCalendarUserType) New() *ParamCalendarUserType {
-	return &t
+	return new(t)
 }
 
 func (t *ParamCalendarUserType) decode(vs []parser.Token) error {
@@ -262,7 +262,7 @@ type ParamDirectoryEntry string
 
 // NewDirectoryEntry returns a *ParamDirectoryEntry for ease of use with optional values.
 func NewDirectoryEntry(v ParamDirectoryEntry) *ParamDirectoryEntry {
-	return &v
+	return new(v)
 }
 
 func (t *ParamDirectoryEntry) decode(vs []parser.Token) error {
@@ -311,7 +311,7 @@ const (
 // New returns a pointer to the type (used with constants for ease of use with
 // optional values).
 func (t ParamEncoding) New() *ParamEncoding {
-	return &t
+	return new(t)
 }
 
 func (t *ParamEncoding) decode(vs []parser.Token) error {
@@ -357,7 +357,7 @@ type ParamFormatType string
 
 // NewFormatType returns a *ParamFormatType for ease of use with optional values.
 func NewFormatType(v ParamFormatType) *ParamFormatType {
-	return &v
+	return new(v)
 }
 
 var regexFormatType = regexp.MustCompile("[A-Za-z0-9!#$&.+-^_]/[A-Za-z0-9!#$&.+-^_]")
@@ -415,7 +415,7 @@ const (
 // New returns a pointer to the type (used with constants for ease of use with
 // optional values).
 func (t ParamFreeBusyType) New() *ParamFreeBusyType {
-	return &t
+	return new(t)
 }
 
 func (t *ParamFreeBusyType) decode(vs []parser.Token) error {
@@ -465,7 +465,7 @@ type ParamLanguage string
 
 // NewLanguage returns a *ParamLanguage for ease of use with optional values.
 func NewLanguage(v ParamLanguage) *ParamLanguage {
-	return &v
+	return new(v)
 }
 
 func (t *ParamLanguage) decode(vs []parser.Token) error {
@@ -507,7 +507,7 @@ type ParamMember []string
 
 // NewMember returns a *ParamMember for ease of use with optional values.
 func NewMember(v ParamMember) *ParamMember {
-	return &v
+	return new(v)
 }
 
 func (t *ParamMember) decode(vs []parser.Token) error {
@@ -568,7 +568,7 @@ const (
 // New returns a pointer to the type (used with constants for ease of use with
 // optional values).
 func (t ParamParticipationStatus) New() *ParamParticipationStatus {
-	return &t
+	return new(t)
 }
 
 func (t *ParamParticipationStatus) decode(vs []parser.Token) error {
@@ -662,7 +662,7 @@ const (
 // New returns a pointer to the type (used with constants for ease of use with
 // optional values).
 func (t ParamRelated) New() *ParamRelated {
-	return &t
+	return new(t)
 }
 
 func (t *ParamRelated) decode(vs []parser.Token) error {
@@ -717,7 +717,7 @@ const (
 // New returns a pointer to the type (used with constants for ease of use with
 // optional values).
 func (t ParamRelationshipType) New() *ParamRelationshipType {
-	return &t
+	return new(t)
 }
 
 func (t *ParamRelationshipType) decode(vs []parser.Token) error {
@@ -773,7 +773,7 @@ const (
 // New returns a pointer to the type (used with constants for ease of use with
 // optional values).
 func (t ParamParticipationRole) New() *ParamParticipationRole {
-	return &t
+	return new(t)
 }
 
 func (t *ParamParticipationRole) decode(vs []parser.Token) error {
@@ -823,7 +823,7 @@ type ParamRSVP Boolean
 
 // NewRSVP returns a *ParamRSVP for ease of use with optional values.
 func NewRSVP(v ParamRSVP) *ParamRSVP {
-	return &v
+	return new(v)
 }
 
 func (t *ParamRSVP) decode(vs []parser.Token) error {
@@ -863,7 +863,7 @@ type ParamSentBy string
 
 // NewSentBy returns a *ParamSentBy for ease of use with optional values.
 func NewSentBy(v ParamSentBy) *ParamSentBy {
-	return &v
+	return new(v)
 }
 
 func (t *ParamSentBy) decode(vs []parser.Token) error {
@@ -905,7 +905,7 @@ type ParamTimezoneID string
 
 // NewTimezoneID returns a *ParamTimezoneID for ease of use with optional values.
 func NewTimezoneID(v ParamTimezoneID) *ParamTimezoneID {
-	return &v
+	return new(v)
 }
 
 func (t *ParamTimezoneID) decode(vs []parser.Token) error {
@@ -967,7 +967,7 @@ const (
 // New returns a pointer to the type (used with constants for ease of use with
 // optional values).
 func (t ParamValue) New() *ParamValue {
-	return &t
+	return new(t)
 }
 
 func (t *ParamValue) decode(vs []parser.Token) error {
@@ -1102,7 +1102,7 @@ type ParamID string
 
 // NewID returns a *ParamID for ease of use with optional values.
 func NewID(v ParamID) *ParamID {
-	return &v
+	return new(v)
 }
 
 func (t *ParamID) decode(vs []parser.Token) error {
@@ -1144,7 +1144,7 @@ type ParamAgentID string
 
 // NewAgentID returns a *ParamAgentID for ease of use with optional values.
 func NewAgentID(v ParamAgentID) *ParamAgentID {
-	return &v
+	return new(v)
 }
 
 func (t *ParamAgentID) decode(vs []parser.Token) error {
