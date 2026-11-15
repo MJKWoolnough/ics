@@ -317,3 +317,10 @@ func TestParamDirectoryEntry(t *testing.T) {
 		},
 	})
 }
+
+func TestParamEncoding(t *testing.T) {
+	testOptions(t, ";ENCODING=", map[string]*ParamEncoding{
+		"8BIT":   new(Encoding8bit),
+		"BASE64": new(EncodingBase64),
+	})
+}
