@@ -324,3 +324,39 @@ func TestParamEncoding(t *testing.T) {
 		"BASE64": new(EncodingBase64),
 	})
 }
+
+func TestParamFormatType(t *testing.T) {
+	testParams(t, []paramTests[*ParamFormatType]{
+		{ // 1
+			Input: []parser.Token{},
+			Error: ErrInvalidParam,
+		},
+		{ // 2
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: ""},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 3
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: "abc/123"},
+				{Type: tokenParamValue, Data: "def/456"},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 4
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: "abc/123"},
+			},
+			Param:  NewFormatType("abc/123"),
+			Output: ";FMTTYPE=abc/123",
+		},
+		{ // 5
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: "abc;/123"},
+			},
+			Param:  NewFormatType("abc;/123"),
+			Output: ";FMTTYPE=\"abc;/123\"",
+		},
+	})
+}
