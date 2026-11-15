@@ -360,7 +360,7 @@ func NewFormatType(v ParamFormatType) *ParamFormatType {
 	return &v
 }
 
-var regexFormatType *regexp.Regexp
+var regexFormatType = regexp.MustCompile("[A-Za-z0-9!#$&.+-^_]/[A-Za-z0-9!#$&.+-^_]")
 
 func (t *ParamFormatType) decode(vs []parser.Token) error {
 	if len(vs) != 1 {
@@ -1238,10 +1238,6 @@ Loop:
 	}
 
 	return d
-}
-
-func init() {
-	regexFormatType = regexp.MustCompile("[A-Za-z0-9!#$&.+-^_]/[A-Za-z0-9!#$&.+-^_]")
 }
 
 // Errors.
