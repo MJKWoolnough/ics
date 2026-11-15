@@ -4,7 +4,6 @@ source "names.sh";
 source "comments.sh";
 
 (
-	declare -A regexes;
 	echo "package ics";
 	echo;
 	echo "// File automatically generated with ./genParams.sh";
@@ -92,8 +91,7 @@ source "comments.sh";
 
 				if [ ! -z "$regex" ]; then
 					echo;
-					echo "var regex$type *regexp.Regexp";
-					regexes[$type]="$values";
+					echo "var regex$type = regexp.MustCompile(\"${values}\")";
 				fi;
 			else
 				if $freeChoice; then
@@ -443,14 +441,6 @@ Loop:
 
 HEREDOC
 
-	echo "func init() {";
-
-	for key in ${!regexes[@]}; do
-		echo "	regex$key = regexp.MustCompile(\"${regexes[$key]}\")";
-	done;
-
-	echo "}";
-	echo;
 	echo "// Errors.";
 	echo "var (";
 	echo "	ErrInvalidParam = errors.New(\"invalid param value\")";
