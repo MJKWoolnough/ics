@@ -360,3 +360,13 @@ func TestParamFormatType(t *testing.T) {
 		},
 	})
 }
+
+func TestParamFreeBusyType(t *testing.T) {
+	testOptions(t, ";FBTYPE=", map[string]*ParamFreeBusyType{
+		"FREE":             new(FreeBusyTypeFree),
+		"BUSY":             new(FreeBusyTypeBusy),
+		"BUSY-UNAVAILABLE": new(FreeBusyTypeBusyUnavailable),
+		"BUSY-TENTATIVE":   new(FreeBusyTypeBusyTentative),
+		"UNKNOWN":          new(FreeBusyTypeUnknown),
+	})
+}
