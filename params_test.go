@@ -381,3 +381,47 @@ func TestParamFreeBusyType(t *testing.T) {
 func TestParamLanguage(t *testing.T) {
 	testStrings[ParamLanguage](t, ";LANGUAGE=", tokenParamValue)
 }
+
+func TestParamMember(t *testing.T) {
+	testParams(t, []paramTests[*ParamMember]{
+		{ // 1
+			Input: []parser.Token{},
+			Param: new(ParamMember),
+		},
+		{ // 2
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: ""},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 3
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "abc"},
+				{Type: tokenParamValue, Data: ""},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 4
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "abc"},
+			},
+			Param:  NewMember(ParamMember{"abc"}),
+			Output: ";MEMBER=\"abc\"",
+		},
+		{ // 5
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "abc;"},
+			},
+			Param:  NewMember(ParamMember{"abc;"}),
+			Output: ";MEMBER=\"abc;\"",
+		},
+		{ // 6
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "abc"},
+				{Type: tokenParamQuotedValue, Data: "def"},
+			},
+			Param:  NewMember(ParamMember{"abc", "def"}),
+			Output: ";MEMBER=\"abc\",\"def\"",
+		},
+	})
+}
