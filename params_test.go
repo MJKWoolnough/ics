@@ -50,6 +50,45 @@ func testParams[T params](t *testing.T, tests []paramTests[T]) {
 	}
 }
 
+func testStrings[T ~string, PV interface {
+	*T
+	params
+}](t *testing.T, prefix string, req parser.TokenType) {
+	testParams(t, []paramTests[PV]{
+		{ // 1
+			Input: []parser.Token{},
+			Error: ErrInvalidParam,
+		},
+		{ // 2
+			Input: []parser.Token{
+				{Type: req, Data: ""},
+			},
+			Param: new(T("")),
+		},
+		{ // 3
+			Input: []parser.Token{
+				{Type: req, Data: "abc"},
+				{Type: req, Data: "def"},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 4
+			Input: []parser.Token{
+				{Type: req, Data: "abc"},
+			},
+			Param:  new(T("abc")),
+			Output: prefix + "abc",
+		},
+		{ // 5
+			Input: []parser.Token{
+				{Type: req, Data: "abc;"},
+			},
+			Param:  new(T("abc;")),
+			Output: prefix + "\"abc;\"",
+		},
+	})
+}
+
 func testOptions[T params](t *testing.T, outputPrefix string, options map[string]T) {
 	tests := []paramTests[T]{
 		{ // 1
@@ -136,39 +175,7 @@ func TestParamAlternativeRepresentation(t *testing.T) {
 }
 
 func TestParamCommonName(t *testing.T) {
-	testParams(t, []paramTests[*ParamCommonName]{
-		{ // 1
-			Input: []parser.Token{},
-			Error: ErrInvalidParam,
-		},
-		{ // 2
-			Input: []parser.Token{
-				{Type: tokenParamValue, Data: ""},
-			},
-			Param: NewCommonName(""),
-		},
-		{ // 3
-			Input: []parser.Token{
-				{Type: tokenParamValue, Data: "abc"},
-				{Type: tokenParamValue, Data: "def"},
-			},
-			Error: ErrInvalidParam,
-		},
-		{ // 4
-			Input: []parser.Token{
-				{Type: tokenParamValue, Data: "abc"},
-			},
-			Param:  NewCommonName("abc"),
-			Output: ";CN=abc",
-		},
-		{ // 5
-			Input: []parser.Token{
-				{Type: tokenParamValue, Data: "abc;"},
-			},
-			Param:  NewCommonName("abc;"),
-			Output: ";CN=\"abc;\"",
-		},
-	})
+	testStrings[ParamCommonName](t, ";CN=", tokenParamValue)
 }
 
 func TestParamCalendarUserType(t *testing.T) {
