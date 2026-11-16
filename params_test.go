@@ -425,3 +425,16 @@ func TestParamMember(t *testing.T) {
 		},
 	})
 }
+
+func TestParamParticipationStatus(t *testing.T) {
+	testOptions(t, ";PARTSTAT=", map[string]*ParamParticipationStatus{
+		"NEEDS-ACTION": new(ParticipationStatusNeedsAction),
+		"ACCEPTED":     new(ParticipationStatusAccepted),
+		"DECLINED":     new(ParticipationStatusDeclined),
+		"TENTATIVE":    new(ParticipationStatusTentative),
+		"DELEGATED":    new(ParticipationStatusDelegated),
+		"COMPLETED":    new(ParticipationStatusCompleted),
+		"IN-PROCESS":   new(ParticipationStatusInProcess),
+		"UNKNOWN":      new(ParticipationStatusUnknown),
+	})
+}
