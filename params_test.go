@@ -377,3 +377,7 @@ func TestParamFreeBusyType(t *testing.T) {
 		"UNKNOWN":          new(FreeBusyTypeUnknown),
 	})
 }
+
+func TestParamLanguage(t *testing.T) {
+	testStrings[ParamLanguage](t, ";LANGUAGE=", tokenParamValue)
+}
