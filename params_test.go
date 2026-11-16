@@ -54,6 +54,12 @@ func testStrings[T ~string, PV interface {
 	*T
 	params
 }](t *testing.T, prefix string, req parser.TokenType) {
+	expect := prefix + "abc"
+
+	if req == tokenParamQuotedValue {
+		expect = prefix + "\"abc\""
+	}
+
 	testParams(t, []paramTests[PV]{
 		{ // 1
 			Input: []parser.Token{},
@@ -77,7 +83,7 @@ func testStrings[T ~string, PV interface {
 				{Type: req, Data: "abc"},
 			},
 			Param:  new(T("abc")),
-			Output: prefix + "abc",
+			Output: expect,
 		},
 		{ // 5
 			Input: []parser.Token{
@@ -528,4 +534,8 @@ func TestParamRSVP(t *testing.T) {
 			Error: ErrInvalidParam,
 		},
 	})
+}
+
+func TestParamSentBy(t *testing.T) {
+	testStrings[ParamSentBy](t, ";SENT-BY=", tokenParamQuotedValue)
 }
