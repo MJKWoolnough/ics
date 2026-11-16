@@ -481,3 +481,12 @@ func TestParamRelated(t *testing.T) {
 		"END":   new(RelatedEnd),
 	})
 }
+
+func TestParamRelationshipType(t *testing.T) {
+	testOptions(t, ";RELTYPE=", map[string]*ParamRelationshipType{
+		"PARENT":  new(RelationshipTypeParent),
+		"CHILD":   new(RelationshipTypeChild),
+		"SIBLING": new(RelationshipTypeSibling),
+		"UNKNOWN": new(RelationshipTypeUnknown),
+	})
+}
