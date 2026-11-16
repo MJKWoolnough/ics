@@ -500,3 +500,32 @@ func TestParamParticipationRole(t *testing.T) {
 		"UNKNOWN":         new(ParticipationRoleUnknown),
 	})
 }
+
+func TestParamRSVP(t *testing.T) {
+	testParams(t, []paramTests[*ParamRSVP]{
+		{ // 1
+			Input: []parser.Token{},
+			Error: ErrInvalidParam,
+		},
+		{ // 2
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: "TRUE"},
+			},
+			Param:  NewRSVP(true),
+			Output: ";RSVP=TRUE",
+		},
+		{ // 3
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: "FALSE"},
+			},
+			Param: NewRSVP(false),
+		},
+		{ // 4
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: "TRUE"},
+				{Type: tokenParamValue, Data: "FALSE"},
+			},
+			Error: ErrInvalidParam,
+		},
+	})
+}
