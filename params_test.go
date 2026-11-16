@@ -438,3 +438,39 @@ func TestParamParticipationStatus(t *testing.T) {
 		"UNKNOWN":      new(ParticipationStatusUnknown),
 	})
 }
+
+func TestParamRange(t *testing.T) {
+	testParams(t, []paramTests[*ParamRange]{
+		{ // 1
+			Input: []parser.Token{},
+			Error: ErrInvalidParam,
+		},
+		{ // 2
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "abc"},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 3
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "THISANDFUTURE"},
+			},
+			Param:  new(ParamRange),
+			Output: ";RANGE=THISANDFUTURE",
+		},
+		{ // 4
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "THISANDFUTURE"},
+				{Type: tokenParamQuotedValue, Data: "THISANDFUTURE"},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 5
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: "THISANDFUTURE"},
+			},
+			Param:  new(ParamRange),
+			Output: ";RANGE=THISANDFUTURE",
+		},
+	})
+}
