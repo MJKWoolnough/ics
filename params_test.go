@@ -490,3 +490,13 @@ func TestParamRelationshipType(t *testing.T) {
 		"UNKNOWN": new(RelationshipTypeUnknown),
 	})
 }
+
+func TestParamParticipationRole(t *testing.T) {
+	testOptions(t, ";ROLE=", map[string]*ParamParticipationRole{
+		"REQ-PARTICIPANT": new(ParticipationRoleRequiredParticipant),
+		"CHAIR":           new(ParticipationRoleChair),
+		"OPT-PARTICIPANT": new(ParticipationRoleOptParticipant),
+		"NON-PARTICIPANT": new(ParticipationRoleNonParticipant),
+		"UNKNOWN":         new(ParticipationRoleUnknown),
+	})
+}
