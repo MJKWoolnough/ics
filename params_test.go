@@ -474,3 +474,10 @@ func TestParamRange(t *testing.T) {
 		},
 	})
 }
+
+func TestParamRelated(t *testing.T) {
+	testOptions(t, ";RELATED=", map[string]*ParamRelated{
+		"START": new(RelatedStart),
+		"END":   new(RelatedEnd),
+	})
+}
