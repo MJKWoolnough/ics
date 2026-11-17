@@ -550,3 +550,7 @@ func TestParamRSVP(t *testing.T) {
 func TestParamSentBy(t *testing.T) {
 	testStrings[ParamSentBy](t, ";SENT-BY=", tokenParamQuotedValue)
 }
+
+func TestParamTimezoneID(t *testing.T) {
+	testStrings[ParamTimezoneID](t, ";TZID=", tokenParamValue)
+}
