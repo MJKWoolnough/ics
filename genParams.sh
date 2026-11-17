@@ -13,7 +13,6 @@ source "comments.sh";
 	echo "	\"fmt\"";
 	echo "	\"regexp\"";
 	echo "	\"strings\"";
-	echo "	\"unicode/utf8\"";
 	echo;
 	echo "	\"vimagination.zapto.org/parser\"";
 	echo ")";
@@ -381,38 +380,42 @@ source "comments.sh";
 
 	cat <<HEREDOC
 func decode6868(s string) string {
+	var buf strings.Builder
+
 	t := parser.NewStringTokeniser(s)
-	d := make([]byte, 0, len(s))
-	var ru [4]byte
+
 Loop:
 	for {
 		c := t.ExceptRun("^")
-		d = append(d, t.Get()...)
+		buf.WriteString(t.Get())
 
 		switch c {
 		case -1:
 			break Loop
 		case '^':
 			t.Accept("^")
-			switch t.Next() {
+
+			switch b := t.Next(); b {
 			case -1:
-				d = append(d, '^')
+				buf.WriteByte('^')
+
 				break Loop
 			case 'n':
-				d = append(d, '\n')
+				buf.WriteByte('\n')
 			case '\'':
-				d = append(d, '"')
+				buf.WriteByte('"')
 			case '^':
-				d = append(d, '^')
+				buf.WriteByte('^')
 			default:
-				d = append(d, '^')
-				l := utf8.EncodeRune(ru[:], c)
-				d = append(d, ru[:l]...)
+				buf.WriteByte('^')
+				buf.WriteRune(b)
 			}
+
+			t.Get()
 		}
 	}
 
-	return string(d)
+	return buf.String()
 }
 
 func encode6868(s string) []byte {
