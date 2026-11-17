@@ -60,7 +60,7 @@ func testStrings[T ~string, PV interface {
 		expect = prefix + "\"abc\""
 	}
 
-	testParams(t, []paramTests[PV]{
+	tests := []paramTests[PV]{
 		{ // 1
 			Input: []parser.Token{},
 			Error: ErrInvalidParam,
@@ -92,7 +92,18 @@ func testStrings[T ~string, PV interface {
 			Param:  new(T("abc;")),
 			Output: prefix + "\"abc;\"",
 		},
-	})
+	}
+
+	if req == tokenParamQuotedValue {
+		tests = append(tests, paramTests[PV]{
+			Input: []parser.Token{
+				{Type: tokenParamValue, Data: ""},
+			},
+			Error: ErrInvalidParam,
+		})
+	}
+
+	testParams(t, tests)
 }
 
 func testOptions[T params](t *testing.T, outputPrefix string, options map[string]T) {
