@@ -574,3 +574,40 @@ func TestParamValue(t *testing.T) {
 		"UNKNOWN":     new(ValueUnknown),
 	})
 }
+
+func TestParamURI(t *testing.T) {
+	u, _ := url.Parse("http://www.example.com")
+
+	testParams(t, []paramTests[*ParamURI]{
+		{ // 1
+			Input: []parser.Token{},
+			Error: ErrInvalidParam,
+		},
+		{ // 2
+			Input: []parser.Token{
+				{Type: tokenParamName, Data: "http://www.example.com"},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 3
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "http://www.example.com"},
+			},
+			Param:  &ParamURI{*u},
+			Output: ";URI=http://www.example.com",
+		},
+		{ // 4
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "http://www.example.com"},
+				{Type: tokenParamQuotedValue, Data: "http://www.example2.com"},
+			},
+			Error: ErrInvalidParam,
+		},
+		{ // 5
+			Input: []parser.Token{
+				{Type: tokenParamQuotedValue, Data: "http://a%:b@example.com"},
+			},
+			Error: url.EscapeError("%"),
+		},
+	})
+}
