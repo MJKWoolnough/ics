@@ -554,3 +554,23 @@ func TestParamSentBy(t *testing.T) {
 func TestParamTimezoneID(t *testing.T) {
 	testStrings[ParamTimezoneID](t, ";TZID=", tokenParamValue)
 }
+
+func TestParamValue(t *testing.T) {
+	testOptions(t, ";VALUE=", map[string]*ParamValue{
+		"BINARY":      new(ValueBinary),
+		"BOOLEAN":     new(ValueBoolean),
+		"CAL-ADDRESS": new(ValueCalendarAddress),
+		"DATE":        new(ValueDate),
+		"DATE-TIME":   new(ValueDateTime),
+		"DURATION":    new(ValueDuration),
+		"FLOAT":       new(ValueFloat),
+		"INTEGER":     new(ValueInteger),
+		"PERIOD":      new(ValuePeriod),
+		"RECUR":       new(ValueRecur),
+		"TEXT":        new(ValueText),
+		"TIME":        new(ValueTime),
+		"URI":         new(ValueURI),
+		"UTC-OFFSET":  new(ValueUTCOffset),
+		"UNKNOWN":     new(ValueUnknown),
+	})
+}
