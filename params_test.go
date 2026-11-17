@@ -619,3 +619,42 @@ func TestParamID(t *testing.T) {
 func TestParamAgentID(t *testing.T) {
 	testStrings[ParamAgentID](t, ";AGENT-ID=", tokenParamQuotedValue)
 }
+
+func TestDecode6868(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output string
+	}{
+		{ // 1
+			Input:  "",
+			Output: "",
+		},
+		{ // 2
+			Input:  "abc",
+			Output: "abc",
+		},
+		{ // 3
+			Input:  "^n",
+			Output: "\n",
+		},
+		{ // 4
+			Input:  "^'",
+			Output: `"`,
+		},
+		{ // 5
+			Input:  "^^",
+			Output: "^",
+		},
+		{ // 6
+			Input:  "^x",
+			Output: "^x",
+		},
+		{ // 7
+			Input:  "^'Hello,^nWorld^!^'^",
+			Output: "\"Hello,\nWorld^!\"^",
+		},
+	} {
+		if out := decode6868(test.Input); out != test.Output {
+			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, out)
+		}
+	}
+}
