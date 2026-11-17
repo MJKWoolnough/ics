@@ -611,3 +611,7 @@ func TestParamURI(t *testing.T) {
 		},
 	})
 }
+
+func TestParamID(t *testing.T) {
+	testStrings[ParamID](t, ";ID=", tokenParamQuotedValue)
+}
