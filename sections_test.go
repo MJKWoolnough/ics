@@ -2,6 +2,7 @@ package ics
 
 import (
 	"errors"
+	"io"
 	"strings"
 	"testing"
 )
@@ -30,4 +31,37 @@ func testSection[T any, PT interface {
 			}
 		}
 	}
+}
+
+func TestCalendar(t *testing.T) {
+	testSection[Calendar](t, []sectionTest{
+		{
+			Error:  io.ErrUnexpectedEOF,
+			Output: "BEGIN:VCALENDAR\r\nVERSION:\r\nPRODID:\r\nEND:VCALENDAR\r\n",
+		},
+		{
+			Input:  "+",
+			Error:  ErrInvalidContentLine,
+			Output: "BEGIN:VCALENDAR\r\nVERSION:\r\nPRODID:\r\nEND:VCALENDAR\r\n",
+		},
+		{
+			Input:  "END:VCALENDAR",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VCALENDAR\r\nVERSION:\r\nPRODID:\r\nEND:VCALENDAR\r\n",
+		},
+		{
+			Input:  "VERSION:1.0\r\nEND:VCALENDAR",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:\r\nEND:VCALENDAR\r\n",
+		},
+		{
+			Input:  "PRODID:1\r\nEND:VCALENDAR",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VCALENDAR\r\nVERSION:\r\nPRODID:1\r\nEND:VCALENDAR\r\n",
+		},
+		{
+			Input:  "VERSION:1.0\r\nPRODID:1\r\nEND:VCALENDAR",
+			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:1\r\nEND:VCALENDAR\r\n",
+		},
+	})
 }
