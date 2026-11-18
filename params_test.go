@@ -658,3 +658,38 @@ func TestDecode6868(t *testing.T) {
 		}
 	}
 }
+
+func TestEncode6868(t *testing.T) {
+	for n, test := range [...]struct {
+		Input, Output string
+	}{
+		{ // 1
+			Input:  "",
+			Output: "",
+		},
+		{ // 1
+			Input:  "abc",
+			Output: "abc",
+		},
+		{ // 1
+			Input:  "\n",
+			Output: "^n",
+		},
+		{ // 1
+			Input:  "\"",
+			Output: "^'",
+		},
+		{ // 1
+			Input:  "^",
+			Output: "^^",
+		},
+		{ // 1
+			Input:  "",
+			Output: "",
+		},
+	} {
+		if out := encode6868(test.Input); string(out) != test.Output {
+			t.Errorf("test %d: expecting output %q, got %q", n+1, test.Output, out)
+		}
+	}
+}
