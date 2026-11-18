@@ -1238,6 +1238,9 @@ Loop:
 		case '"':
 			d = append(d, '^', '\'')
 		}
+
+		t.Except("")
+		t.Get()
 	}
 
 	return d
