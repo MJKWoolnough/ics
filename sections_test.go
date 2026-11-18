@@ -35,57 +35,57 @@ func testSection[T any, PT interface {
 
 func TestCalendar(t *testing.T) {
 	testSection[Calendar](t, []sectionTest{
-		{
+		{ // 1
 			Error:  io.ErrUnexpectedEOF,
 			Output: "BEGIN:VCALENDAR\r\nVERSION:\r\nPRODID:\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 2
 			Input:  "+",
 			Error:  ErrInvalidContentLine,
 			Output: "BEGIN:VCALENDAR\r\nVERSION:\r\nPRODID:\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 3
 			Input:  "END:VCALENDAR",
 			Error:  ErrMissingRequired,
 			Output: "BEGIN:VCALENDAR\r\nVERSION:\r\nPRODID:\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 4
 			Input:  "VERSION:1.0\r\nEND:VCALENDAR",
 			Error:  ErrMissingRequired,
 			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 5
 			Input:  "PRODID:1\r\nEND:VCALENDAR",
 			Error:  ErrMissingRequired,
 			Output: "BEGIN:VCALENDAR\r\nVERSION:\r\nPRODID:1\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 6
 			Input:  "VERSION:1.0\r\nPRODID:1\r\nEND:VCALENDAR",
 			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:1\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 7
 			Input:  "VERSION:1.0\r\nPRODID:1\r\nBEGIN:VEVENT\r\nDTSTAMP:19990404T020000\r\nUID:2\r\nEND:VEVENT\r\nEND:VCALENDAR",
 			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:1\r\nBEGIN:VEVENT\r\nDTSTAMP:19990404T020000\r\nUID:2\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 8
 			Input:  "VERSION:1.0\r\nPRODID:1\r\nBEGIN:VEVENT\r\nDTSTAMP:19990404T020000\r\nEND:VEVENT\r\nEND:VCALENDAR",
 			Error:  ErrMissingRequired,
 			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:1\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 9
 			Input:  "VERSION:1.0\r\nPRODID:1\r\nBEGIN:VEVENT\r\nDTSTAMP:19990404T020000\r\nUID:2\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nDTSTAMP:19990404T020000\r\nUID:3\r\nEND:VEVENT\r\nEND:VCALENDAR",
 			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:1\r\nBEGIN:VEVENT\r\nDTSTAMP:19990404T020000\r\nUID:2\r\nEND:VEVENT\r\nBEGIN:VEVENT\r\nDTSTAMP:19990404T020000\r\nUID:3\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 10
 			Input:  "VERSION:1.0\r\nPRODID:1\r\nBEGIN:VTODO\r\nDTSTAMP:19990404T020000\r\nUID:2\r\nEND:VTODO\r\nEND:VCALENDAR",
 			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:1\r\nBEGIN:VTODO\r\nDTSTAMP:19990404T020000\r\nUID:2\r\nEND:VTODO\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 11
 			Input:  "VERSION:1.0\r\nPRODID:1\r\nBEGIN:VTODO\r\nDTSTAMP:19990404T020000\r\nEND:VTODO\r\nEND:VCALENDAR",
 			Error:  ErrMissingRequired,
 			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:1\r\nEND:VCALENDAR\r\n",
 		},
-		{
+		{ // 12
 			Input:  "VERSION:1.0\r\nPRODID:1\r\nBEGIN:VTODO\r\nDTSTAMP:19990404T020000\r\nUID:2\r\nEND:VTODO\r\nBEGIN:VTODO\r\nDTSTAMP:19990404T020000\r\nUID:3\r\nEND:VTODO\r\nEND:VCALENDAR",
 			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:1\r\nBEGIN:VTODO\r\nDTSTAMP:19990404T020000\r\nUID:2\r\nEND:VTODO\r\nBEGIN:VTODO\r\nDTSTAMP:19990404T020000\r\nUID:3\r\nEND:VTODO\r\nEND:VCALENDAR\r\n",
 		},
