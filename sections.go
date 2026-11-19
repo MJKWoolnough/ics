@@ -87,7 +87,7 @@ Loop:
 			}
 		case "VERSION":
 			if requiredVersion {
-				return fmt.Errorf(errMultiple, cCalendar, cVersion)
+				return fmt.Errorf(errMultiple, cCalendar, cVersion, ErrMultiple)
 			}
 
 			requiredVersion = true
@@ -97,7 +97,7 @@ Loop:
 			}
 		case "PRODID":
 			if requiredProductID {
-				return fmt.Errorf(errMultiple, cCalendar, cProductID)
+				return fmt.Errorf(errMultiple, cCalendar, cProductID, ErrMultiple)
 			}
 
 			requiredProductID = true
@@ -259,7 +259,7 @@ Loop:
 			}
 		case "DTSTAMP":
 			if requiredDateTimeStamp {
-				return fmt.Errorf(errMultiple, cEvent, cDateTimeStamp)
+				return fmt.Errorf(errMultiple, cEvent, cDateTimeStamp, ErrMultiple)
 			}
 
 			requiredDateTimeStamp = true
@@ -269,7 +269,7 @@ Loop:
 			}
 		case "UID":
 			if requiredUID {
-				return fmt.Errorf(errMultiple, cEvent, cUID)
+				return fmt.Errorf(errMultiple, cEvent, cUID, ErrMultiple)
 			}
 
 			requiredUID = true
@@ -279,7 +279,7 @@ Loop:
 			}
 		case "DTSTART":
 			if s.DateTimeStart != nil {
-				return fmt.Errorf(errMultiple, cEvent, cDateTimeStart)
+				return fmt.Errorf(errMultiple, cEvent, cDateTimeStart, ErrMultiple)
 			}
 
 			s.DateTimeStart = new(PropDateTimeStart)
@@ -289,7 +289,7 @@ Loop:
 			}
 		case "CLASS":
 			if s.Class != nil {
-				return fmt.Errorf(errMultiple, cEvent, cClass)
+				return fmt.Errorf(errMultiple, cEvent, cClass, ErrMultiple)
 			}
 
 			s.Class = new(PropClass)
@@ -299,7 +299,7 @@ Loop:
 			}
 		case "CREATED":
 			if s.Created != nil {
-				return fmt.Errorf(errMultiple, cEvent, cCreated)
+				return fmt.Errorf(errMultiple, cEvent, cCreated, ErrMultiple)
 			}
 
 			s.Created = new(PropCreated)
@@ -309,7 +309,7 @@ Loop:
 			}
 		case "DESCRIPTION":
 			if s.Description != nil {
-				return fmt.Errorf(errMultiple, cEvent, cDescription)
+				return fmt.Errorf(errMultiple, cEvent, cDescription, ErrMultiple)
 			}
 
 			s.Description = new(PropDescription)
@@ -319,7 +319,7 @@ Loop:
 			}
 		case "GEO":
 			if s.Geo != nil {
-				return fmt.Errorf(errMultiple, cEvent, cGeo)
+				return fmt.Errorf(errMultiple, cEvent, cGeo, ErrMultiple)
 			}
 
 			s.Geo = new(PropGeo)
@@ -329,7 +329,7 @@ Loop:
 			}
 		case "LAST-MOD":
 			if s.LastModified != nil {
-				return fmt.Errorf(errMultiple, cEvent, cLastModified)
+				return fmt.Errorf(errMultiple, cEvent, cLastModified, ErrMultiple)
 			}
 
 			s.LastModified = new(PropLastModified)
@@ -339,7 +339,7 @@ Loop:
 			}
 		case "LOCATION":
 			if s.Location != nil {
-				return fmt.Errorf(errMultiple, cEvent, cLocation)
+				return fmt.Errorf(errMultiple, cEvent, cLocation, ErrMultiple)
 			}
 
 			s.Location = new(PropLocation)
@@ -349,7 +349,7 @@ Loop:
 			}
 		case "ORGANIZER":
 			if s.Organizer != nil {
-				return fmt.Errorf(errMultiple, cEvent, cOrganizer)
+				return fmt.Errorf(errMultiple, cEvent, cOrganizer, ErrMultiple)
 			}
 
 			s.Organizer = new(PropOrganizer)
@@ -359,7 +359,7 @@ Loop:
 			}
 		case "PRIORITY":
 			if s.Priority != nil {
-				return fmt.Errorf(errMultiple, cEvent, cPriority)
+				return fmt.Errorf(errMultiple, cEvent, cPriority, ErrMultiple)
 			}
 
 			s.Priority = new(PropPriority)
@@ -369,7 +369,7 @@ Loop:
 			}
 		case "SEQUENCE":
 			if s.Sequence != nil {
-				return fmt.Errorf(errMultiple, cEvent, cSequence)
+				return fmt.Errorf(errMultiple, cEvent, cSequence, ErrMultiple)
 			}
 
 			s.Sequence = new(PropSequence)
@@ -379,7 +379,7 @@ Loop:
 			}
 		case "STATUS":
 			if s.Status != nil {
-				return fmt.Errorf(errMultiple, cEvent, cStatus)
+				return fmt.Errorf(errMultiple, cEvent, cStatus, ErrMultiple)
 			}
 
 			s.Status = new(PropStatus)
@@ -389,7 +389,7 @@ Loop:
 			}
 		case "SUMMARY":
 			if s.Summary != nil {
-				return fmt.Errorf(errMultiple, cEvent, cSummary)
+				return fmt.Errorf(errMultiple, cEvent, cSummary, ErrMultiple)
 			}
 
 			s.Summary = new(PropSummary)
@@ -399,7 +399,7 @@ Loop:
 			}
 		case "TRANSP":
 			if s.TimeTransparency != nil {
-				return fmt.Errorf(errMultiple, cEvent, cTimeTransparency)
+				return fmt.Errorf(errMultiple, cEvent, cTimeTransparency, ErrMultiple)
 			}
 
 			s.TimeTransparency = new(PropTimeTransparency)
@@ -409,7 +409,7 @@ Loop:
 			}
 		case "URL":
 			if s.URL != nil {
-				return fmt.Errorf(errMultiple, cEvent, cURL)
+				return fmt.Errorf(errMultiple, cEvent, cURL, ErrMultiple)
 			}
 
 			s.URL = new(PropURL)
@@ -419,7 +419,7 @@ Loop:
 			}
 		case "RECURRENCE-ID":
 			if s.RecurrenceID != nil {
-				return fmt.Errorf(errMultiple, cEvent, cRecurrenceID)
+				return fmt.Errorf(errMultiple, cEvent, cRecurrenceID, ErrMultiple)
 			}
 
 			s.RecurrenceID = new(PropRecurrenceID)
@@ -429,7 +429,7 @@ Loop:
 			}
 		case "RRULE":
 			if s.RecurrenceRule != nil {
-				return fmt.Errorf(errMultiple, cEvent, cRecurrenceRule)
+				return fmt.Errorf(errMultiple, cEvent, cRecurrenceRule, ErrMultiple)
 			}
 
 			s.RecurrenceRule = new(PropRecurrenceRule)
@@ -439,7 +439,7 @@ Loop:
 			}
 		case "DTEND":
 			if s.DateTimeEnd != nil {
-				return fmt.Errorf(errMultiple, cEvent, cDateTimeEnd)
+				return fmt.Errorf(errMultiple, cEvent, cDateTimeEnd, ErrMultiple)
 			}
 
 			s.DateTimeEnd = new(PropDateTimeEnd)
@@ -449,7 +449,7 @@ Loop:
 			}
 		case "DURATION":
 			if s.Duration != nil {
-				return fmt.Errorf(errMultiple, cEvent, cDuration)
+				return fmt.Errorf(errMultiple, cEvent, cDuration, ErrMultiple)
 			}
 
 			s.Duration = new(PropDuration)
@@ -935,7 +935,7 @@ Loop:
 			}
 		case "DTSTAMP":
 			if requiredDateTimeStamp {
-				return fmt.Errorf(errMultiple, cTodo, cDateTimeStamp)
+				return fmt.Errorf(errMultiple, cTodo, cDateTimeStamp, ErrMultiple)
 			}
 
 			requiredDateTimeStamp = true
@@ -945,7 +945,7 @@ Loop:
 			}
 		case "UID":
 			if requiredUID {
-				return fmt.Errorf(errMultiple, cTodo, cUID)
+				return fmt.Errorf(errMultiple, cTodo, cUID, ErrMultiple)
 			}
 
 			requiredUID = true
@@ -955,7 +955,7 @@ Loop:
 			}
 		case "CLASS":
 			if s.Class != nil {
-				return fmt.Errorf(errMultiple, cTodo, cClass)
+				return fmt.Errorf(errMultiple, cTodo, cClass, ErrMultiple)
 			}
 
 			s.Class = new(PropClass)
@@ -965,7 +965,7 @@ Loop:
 			}
 		case "COMPLETED":
 			if s.Completed != nil {
-				return fmt.Errorf(errMultiple, cTodo, cCompleted)
+				return fmt.Errorf(errMultiple, cTodo, cCompleted, ErrMultiple)
 			}
 
 			s.Completed = new(PropCompleted)
@@ -975,7 +975,7 @@ Loop:
 			}
 		case "CREATED":
 			if s.Created != nil {
-				return fmt.Errorf(errMultiple, cTodo, cCreated)
+				return fmt.Errorf(errMultiple, cTodo, cCreated, ErrMultiple)
 			}
 
 			s.Created = new(PropCreated)
@@ -985,7 +985,7 @@ Loop:
 			}
 		case "DESCRIPTION":
 			if s.Description != nil {
-				return fmt.Errorf(errMultiple, cTodo, cDescription)
+				return fmt.Errorf(errMultiple, cTodo, cDescription, ErrMultiple)
 			}
 
 			s.Description = new(PropDescription)
@@ -995,7 +995,7 @@ Loop:
 			}
 		case "DTSTART":
 			if s.DateTimeStart != nil {
-				return fmt.Errorf(errMultiple, cTodo, cDateTimeStart)
+				return fmt.Errorf(errMultiple, cTodo, cDateTimeStart, ErrMultiple)
 			}
 
 			s.DateTimeStart = new(PropDateTimeStart)
@@ -1005,7 +1005,7 @@ Loop:
 			}
 		case "GEO":
 			if s.Geo != nil {
-				return fmt.Errorf(errMultiple, cTodo, cGeo)
+				return fmt.Errorf(errMultiple, cTodo, cGeo, ErrMultiple)
 			}
 
 			s.Geo = new(PropGeo)
@@ -1015,7 +1015,7 @@ Loop:
 			}
 		case "LAST-MOD":
 			if s.LastModified != nil {
-				return fmt.Errorf(errMultiple, cTodo, cLastModified)
+				return fmt.Errorf(errMultiple, cTodo, cLastModified, ErrMultiple)
 			}
 
 			s.LastModified = new(PropLastModified)
@@ -1025,7 +1025,7 @@ Loop:
 			}
 		case "LOCATION":
 			if s.Location != nil {
-				return fmt.Errorf(errMultiple, cTodo, cLocation)
+				return fmt.Errorf(errMultiple, cTodo, cLocation, ErrMultiple)
 			}
 
 			s.Location = new(PropLocation)
@@ -1035,7 +1035,7 @@ Loop:
 			}
 		case "ORGANIZER":
 			if s.Organizer != nil {
-				return fmt.Errorf(errMultiple, cTodo, cOrganizer)
+				return fmt.Errorf(errMultiple, cTodo, cOrganizer, ErrMultiple)
 			}
 
 			s.Organizer = new(PropOrganizer)
@@ -1045,7 +1045,7 @@ Loop:
 			}
 		case "PERCENT-COMPLETE":
 			if s.PercentComplete != nil {
-				return fmt.Errorf(errMultiple, cTodo, cPercentComplete)
+				return fmt.Errorf(errMultiple, cTodo, cPercentComplete, ErrMultiple)
 			}
 
 			s.PercentComplete = new(PropPercentComplete)
@@ -1055,7 +1055,7 @@ Loop:
 			}
 		case "PRIORITY":
 			if s.Priority != nil {
-				return fmt.Errorf(errMultiple, cTodo, cPriority)
+				return fmt.Errorf(errMultiple, cTodo, cPriority, ErrMultiple)
 			}
 
 			s.Priority = new(PropPriority)
@@ -1065,7 +1065,7 @@ Loop:
 			}
 		case "RECURRENCE-ID":
 			if s.RecurrenceID != nil {
-				return fmt.Errorf(errMultiple, cTodo, cRecurrenceID)
+				return fmt.Errorf(errMultiple, cTodo, cRecurrenceID, ErrMultiple)
 			}
 
 			s.RecurrenceID = new(PropRecurrenceID)
@@ -1075,7 +1075,7 @@ Loop:
 			}
 		case "SEQUENCE":
 			if s.Sequence != nil {
-				return fmt.Errorf(errMultiple, cTodo, cSequence)
+				return fmt.Errorf(errMultiple, cTodo, cSequence, ErrMultiple)
 			}
 
 			s.Sequence = new(PropSequence)
@@ -1085,7 +1085,7 @@ Loop:
 			}
 		case "STATUS":
 			if s.Status != nil {
-				return fmt.Errorf(errMultiple, cTodo, cStatus)
+				return fmt.Errorf(errMultiple, cTodo, cStatus, ErrMultiple)
 			}
 
 			s.Status = new(PropStatus)
@@ -1095,7 +1095,7 @@ Loop:
 			}
 		case "SUMMARY":
 			if s.Summary != nil {
-				return fmt.Errorf(errMultiple, cTodo, cSummary)
+				return fmt.Errorf(errMultiple, cTodo, cSummary, ErrMultiple)
 			}
 
 			s.Summary = new(PropSummary)
@@ -1105,7 +1105,7 @@ Loop:
 			}
 		case "URL":
 			if s.URL != nil {
-				return fmt.Errorf(errMultiple, cTodo, cURL)
+				return fmt.Errorf(errMultiple, cTodo, cURL, ErrMultiple)
 			}
 
 			s.URL = new(PropURL)
@@ -1115,7 +1115,7 @@ Loop:
 			}
 		case "DUE":
 			if s.Due != nil {
-				return fmt.Errorf(errMultiple, cTodo, cDue)
+				return fmt.Errorf(errMultiple, cTodo, cDue, ErrMultiple)
 			}
 
 			s.Due = new(PropDue)
@@ -1125,7 +1125,7 @@ Loop:
 			}
 		case "DURATION":
 			if s.Duration != nil {
-				return fmt.Errorf(errMultiple, cTodo, cDuration)
+				return fmt.Errorf(errMultiple, cTodo, cDuration, ErrMultiple)
 			}
 
 			s.Duration = new(PropDuration)
@@ -1600,7 +1600,7 @@ Loop:
 			}
 		case "DTSTAMP":
 			if requiredDateTimeStamp {
-				return fmt.Errorf(errMultiple, cJournal, cDateTimeStamp)
+				return fmt.Errorf(errMultiple, cJournal, cDateTimeStamp, ErrMultiple)
 			}
 
 			requiredDateTimeStamp = true
@@ -1610,7 +1610,7 @@ Loop:
 			}
 		case "UID":
 			if requiredUID {
-				return fmt.Errorf(errMultiple, cJournal, cUID)
+				return fmt.Errorf(errMultiple, cJournal, cUID, ErrMultiple)
 			}
 
 			requiredUID = true
@@ -1620,7 +1620,7 @@ Loop:
 			}
 		case "CLASS":
 			if s.Class != nil {
-				return fmt.Errorf(errMultiple, cJournal, cClass)
+				return fmt.Errorf(errMultiple, cJournal, cClass, ErrMultiple)
 			}
 
 			s.Class = new(PropClass)
@@ -1630,7 +1630,7 @@ Loop:
 			}
 		case "CREATED":
 			if s.Created != nil {
-				return fmt.Errorf(errMultiple, cJournal, cCreated)
+				return fmt.Errorf(errMultiple, cJournal, cCreated, ErrMultiple)
 			}
 
 			s.Created = new(PropCreated)
@@ -1640,7 +1640,7 @@ Loop:
 			}
 		case "DTSTART":
 			if s.DateTimeStart != nil {
-				return fmt.Errorf(errMultiple, cJournal, cDateTimeStart)
+				return fmt.Errorf(errMultiple, cJournal, cDateTimeStart, ErrMultiple)
 			}
 
 			s.DateTimeStart = new(PropDateTimeStart)
@@ -1650,7 +1650,7 @@ Loop:
 			}
 		case "LAST-MOD":
 			if s.LastModified != nil {
-				return fmt.Errorf(errMultiple, cJournal, cLastModified)
+				return fmt.Errorf(errMultiple, cJournal, cLastModified, ErrMultiple)
 			}
 
 			s.LastModified = new(PropLastModified)
@@ -1660,7 +1660,7 @@ Loop:
 			}
 		case "ORGANIZER":
 			if s.Organizer != nil {
-				return fmt.Errorf(errMultiple, cJournal, cOrganizer)
+				return fmt.Errorf(errMultiple, cJournal, cOrganizer, ErrMultiple)
 			}
 
 			s.Organizer = new(PropOrganizer)
@@ -1670,7 +1670,7 @@ Loop:
 			}
 		case "RECURRENCE-ID":
 			if s.RecurrenceID != nil {
-				return fmt.Errorf(errMultiple, cJournal, cRecurrenceID)
+				return fmt.Errorf(errMultiple, cJournal, cRecurrenceID, ErrMultiple)
 			}
 
 			s.RecurrenceID = new(PropRecurrenceID)
@@ -1680,7 +1680,7 @@ Loop:
 			}
 		case "SEQUENCE":
 			if s.Sequence != nil {
-				return fmt.Errorf(errMultiple, cJournal, cSequence)
+				return fmt.Errorf(errMultiple, cJournal, cSequence, ErrMultiple)
 			}
 
 			s.Sequence = new(PropSequence)
@@ -1690,7 +1690,7 @@ Loop:
 			}
 		case "STATUS":
 			if s.Status != nil {
-				return fmt.Errorf(errMultiple, cJournal, cStatus)
+				return fmt.Errorf(errMultiple, cJournal, cStatus, ErrMultiple)
 			}
 
 			s.Status = new(PropStatus)
@@ -1700,7 +1700,7 @@ Loop:
 			}
 		case "SUMMARY":
 			if s.Summary != nil {
-				return fmt.Errorf(errMultiple, cJournal, cSummary)
+				return fmt.Errorf(errMultiple, cJournal, cSummary, ErrMultiple)
 			}
 
 			s.Summary = new(PropSummary)
@@ -1710,7 +1710,7 @@ Loop:
 			}
 		case "URL":
 			if s.URL != nil {
-				return fmt.Errorf(errMultiple, cJournal, cURL)
+				return fmt.Errorf(errMultiple, cJournal, cURL, ErrMultiple)
 			}
 
 			s.URL = new(PropURL)
@@ -1720,7 +1720,7 @@ Loop:
 			}
 		case "RRULE":
 			if s.RecurrenceRule != nil {
-				return fmt.Errorf(errMultiple, cJournal, cRecurrenceRule)
+				return fmt.Errorf(errMultiple, cJournal, cRecurrenceRule, ErrMultiple)
 			}
 
 			s.RecurrenceRule = new(PropRecurrenceRule)
@@ -2114,7 +2114,7 @@ Loop:
 			}
 		case "DTSTAMP":
 			if requiredDateTimeStamp {
-				return fmt.Errorf(errMultiple, cFreeBusy, cDateTimeStamp)
+				return fmt.Errorf(errMultiple, cFreeBusy, cDateTimeStamp, ErrMultiple)
 			}
 
 			requiredDateTimeStamp = true
@@ -2124,7 +2124,7 @@ Loop:
 			}
 		case "UID":
 			if requiredUID {
-				return fmt.Errorf(errMultiple, cFreeBusy, cUID)
+				return fmt.Errorf(errMultiple, cFreeBusy, cUID, ErrMultiple)
 			}
 
 			requiredUID = true
@@ -2134,7 +2134,7 @@ Loop:
 			}
 		case "CONTACT":
 			if s.Contact != nil {
-				return fmt.Errorf(errMultiple, cFreeBusy, cContact)
+				return fmt.Errorf(errMultiple, cFreeBusy, cContact, ErrMultiple)
 			}
 
 			s.Contact = new(PropContact)
@@ -2144,7 +2144,7 @@ Loop:
 			}
 		case "DTSTART":
 			if s.DateTimeStart != nil {
-				return fmt.Errorf(errMultiple, cFreeBusy, cDateTimeStart)
+				return fmt.Errorf(errMultiple, cFreeBusy, cDateTimeStart, ErrMultiple)
 			}
 
 			s.DateTimeStart = new(PropDateTimeStart)
@@ -2154,7 +2154,7 @@ Loop:
 			}
 		case "DTEND":
 			if s.DateTimeEnd != nil {
-				return fmt.Errorf(errMultiple, cFreeBusy, cDateTimeEnd)
+				return fmt.Errorf(errMultiple, cFreeBusy, cDateTimeEnd, ErrMultiple)
 			}
 
 			s.DateTimeEnd = new(PropDateTimeEnd)
@@ -2164,7 +2164,7 @@ Loop:
 			}
 		case "ORGANIZER":
 			if s.Organizer != nil {
-				return fmt.Errorf(errMultiple, cFreeBusy, cOrganizer)
+				return fmt.Errorf(errMultiple, cFreeBusy, cOrganizer, ErrMultiple)
 			}
 
 			s.Organizer = new(PropOrganizer)
@@ -2174,7 +2174,7 @@ Loop:
 			}
 		case "URL":
 			if s.URL != nil {
-				return fmt.Errorf(errMultiple, cFreeBusy, cURL)
+				return fmt.Errorf(errMultiple, cFreeBusy, cURL, ErrMultiple)
 			}
 
 			s.URL = new(PropURL)
@@ -2390,7 +2390,7 @@ Loop:
 			}
 		case "TZID":
 			if requiredTimezoneID {
-				return fmt.Errorf(errMultiple, cTimezone, cTimezoneID)
+				return fmt.Errorf(errMultiple, cTimezone, cTimezoneID, ErrMultiple)
 			}
 
 			requiredTimezoneID = true
@@ -2400,7 +2400,7 @@ Loop:
 			}
 		case "LAST-MOD":
 			if s.LastModified != nil {
-				return fmt.Errorf(errMultiple, cTimezone, cLastModified)
+				return fmt.Errorf(errMultiple, cTimezone, cLastModified, ErrMultiple)
 			}
 
 			s.LastModified = new(PropLastModified)
@@ -2410,7 +2410,7 @@ Loop:
 			}
 		case "TZURL":
 			if s.TimezoneURL != nil {
-				return fmt.Errorf(errMultiple, cTimezone, cTimezoneURL)
+				return fmt.Errorf(errMultiple, cTimezone, cTimezoneURL, ErrMultiple)
 			}
 
 			s.TimezoneURL = new(PropTimezoneURL)
@@ -2529,7 +2529,7 @@ Loop:
 			}
 		case "DTSTART":
 			if requiredDateTimeStart {
-				return fmt.Errorf(errMultiple, cStandard, cDateTimeStart)
+				return fmt.Errorf(errMultiple, cStandard, cDateTimeStart, ErrMultiple)
 			}
 
 			requiredDateTimeStart = true
@@ -2539,7 +2539,7 @@ Loop:
 			}
 		case "TZOFFSETTO":
 			if requiredTimezoneOffsetTo {
-				return fmt.Errorf(errMultiple, cStandard, cTimezoneOffsetTo)
+				return fmt.Errorf(errMultiple, cStandard, cTimezoneOffsetTo, ErrMultiple)
 			}
 
 			requiredTimezoneOffsetTo = true
@@ -2549,7 +2549,7 @@ Loop:
 			}
 		case "TZOFFSETFROM":
 			if requiredTimezoneOffsetFrom {
-				return fmt.Errorf(errMultiple, cStandard, cTimezoneOffsetFrom)
+				return fmt.Errorf(errMultiple, cStandard, cTimezoneOffsetFrom, ErrMultiple)
 			}
 
 			requiredTimezoneOffsetFrom = true
@@ -2559,7 +2559,7 @@ Loop:
 			}
 		case "RRULE":
 			if s.RecurrenceRule != nil {
-				return fmt.Errorf(errMultiple, cStandard, cRecurrenceRule)
+				return fmt.Errorf(errMultiple, cStandard, cRecurrenceRule, ErrMultiple)
 			}
 
 			s.RecurrenceRule = new(PropRecurrenceRule)
@@ -2708,7 +2708,7 @@ Loop:
 			}
 		case "DTSTART":
 			if requiredDateTimeStart {
-				return fmt.Errorf(errMultiple, cDaylight, cDateTimeStart)
+				return fmt.Errorf(errMultiple, cDaylight, cDateTimeStart, ErrMultiple)
 			}
 
 			requiredDateTimeStart = true
@@ -2718,7 +2718,7 @@ Loop:
 			}
 		case "TZOFFSETTO":
 			if requiredTimezoneOffsetTo {
-				return fmt.Errorf(errMultiple, cDaylight, cTimezoneOffsetTo)
+				return fmt.Errorf(errMultiple, cDaylight, cTimezoneOffsetTo, ErrMultiple)
 			}
 
 			requiredTimezoneOffsetTo = true
@@ -2728,7 +2728,7 @@ Loop:
 			}
 		case "TZOFFSETFROM":
 			if requiredTimezoneOffsetFrom {
-				return fmt.Errorf(errMultiple, cDaylight, cTimezoneOffsetFrom)
+				return fmt.Errorf(errMultiple, cDaylight, cTimezoneOffsetFrom, ErrMultiple)
 			}
 
 			requiredTimezoneOffsetFrom = true
@@ -2738,7 +2738,7 @@ Loop:
 			}
 		case "RRULE":
 			if s.RecurrenceRule != nil {
-				return fmt.Errorf(errMultiple, cDaylight, cRecurrenceRule)
+				return fmt.Errorf(errMultiple, cDaylight, cRecurrenceRule, ErrMultiple)
 			}
 
 			s.RecurrenceRule = new(PropRecurrenceRule)
@@ -2893,7 +2893,7 @@ Loop:
 			}
 		case "TRIGGER":
 			if requiredTrigger {
-				return fmt.Errorf(errMultiple, cAlarmAudio, cTrigger)
+				return fmt.Errorf(errMultiple, cAlarmAudio, cTrigger, ErrMultiple)
 			}
 
 			requiredTrigger = true
@@ -2903,7 +2903,7 @@ Loop:
 			}
 		case "DURATION":
 			if s.Duration != nil {
-				return fmt.Errorf(errMultiple, cAlarmAudio, cDuration)
+				return fmt.Errorf(errMultiple, cAlarmAudio, cDuration, ErrMultiple)
 			}
 
 			s.Duration = new(PropDuration)
@@ -2913,7 +2913,7 @@ Loop:
 			}
 		case "REPEAT":
 			if s.Repeat != nil {
-				return fmt.Errorf(errMultiple, cAlarmAudio, cRepeat)
+				return fmt.Errorf(errMultiple, cAlarmAudio, cRepeat, ErrMultiple)
 			}
 
 			s.Repeat = new(PropRepeat)
@@ -2931,7 +2931,7 @@ Loop:
 			s.Attachment = append(s.Attachment, e)
 		case "UID":
 			if s.UID != nil {
-				return fmt.Errorf(errMultiple, cAlarmAudio, cUID)
+				return fmt.Errorf(errMultiple, cAlarmAudio, cUID, ErrMultiple)
 			}
 
 			s.UID = new(PropUID)
@@ -2949,7 +2949,7 @@ Loop:
 			s.AlarmAgent = append(s.AlarmAgent, e)
 		case "STATUS":
 			if s.AlarmStatus != nil {
-				return fmt.Errorf(errMultiple, cAlarmAudio, cAlarmStatus)
+				return fmt.Errorf(errMultiple, cAlarmAudio, cAlarmStatus, ErrMultiple)
 			}
 
 			s.AlarmStatus = new(PropAlarmStatus)
@@ -2967,7 +2967,7 @@ Loop:
 			s.LastTriggered = append(s.LastTriggered, e)
 		case "ACKNOWLEDGED":
 			if s.Acknowledged != nil {
-				return fmt.Errorf(errMultiple, cAlarmAudio, cAcknowledged)
+				return fmt.Errorf(errMultiple, cAlarmAudio, cAcknowledged, ErrMultiple)
 			}
 
 			s.Acknowledged = new(PropAcknowledged)
@@ -2977,7 +2977,7 @@ Loop:
 			}
 		case "PROXIMITY":
 			if s.Proximity != nil {
-				return fmt.Errorf(errMultiple, cAlarmAudio, cProximity)
+				return fmt.Errorf(errMultiple, cAlarmAudio, cProximity, ErrMultiple)
 			}
 
 			s.Proximity = new(PropProximity)
@@ -2995,7 +2995,7 @@ Loop:
 			s.GeoLocation = append(s.GeoLocation, e)
 		case "RELATED-TO":
 			if s.RelatedTo != nil {
-				return fmt.Errorf(errMultiple, cAlarmAudio, cRelatedTo)
+				return fmt.Errorf(errMultiple, cAlarmAudio, cRelatedTo, ErrMultiple)
 			}
 
 			s.RelatedTo = new(PropRelatedTo)
@@ -3005,7 +3005,7 @@ Loop:
 			}
 		case "DEFAULT-ALARM":
 			if s.DefaultAlarm != nil {
-				return fmt.Errorf(errMultiple, cAlarmAudio, cDefaultAlarm)
+				return fmt.Errorf(errMultiple, cAlarmAudio, cDefaultAlarm, ErrMultiple)
 			}
 
 			s.DefaultAlarm = new(PropDefaultAlarm)
@@ -3208,7 +3208,7 @@ Loop:
 			}
 		case "DESCRIPTION":
 			if requiredDescription {
-				return fmt.Errorf(errMultiple, cAlarmDisplay, cDescription)
+				return fmt.Errorf(errMultiple, cAlarmDisplay, cDescription, ErrMultiple)
 			}
 
 			requiredDescription = true
@@ -3218,7 +3218,7 @@ Loop:
 			}
 		case "TRIGGER":
 			if requiredTrigger {
-				return fmt.Errorf(errMultiple, cAlarmDisplay, cTrigger)
+				return fmt.Errorf(errMultiple, cAlarmDisplay, cTrigger, ErrMultiple)
 			}
 
 			requiredTrigger = true
@@ -3228,7 +3228,7 @@ Loop:
 			}
 		case "DURATION":
 			if s.Duration != nil {
-				return fmt.Errorf(errMultiple, cAlarmDisplay, cDuration)
+				return fmt.Errorf(errMultiple, cAlarmDisplay, cDuration, ErrMultiple)
 			}
 
 			s.Duration = new(PropDuration)
@@ -3238,7 +3238,7 @@ Loop:
 			}
 		case "REPEAT":
 			if s.Repeat != nil {
-				return fmt.Errorf(errMultiple, cAlarmDisplay, cRepeat)
+				return fmt.Errorf(errMultiple, cAlarmDisplay, cRepeat, ErrMultiple)
 			}
 
 			s.Repeat = new(PropRepeat)
@@ -3248,7 +3248,7 @@ Loop:
 			}
 		case "UID":
 			if s.UID != nil {
-				return fmt.Errorf(errMultiple, cAlarmDisplay, cUID)
+				return fmt.Errorf(errMultiple, cAlarmDisplay, cUID, ErrMultiple)
 			}
 
 			s.UID = new(PropUID)
@@ -3266,7 +3266,7 @@ Loop:
 			s.AlarmAgent = append(s.AlarmAgent, e)
 		case "STATUS":
 			if s.AlarmStatus != nil {
-				return fmt.Errorf(errMultiple, cAlarmDisplay, cAlarmStatus)
+				return fmt.Errorf(errMultiple, cAlarmDisplay, cAlarmStatus, ErrMultiple)
 			}
 
 			s.AlarmStatus = new(PropAlarmStatus)
@@ -3284,7 +3284,7 @@ Loop:
 			s.LastTriggered = append(s.LastTriggered, e)
 		case "ACKNOWLEDGED":
 			if s.Acknowledged != nil {
-				return fmt.Errorf(errMultiple, cAlarmDisplay, cAcknowledged)
+				return fmt.Errorf(errMultiple, cAlarmDisplay, cAcknowledged, ErrMultiple)
 			}
 
 			s.Acknowledged = new(PropAcknowledged)
@@ -3294,7 +3294,7 @@ Loop:
 			}
 		case "PROXIMITY":
 			if s.Proximity != nil {
-				return fmt.Errorf(errMultiple, cAlarmDisplay, cProximity)
+				return fmt.Errorf(errMultiple, cAlarmDisplay, cProximity, ErrMultiple)
 			}
 
 			s.Proximity = new(PropProximity)
@@ -3312,7 +3312,7 @@ Loop:
 			s.GeoLocation = append(s.GeoLocation, e)
 		case "RELATED-TO":
 			if s.RelatedTo != nil {
-				return fmt.Errorf(errMultiple, cAlarmDisplay, cRelatedTo)
+				return fmt.Errorf(errMultiple, cAlarmDisplay, cRelatedTo, ErrMultiple)
 			}
 
 			s.RelatedTo = new(PropRelatedTo)
@@ -3322,7 +3322,7 @@ Loop:
 			}
 		case "DEFAULT-ALARM":
 			if s.DefaultAlarm != nil {
-				return fmt.Errorf(errMultiple, cAlarmDisplay, cDefaultAlarm)
+				return fmt.Errorf(errMultiple, cAlarmDisplay, cDefaultAlarm, ErrMultiple)
 			}
 
 			s.DefaultAlarm = new(PropDefaultAlarm)
@@ -3522,7 +3522,7 @@ Loop:
 			}
 		case "DESCRIPTION":
 			if requiredDescription {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cDescription)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cDescription, ErrMultiple)
 			}
 
 			requiredDescription = true
@@ -3532,7 +3532,7 @@ Loop:
 			}
 		case "TRIGGER":
 			if requiredTrigger {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cTrigger)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cTrigger, ErrMultiple)
 			}
 
 			requiredTrigger = true
@@ -3542,7 +3542,7 @@ Loop:
 			}
 		case "SUMMARY":
 			if requiredSummary {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cSummary)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cSummary, ErrMultiple)
 			}
 
 			requiredSummary = true
@@ -3552,7 +3552,7 @@ Loop:
 			}
 		case "ATTENDEE":
 			if s.Attendee != nil {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cAttendee)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cAttendee, ErrMultiple)
 			}
 
 			s.Attendee = new(PropAttendee)
@@ -3562,7 +3562,7 @@ Loop:
 			}
 		case "DURATION":
 			if s.Duration != nil {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cDuration)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cDuration, ErrMultiple)
 			}
 
 			s.Duration = new(PropDuration)
@@ -3572,7 +3572,7 @@ Loop:
 			}
 		case "REPEAT":
 			if s.Repeat != nil {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cRepeat)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cRepeat, ErrMultiple)
 			}
 
 			s.Repeat = new(PropRepeat)
@@ -3582,7 +3582,7 @@ Loop:
 			}
 		case "UID":
 			if s.UID != nil {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cUID)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cUID, ErrMultiple)
 			}
 
 			s.UID = new(PropUID)
@@ -3600,7 +3600,7 @@ Loop:
 			s.AlarmAgent = append(s.AlarmAgent, e)
 		case "STATUS":
 			if s.AlarmStatus != nil {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cAlarmStatus)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cAlarmStatus, ErrMultiple)
 			}
 
 			s.AlarmStatus = new(PropAlarmStatus)
@@ -3618,7 +3618,7 @@ Loop:
 			s.LastTriggered = append(s.LastTriggered, e)
 		case "ACKNOWLEDGED":
 			if s.Acknowledged != nil {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cAcknowledged)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cAcknowledged, ErrMultiple)
 			}
 
 			s.Acknowledged = new(PropAcknowledged)
@@ -3628,7 +3628,7 @@ Loop:
 			}
 		case "PROXIMITY":
 			if s.Proximity != nil {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cProximity)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cProximity, ErrMultiple)
 			}
 
 			s.Proximity = new(PropProximity)
@@ -3646,7 +3646,7 @@ Loop:
 			s.GeoLocation = append(s.GeoLocation, e)
 		case "RELATED-TO":
 			if s.RelatedTo != nil {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cRelatedTo)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cRelatedTo, ErrMultiple)
 			}
 
 			s.RelatedTo = new(PropRelatedTo)
@@ -3656,7 +3656,7 @@ Loop:
 			}
 		case "DEFAULT-ALARM":
 			if s.DefaultAlarm != nil {
-				return fmt.Errorf(errMultiple, cAlarmEmail, cDefaultAlarm)
+				return fmt.Errorf(errMultiple, cAlarmEmail, cDefaultAlarm, ErrMultiple)
 			}
 
 			s.DefaultAlarm = new(PropDefaultAlarm)
@@ -3872,7 +3872,7 @@ Loop:
 			}
 		case "URI":
 			if requiredURI {
-				return fmt.Errorf(errMultiple, cAlarmURI, cURI)
+				return fmt.Errorf(errMultiple, cAlarmURI, cURI, ErrMultiple)
 			}
 
 			requiredURI = true
@@ -3882,7 +3882,7 @@ Loop:
 			}
 		case "DURATION":
 			if s.Duration != nil {
-				return fmt.Errorf(errMultiple, cAlarmURI, cDuration)
+				return fmt.Errorf(errMultiple, cAlarmURI, cDuration, ErrMultiple)
 			}
 
 			s.Duration = new(PropDuration)
@@ -3892,7 +3892,7 @@ Loop:
 			}
 		case "REPEAT":
 			if s.Repeat != nil {
-				return fmt.Errorf(errMultiple, cAlarmURI, cRepeat)
+				return fmt.Errorf(errMultiple, cAlarmURI, cRepeat, ErrMultiple)
 			}
 
 			s.Repeat = new(PropRepeat)
@@ -3902,7 +3902,7 @@ Loop:
 			}
 		case "UID":
 			if s.UID != nil {
-				return fmt.Errorf(errMultiple, cAlarmURI, cUID)
+				return fmt.Errorf(errMultiple, cAlarmURI, cUID, ErrMultiple)
 			}
 
 			s.UID = new(PropUID)
@@ -3920,7 +3920,7 @@ Loop:
 			s.AlarmAgent = append(s.AlarmAgent, e)
 		case "STATUS":
 			if s.AlarmStatus != nil {
-				return fmt.Errorf(errMultiple, cAlarmURI, cAlarmStatus)
+				return fmt.Errorf(errMultiple, cAlarmURI, cAlarmStatus, ErrMultiple)
 			}
 
 			s.AlarmStatus = new(PropAlarmStatus)
@@ -3938,7 +3938,7 @@ Loop:
 			s.LastTriggered = append(s.LastTriggered, e)
 		case "ACKNOWLEDGED":
 			if s.Acknowledged != nil {
-				return fmt.Errorf(errMultiple, cAlarmURI, cAcknowledged)
+				return fmt.Errorf(errMultiple, cAlarmURI, cAcknowledged, ErrMultiple)
 			}
 
 			s.Acknowledged = new(PropAcknowledged)
@@ -3948,7 +3948,7 @@ Loop:
 			}
 		case "PROXIMITY":
 			if s.Proximity != nil {
-				return fmt.Errorf(errMultiple, cAlarmURI, cProximity)
+				return fmt.Errorf(errMultiple, cAlarmURI, cProximity, ErrMultiple)
 			}
 
 			s.Proximity = new(PropProximity)
@@ -3966,7 +3966,7 @@ Loop:
 			s.GeoLocation = append(s.GeoLocation, e)
 		case "RELATED-TO":
 			if s.RelatedTo != nil {
-				return fmt.Errorf(errMultiple, cAlarmURI, cRelatedTo)
+				return fmt.Errorf(errMultiple, cAlarmURI, cRelatedTo, ErrMultiple)
 			}
 
 			s.RelatedTo = new(PropRelatedTo)
@@ -3976,7 +3976,7 @@ Loop:
 			}
 		case "DEFAULT-ALARM":
 			if s.DefaultAlarm != nil {
-				return fmt.Errorf(errMultiple, cAlarmURI, cDefaultAlarm)
+				return fmt.Errorf(errMultiple, cAlarmURI, cDefaultAlarm, ErrMultiple)
 			}
 
 			s.DefaultAlarm = new(PropDefaultAlarm)
@@ -4202,10 +4202,11 @@ var (
 	ErrInvalidEnd        = errors.New("invalid end of section")
 	ErrMissingRequired   = errors.New("required property missing")
 	ErrRequirementNotMet = errors.New("requirement not met")
+	ErrMultiple          = errors.New("more than one section parsed")
 )
 
 const (
-	errMultiple   = "error decoding %s: multiple %s"
+	errMultiple   = "decoding %s->%s: %w"
 	cCalendar     = "Calendar"
 	cEvent        = "Event"
 	cTodo         = "Todo"
