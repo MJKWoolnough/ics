@@ -3,6 +3,7 @@ package ics
 import (
 	"errors"
 	"io"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -20,8 +21,12 @@ func testSection[T any, PT interface {
 		var section PT = new(T)
 
 		if err := section.decode(newTokeniser(strings.NewReader(test.Input))); !errors.Is(err, test.Error) {
-			t.Errorf("test %d: expecting error %v, got %v", n+1, test.Error, err)
-		} else {
+			if errv := reflect.New(reflect.TypeOf(test.Error)); !errors.As(err, errv.Interface()) || !reflect.DeepEqual(test.Error, errv.Elem().Interface().(error)) {
+				t.Errorf("test %d: expecting error %v, got %v", n+1, test.Error, err)
+			}
+		}
+
+		if test.Error == nil {
 			var buf strings.Builder
 
 			section.encode(&buf)
