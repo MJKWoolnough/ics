@@ -164,3 +164,36 @@ func TestCalendar(t *testing.T) {
 		},
 	})
 }
+
+func TestEvent(t *testing.T) {
+	testSection[Event](t, []sectionTest{
+		{ // 1
+			Error:  io.ErrUnexpectedEOF,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:00010101T000000Z\r\nUID:\r\nEND:VEVENT\r\n",
+		},
+		{ // 2
+			Input:  "+",
+			Error:  ErrInvalidContentLine,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:00010101T000000Z\r\nUID:\r\nEND:VEVENT\r\n",
+		},
+		{ // 3
+			Input:  "END:VEVENT",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:00010101T000000Z\r\nUID:\r\nEND:VEVENT\r\n",
+		},
+		{ // 4
+			Input:  "DTSTAMP:20261119T200528Z\r\nEND:VEVENT",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:\r\nEND:VEVENT\r\n",
+		},
+		{ // 5
+			Input:  "UID:1\r\nEND:VEVENT",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:00010101T000000Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
+		{ // 6
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
+	})
+}
