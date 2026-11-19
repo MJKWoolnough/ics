@@ -138,7 +138,7 @@ function printSection() {
 
 		if $required && ! $multiple; then
 			echo "				if required$name {";
-			echo "					return fmt.Errorf(errMultiple, c$sName, c$name)";
+			echo "					return fmt.Errorf(errMultiple, c$sName, c$name, ErrMultiple)";
 			echo "				}";
 			echo;
 			echo "				required$name = true";
@@ -156,7 +156,7 @@ function printSection() {
 			echo "				s.$name = append(s.$name, e)";
 		else
 			echo "				if s.$name != nil {";
-			echo "					return fmt.Errorf(errMultiple, c$sName, c$name)";
+			echo "					return fmt.Errorf(errMultiple, c$sName, c$name, ErrMultiple)";
 			echo "				}";
 			echo;
 			echo "				s.$name = new($name)";
@@ -190,7 +190,7 @@ function printSection() {
 
 		if $required && ! $multiple; then
 			echo "			if required$name {";
-			echo "				return fmt.Errorf(errMultiple, c$sName, c$name)";
+			echo "				return fmt.Errorf(errMultiple, c$sName, c$name, ErrMultiple)";
 			echo "			}";
 			echo;
 			echo "			required$name = true";
@@ -208,7 +208,7 @@ function printSection() {
 			echo "			s.$name = append(s.$name, e)";
 		else
 			echo "			if s.$name != nil {";
-			echo "				return fmt.Errorf(errMultiple, c$sName, c$name)";
+			echo "				return fmt.Errorf(errMultiple, c$sName, c$name, ErrMultiple)";
 			echo "			}";
 			echo;
 			echo "			s.$name = new(Prop$name)";
@@ -542,10 +542,11 @@ var (
 	ErrInvalidEnd        = errors.New("invalid end of section")
 	ErrMissingRequired   = errors.New("required property missing")
 	ErrRequirementNotMet = errors.New("requirement not met")
+	ErrMultiple          = errors.New("more than one section parsed")
 )
 
 const (
-	errMultiple   = "error decoding %s: multiple %s"
+	errMultiple   = "decoding %s->%s: %w"
 HEREDOC
 	while read line; do
 		if [ "${line:0:1}" = "	" -o "$line" = "VFREEBUSY" ]; then
