@@ -157,5 +157,10 @@ func TestCalendar(t *testing.T) {
 			Error:  ErrMultiple,
 			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:1\r\nEND:VCALENDAR\r\n",
 		},
+		{ // 28
+			Input:  "VERSION:1.0\r\nPRODID:1\r\nEND:VCALENDA",
+			Error:  ErrInvalidEnd,
+			Output: "BEGIN:VCALENDAR\r\nVERSION:1.0\r\nPRODID:1\r\nEND:VCALENDAR\r\n",
+		},
 	})
 }
