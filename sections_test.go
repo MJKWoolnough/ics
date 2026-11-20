@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 type sectionTest struct {
@@ -221,6 +222,20 @@ func TestEvent(t *testing.T) {
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:UNKNOWN\r\nEND:VEVENT",
 			Error:  ErrInvalidEnd,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
+		{ // 12
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDTSTAMP:20250403T01020304Z\r\nEND:VEVENT",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
+		{ // 13
+			Input: "DTSTAMP:20011240T131415\r\nUID:1\r\nEND:VEVENT",
+			Error: &time.ParseError{
+				Layout:  "20060102T150405",
+				Value:   "20011240T131415",
+				Message: ": day out of range",
+			},
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:\r\nUID:\r\nEND:VEVENT\r\n",
 		},
 	})
 }
