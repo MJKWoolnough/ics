@@ -22,7 +22,9 @@ func testSection[T any, PT interface {
 		var section PT = new(T)
 
 		if err := section.decode(newTokeniser(strings.NewReader(test.Input))); !errors.Is(err, test.Error) {
-			if errv := reflect.New(reflect.TypeOf(test.Error)); !errors.As(err, errv.Interface()) || !reflect.DeepEqual(test.Error, errv.Elem().Interface().(error)) {
+			if test.Error == nil {
+				t.Errorf("test %d: expecting nil error,  got %v", n+1, err)
+			} else if errv := reflect.New(reflect.TypeOf(test.Error)); !errors.As(err, errv.Interface()) || !reflect.DeepEqual(test.Error, errv.Elem().Interface().(error)) {
 				t.Errorf("test %d: expecting error %v, got %v", n+1, test.Error, err)
 			}
 		}
