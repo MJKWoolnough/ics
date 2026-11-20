@@ -313,5 +313,19 @@ func TestEvent(t *testing.T) {
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
+		{ // 28
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nEND:VEVENT\r\n",
+		},
+		{ // 29
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nGEO:3;4\r\nEND:VEVENT",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nEND:VEVENT\r\n",
+		},
+		{ // 30
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1\r\nEND:VEVENT",
+			Error:  ErrInvalidTFloat,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
 	})
 }
