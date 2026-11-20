@@ -327,7 +327,7 @@ Loop:
 			if err := s.Geo.decode(params, value); err != nil {
 				return fmt.Errorf(errDecodingProp, cEvent, cGeo, err)
 			}
-		case "LAST-MOD":
+		case "LAST-MODIFIED":
 			if s.LastModified != nil {
 				return fmt.Errorf(errMultiple, cEvent, cLastModified, ErrMultiple)
 			}
@@ -1013,7 +1013,7 @@ Loop:
 			if err := s.Geo.decode(params, value); err != nil {
 				return fmt.Errorf(errDecodingProp, cTodo, cGeo, err)
 			}
-		case "LAST-MOD":
+		case "LAST-MODIFIED":
 			if s.LastModified != nil {
 				return fmt.Errorf(errMultiple, cTodo, cLastModified, ErrMultiple)
 			}
@@ -1648,7 +1648,7 @@ Loop:
 			if err := s.DateTimeStart.decode(params, value); err != nil {
 				return fmt.Errorf(errDecodingProp, cJournal, cDateTimeStart, err)
 			}
-		case "LAST-MOD":
+		case "LAST-MODIFIED":
 			if s.LastModified != nil {
 				return fmt.Errorf(errMultiple, cJournal, cLastModified, ErrMultiple)
 			}
@@ -2398,7 +2398,7 @@ Loop:
 			if err := s.TimezoneID.decode(params, value); err != nil {
 				return fmt.Errorf(errDecodingProp, cTimezone, cTimezoneID, err)
 			}
-		case "LAST-MOD":
+		case "LAST-MODIFIED":
 			if s.LastModified != nil {
 				return fmt.Errorf(errMultiple, cTimezone, cLastModified, ErrMultiple)
 			}
