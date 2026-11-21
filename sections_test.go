@@ -453,5 +453,19 @@ func TestEvent(t *testing.T) {
 			Error:  ErrInvalidValue,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
+		{ // 55
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nURL:http://example.com\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nURL:http://example.com\r\nEND:VEVENT\r\n",
+		},
+		{ // 56
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nURL:http://example.com\r\nURL:http://another.com\r\nEND:VEVENT",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nURL:http://example.com\r\nEND:VEVENT\r\n",
+		},
+		{ // 57
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nURL:http://a%:b@example.com;\r\nEND:VEVENT",
+			Error:  url.EscapeError("%"),
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
 	})
 }
