@@ -425,5 +425,19 @@ func TestEvent(t *testing.T) {
 			Error:  ErrInvalidValue,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
+		{ // 49
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSUMMARY:\"My Summary\"\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSUMMARY:\"My Summary\"\r\nEND:VEVENT\r\n",
+		},
+		{ // 50
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSUMMARY:\"My Summary\"\r\nSUMMARY:\"Another Summary\"\r\nEND:VEVENT",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSUMMARY:\"My Summary\"\r\nEND:VEVENT\r\n",
+		},
+		{ // 51
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSUMMARY:summary;\r\nEND:VEVENT",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
 	})
 }
