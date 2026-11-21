@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/url"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -372,6 +373,24 @@ func TestEvent(t *testing.T) {
 		{ // 39
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://a%:b@example.com;\r\nEND:VEVENT",
 			Error:  url.EscapeError("%"),
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
+		{ // 40
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nPRIORITY:1\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nPRIORITY:1\r\nEND:VEVENT\r\n",
+		},
+		{ // 41
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nPRIORITY:1\r\nPRIORITY:2\r\nEND:VEVENT",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nPRIORITY:1\r\nEND:VEVENT\r\n",
+		},
+		{ // 42
+			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nPRIORITY:x\r\nEND:VEVENT",
+			Error: &strconv.NumError{
+				Func: "ParseInt",
+				Num:  "x",
+				Err:  strconv.ErrSyntax,
+			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
 	})
