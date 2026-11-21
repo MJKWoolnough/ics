@@ -345,5 +345,19 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
+		{ // 34
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nLOCATION:\"My Location\"\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nLOCATION:\"My Location\"\r\nEND:VEVENT\r\n",
+		},
+		{ // 35
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nLOCATION:\"My Location\"\r\nLOCATION:\"Another Location\"\r\nEND:VEVENT",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nLOCATION:\"My Location\"\r\nEND:VEVENT\r\n",
+		},
+		{ // 36
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nLOCATION:Location;\r\nEND:VEVENT",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
 	})
 }
