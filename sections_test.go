@@ -3,6 +3,7 @@ package ics
 import (
 	"errors"
 	"io"
+	"net/url"
 	"reflect"
 	"strings"
 	"testing"
@@ -357,6 +358,20 @@ func TestEvent(t *testing.T) {
 		{ // 36
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nLOCATION:Location;\r\nEND:VEVENT",
 			Error:  ErrInvalidText,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
+		{ // 37
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VEVENT\r\n",
+		},
+		{ // 38
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nORGANIZER:http://another.com\r\nEND:VEVENT",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VEVENT\r\n",
+		},
+		{ // 39
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://a%:b@example.com;\r\nEND:VEVENT",
+			Error:  url.EscapeError("%"),
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
 	})
