@@ -393,5 +393,23 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
+		{ // 43
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VEVENT\r\n",
+		},
+		{ // 44
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nSEQUENCE:2\r\nEND:VEVENT",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VEVENT\r\n",
+		},
+		{ // 45
+			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:x\r\nEND:VEVENT",
+			Error: &strconv.NumError{
+				Func: "ParseInt",
+				Num:  "x",
+				Err:  strconv.ErrSyntax,
+			},
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
 	})
 }
