@@ -517,5 +517,19 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
+		{ // 67
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDURATION:PT1H\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDURATION:PT1H\r\nEND:VEVENT\r\n",
+		},
+		{ // 68
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDURATION:PT1H\r\nDURATION:PT2H\r\nEND:VEVENT",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDURATION:PT1H\r\nEND:VEVENT\r\n",
+		},
+		{ // 69
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDURATION:T1H\r\nEND:VEVENT",
+			Error:  ErrInvalidDuration,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
 	})
 }
