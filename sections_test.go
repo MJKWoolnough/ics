@@ -613,5 +613,18 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
+		{ // 88
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nEND:VEVENT\r\n",
+		},
+		{ // 89
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nREQUEST-STATUS:Another Status\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nREQUEST-STATUS:Another Status\r\nEND:VEVENT\r\n",
+		},
+		{ // 90
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status;\r\nEND:VEVENT",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
 	})
 }
