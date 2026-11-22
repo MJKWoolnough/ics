@@ -570,5 +570,18 @@ func TestEvent(t *testing.T) {
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
+		{ // 79
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nEND:VEVENT\r\n",
+		},
+		{ // 80
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nCOMMENT:Another Comment\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nCOMMENT:Another Comment\r\nEND:VEVENT\r\n",
+		},
+		{ // 81
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment;\r\nEND:VEVENT",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
 	})
 }
