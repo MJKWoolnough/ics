@@ -681,3 +681,41 @@ func TestEvent(t *testing.T) {
 		},
 	})
 }
+
+func TestTodo(t *testing.T) {
+	testSection[Todo](t, []sectionTest{
+		{ // 1
+			Error:  io.ErrUnexpectedEOF,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:00010101T000000Z\r\nUID:\r\nEND:VTODO\r\n",
+		},
+		{ // 2
+			Input:  "+",
+			Error:  ErrInvalidContentLine,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:00010101T000000Z\r\nUID:\r\nEND:VEVENT\r\n",
+		},
+		{ // 3
+			Input:  "END:VTODO",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:00010101T000000Z\r\nUID:\r\nEND:VTODO\r\n",
+		},
+		{ // 4
+			Input:  "DTSTAMP:20261119T200528Z\r\nEND:VTODO",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:\r\nEND:VTODO\r\n",
+		},
+		{ // 5
+			Input:  "UID:1\r\nEND:VTODO",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:00010101T000000Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
+		{ // 6
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
+		{ // 7
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VOOD",
+			Error:  ErrInvalidEnd,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
+	})
+}
