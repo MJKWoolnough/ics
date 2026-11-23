@@ -730,5 +730,28 @@ func TestTodo(t *testing.T) {
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:VALARM\r\nACTION:NONE\r\nEND:VALARM\r\nBEGIN:VALARM\r\nACTION:NONE\r\nEND:VALARM\r\nEND:VTODO",
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:VALARM\r\nACTION:NONE\r\nEND:VALARM\r\nBEGIN:VALARM\r\nACTION:NONE\r\nEND:VALARM\r\nEND:VTODO\r\n",
 		},
+		{ // 11
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:UNKNOWN\r\nEND:UNKNOWN\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
+		{ // 12
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:UNKNOWN\r\nEND:VTODO",
+			Error:  ErrInvalidEnd,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
+		{ // 13
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDTSTAMP:20250403T01020304Z\r\nEND:VTODO",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
+		{ // 14
+			Input: "DTSTAMP:20011240T131415\r\nUID:1\r\nEND:VTODO",
+			Error: &time.ParseError{
+				Layout:  "20060102T150405",
+				Value:   "20011240T131415",
+				Message: ": day out of range",
+			},
+			Output: "BEGIN:VTODO\r\nDTSTAMP:\r\nUID:\r\nEND:VTODO\r\n",
+		},
 	})
 }
