@@ -206,33 +206,38 @@ func TestEvent(t *testing.T) {
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
 		{ // 7
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEENT",
+			Error:  ErrInvalidEnd,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
+		{ // 8
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:VALARM\r\nACTION:NONE\r\nEND:VALARM\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:VALARM\r\nACTION:NONE\r\nEND:VALARM\r\nEND:VEVENT\r\n",
 		},
-		{ // 8
+		{ // 9
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:VALARM\r\nEND:VALARM\r\nEND:VEVENT",
 			Error:  ErrMissingAlarmAction,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 9
+		{ // 10
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:VALARM\r\nACTION:NONE\r\nEND:VALARM\r\nBEGIN:VALARM\r\nACTION:NONE\r\nEND:VALARM\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:VALARM\r\nACTION:NONE\r\nEND:VALARM\r\nBEGIN:VALARM\r\nACTION:NONE\r\nEND:VALARM\r\nEND:VEVENT\r\n",
 		},
-		{ // 10
+		{ // 11
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:UNKNOWN\r\nEND:UNKNOWN\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 11
+		{ // 12
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nBEGIN:UNKNOWN\r\nEND:VEVENT",
 			Error:  ErrInvalidEnd,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 12
+		{ // 13
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDTSTAMP:20250403T01020304Z\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 13
+		{ // 14
 			Input: "DTSTAMP:20011240T131415\r\nUID:1\r\nEND:VEVENT",
 			Error: &time.ParseError{
 				Layout:  "20060102T150405",
@@ -241,26 +246,26 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:\r\nUID:\r\nEND:VEVENT\r\n",
 		},
-		{ // 14
+		{ // 15
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nUID:2\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:\r\nEND:VEVENT\r\n",
 		},
-		{ // 15
+		{ // 16
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1;\r\nEND:VEVENT",
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:\r\nEND:VEVENT\r\n",
 		},
-		{ // 16
+		{ // 17
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDTSTART:20250403T010203Z\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDTSTART:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 17
+		{ // 18
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDTSTART:20250403T010203Z\r\nDTSTART:20250403T010204Z\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDTSTART:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 18
+		{ // 19
 			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDTSTART:20011240T131415\r\nEND:VEVENT",
 			Error: &time.ParseError{
 				Layout:  "20060102T150405",
@@ -269,30 +274,30 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 19
+		{ // 20
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCLASS:PUBLIC\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCLASS:PUBLIC\r\nEND:VEVENT\r\n",
 		},
-		{ // 20
+		{ // 21
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCLASS:PUBLIC\r\nCLASS:PRIVATE\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCLASS:PUBLIC\r\nEND:VEVENT\r\n",
 		},
-		{ // 21
+		{ // 22
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCLASS:UNKNOWN\r\nEND:VEVENT",
 			Error:  ErrInvalidValue,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 22
+		{ // 23
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCREATED:20250403T010203Z\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCREATED:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 23
+		{ // 24
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCREATED:20250403T010203Z\r\nCREATED:20250403T010204Z\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCREATED:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 24
+		{ // 25
 			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCREATED:20011240T131415\r\nEND:VEVENT",
 			Error: &time.ParseError{
 				Layout:  "20060102T150405",
@@ -301,44 +306,44 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 25
+		{ // 26
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDESCRIPTION:\"My Description\"\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDESCRIPTION:\"My Description\"\r\nEND:VEVENT\r\n",
 		},
-		{ // 26
+		{ // 27
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDESCRIPTION:\"My Description\"\r\nDESCRIPTION:\"Another Description\"\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDESCRIPTION:\"My Description\"\r\nEND:VEVENT\r\n",
 		},
-		{ // 27
+		{ // 28
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDESCRIPTION:My;\r\nEND:VEVENT",
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 28
+		{ // 29
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nEND:VEVENT\r\n",
 		},
-		{ // 29
+		{ // 30
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nGEO:3;4\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nEND:VEVENT\r\n",
 		},
-		{ // 30
+		{ // 31
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1\r\nEND:VEVENT",
 			Error:  ErrInvalidTFloat,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 31
+		{ // 32
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nLAST-MODIFIED:20250403T010203Z\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nLAST-MODIFIED:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 32
+		{ // 33
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nLAST-MODIFIED:20250403T010203Z\r\nLAST-MODIFIED:20250403T010204Z\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nLAST-MODIFIED:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 33
+		{ // 34
 			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nLAST-MODIFIED:20011240T131415\r\nEND:VEVENT",
 			Error: &time.ParseError{
 				Layout:  "20060102T150405",
@@ -347,44 +352,44 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 34
+		{ // 35
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nLOCATION:\"My Location\"\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nLOCATION:\"My Location\"\r\nEND:VEVENT\r\n",
 		},
-		{ // 35
+		{ // 36
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nLOCATION:\"My Location\"\r\nLOCATION:\"Another Location\"\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nLOCATION:\"My Location\"\r\nEND:VEVENT\r\n",
 		},
-		{ // 36
+		{ // 37
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nLOCATION:Location;\r\nEND:VEVENT",
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 37
+		{ // 38
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VEVENT\r\n",
 		},
-		{ // 38
+		{ // 39
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nORGANIZER:http://another.com\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VEVENT\r\n",
 		},
-		{ // 39
+		{ // 40
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://a%:b@example.com;\r\nEND:VEVENT",
 			Error:  url.EscapeError("%"),
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 40
+		{ // 41
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nPRIORITY:1\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nPRIORITY:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 41
+		{ // 42
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nPRIORITY:1\r\nPRIORITY:2\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nPRIORITY:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 42
+		{ // 43
 			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nPRIORITY:x\r\nEND:VEVENT",
 			Error: &strconv.NumError{
 				Func: "ParseInt",
@@ -393,16 +398,16 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 43
+		{ // 44
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 44
+		{ // 45
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nSEQUENCE:2\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 45
+		{ // 46
 			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:x\r\nEND:VEVENT",
 			Error: &strconv.NumError{
 				Func: "ParseInt",
@@ -411,72 +416,72 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 46
+		{ // 47
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSTATUS:TENTATIVE\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSTATUS:TENTATIVE\r\nEND:VEVENT\r\n",
 		},
-		{ // 47
+		{ // 48
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSTATUS:TENTATIVE\r\nSTATUS:CONFIRMED\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSTATUS:TENTATIVE\r\nEND:VEVENT\r\n",
 		},
-		{ // 48
+		{ // 49
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSTATUS:x\r\nEND:VEVENT",
 			Error:  ErrInvalidValue,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 49
+		{ // 50
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSUMMARY:\"My Summary\"\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSUMMARY:\"My Summary\"\r\nEND:VEVENT\r\n",
 		},
-		{ // 50
+		{ // 51
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSUMMARY:\"My Summary\"\r\nSUMMARY:\"Another Summary\"\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSUMMARY:\"My Summary\"\r\nEND:VEVENT\r\n",
 		},
-		{ // 51
+		{ // 52
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSUMMARY:summary;\r\nEND:VEVENT",
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 52
+		{ // 53
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nTRANSP:TRANSPARENT\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nTRANSP:TRANSPARENT\r\nEND:VEVENT\r\n",
 		},
-		{ // 53
+		{ // 54
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nTRANSP:TRANSPARENT\r\nTRANSP:OPAQUE\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nTRANSP:TRANSPARENT\r\nEND:VEVENT\r\n",
 		},
-		{ // 54
+		{ // 55
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nTRANSP:x\r\nEND:VEVENT",
 			Error:  ErrInvalidValue,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 55
+		{ // 56
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nURL:http://example.com\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nURL:http://example.com\r\nEND:VEVENT\r\n",
 		},
-		{ // 56
+		{ // 57
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nURL:http://example.com\r\nURL:http://another.com\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nURL:http://example.com\r\nEND:VEVENT\r\n",
 		},
-		{ // 57
+		{ // 58
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nURL:http://a%:b@example.com;\r\nEND:VEVENT",
 			Error:  url.EscapeError("%"),
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 58
+		{ // 59
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRECURRENCE-ID:20250403T010203Z\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRECURRENCE-ID:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 59
+		{ // 60
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRECURRENCE-ID:20250403T010203Z\r\nRECURRENCE-ID:20250403T010204Z\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRECURRENCE-ID:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 60
+		{ // 61
 			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRECURRENCE-ID:20011240T131415\r\nEND:VEVENT",
 			Error: &time.ParseError{
 				Layout:  "20060102T150405",
@@ -485,30 +490,30 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 61
+		{ // 62
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRRULE:FREQ=SECONDLY\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRRULE:FREQ=SECONDLY\r\nEND:VEVENT\r\n",
 		},
-		{ // 62
+		{ // 63
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRRULE:FREQ=SECONDLY\r\nRRULE:FREQ=YEARLY\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRRULE:FREQ=SECONDLY\r\nEND:VEVENT\r\n",
 		},
-		{ // 63
+		{ // 64
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRRULE:FREQ=other\r\nEND:VEVENT",
 			Error:  ErrInvalidRecur,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 64
+		{ // 65
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDTEND:20250403T010203Z\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDTEND:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 65
+		{ // 66
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDTEND:20250403T010203Z\r\nDTEND:20250403T010204Z\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDTEND:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 66
+		{ // 67
 			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDTEND:20011240T131415\r\nEND:VEVENT",
 			Error: &time.ParseError{
 				Layout:  "20060102T150405",
@@ -517,94 +522,94 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 67
+		{ // 68
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDURATION:PT1H\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDURATION:PT1H\r\nEND:VEVENT\r\n",
 		},
-		{ // 68
+		{ // 69
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDURATION:PT1H\r\nDURATION:PT2H\r\nEND:VEVENT",
 			Error:  ErrMultiple,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDURATION:PT1H\r\nEND:VEVENT\r\n",
 		},
-		{ // 69
+		{ // 70
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDURATION:T1H\r\nEND:VEVENT",
 			Error:  ErrInvalidDuration,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 70
+		{ // 71
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTACH:http://example.com\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nATTACH:http://example.com\r\nEND:VEVENT\r\n",
 		},
-		{ // 71
+		{ // 72
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTACH:http://example.com\r\nATTACH:http://another.com\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nATTACH:http://example.com\r\nATTACH:http://another.com\r\nEND:VEVENT\r\n",
 		},
-		{ // 72
+		{ // 73
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTACH:http://a%:b@example.com;\r\nEND:VEVENT",
 			Error:  url.EscapeError("%"),
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 73
+		{ // 74
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nEND:VEVENT\r\n",
 		},
-		{ // 74
+		{ // 75
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nATTENDEE:http://another.com\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nATTENDEE:http://another.com\r\nEND:VEVENT\r\n",
 		},
-		{ // 75
+		{ // 76
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://a%:b@example.com;\r\nEND:VEVENT",
 			Error:  url.EscapeError("%"),
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 76
+		{ // 77
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCATEGORIES:My Category\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCATEGORIES:My Category\r\nEND:VEVENT\r\n",
 		},
-		{ // 77
+		{ // 78
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCATEGORIES:My Category\r\nCATEGORIES:Another Category\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCATEGORIES:My Category\r\nCATEGORIES:Another Category\r\nEND:VEVENT\r\n",
 		},
-		{ // 78
+		{ // 79
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCATEGORIES:My Category;\r\nEND:VEVENT",
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 79
+		{ // 80
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nEND:VEVENT\r\n",
 		},
-		{ // 80
+		{ // 81
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nCOMMENT:Another Comment\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nCOMMENT:Another Comment\r\nEND:VEVENT\r\n",
 		},
-		{ // 81
+		{ // 82
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment;\r\nEND:VEVENT",
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 82
+		{ // 83
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCONTACT:My Contact\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCONTACT:My Contact\r\nEND:VEVENT\r\n",
 		},
-		{ // 83
+		{ // 84
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCONTACT:My Contact\r\nCONTACT:Another Contact\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCONTACT:My Contact\r\nCONTACT:Another Contact\r\nEND:VEVENT\r\n",
 		},
-		{ // 84
+		{ // 85
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCONTACT:My Contact;\r\nEND:VEVENT",
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 85
+		{ // 86
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nEXDATE:20250403T010203Z\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEXDATE:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 86
+		{ // 87
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nEXDATE:20250403T010203Z\r\nEXDATE:20250403T010204Z\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEXDATE:20250403T010203Z\r\nEXDATE:20250403T010204Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 87
+		{ // 88
 			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nEXDATE:20011240T131415\r\nEND:VEVENT",
 			Error: &time.ParseError{
 				Layout:  "20060102T150405",
@@ -613,54 +618,54 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 88
+		{ // 89
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nEND:VEVENT\r\n",
 		},
-		{ // 89
+		{ // 90
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nREQUEST-STATUS:Another Status\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nREQUEST-STATUS:Another Status\r\nEND:VEVENT\r\n",
 		},
-		{ // 90
+		{ // 91
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status;\r\nEND:VEVENT",
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 91
+		{ // 92
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRELATED-TO:My Relation\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRELATED-TO:My Relation\r\nEND:VEVENT\r\n",
 		},
-		{ // 92
+		{ // 93
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRELATED-TO:My Relation\r\nRELATED-TO:Another Relation\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRELATED-TO:My Relation\r\nRELATED-TO:Another Relation\r\nEND:VEVENT\r\n",
 		},
-		{ // 93
+		{ // 94
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRELATED-TO:My Relation;\r\nEND:VEVENT",
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 94
+		{ // 95
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRESOURCES:My Resource\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRESOURCES:My Resource\r\nEND:VEVENT\r\n",
 		},
-		{ // 95
+		{ // 96
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRESOURCES:My Resource\r\nRESOURCES:Another Resource\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRESOURCES:My Resource\r\nRESOURCES:Another Resource\r\nEND:VEVENT\r\n",
 		},
-		{ // 96
+		{ // 97
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRESOURCES:My Resource;\r\nEND:VEVENT",
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
-		{ // 97
+		{ // 98
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRDATE:20250403T010203Z\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRDATE:20250403T010203Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 98
+		{ // 99
 			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRDATE:20250403T010203Z\r\nRDATE:20250403T010204Z\r\nEND:VEVENT",
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRDATE:20250403T010203Z\r\nRDATE:20250403T010204Z\r\nEND:VEVENT\r\n",
 		},
-		{ // 99
+		{ // 100
 			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRDATE:20011240T131415\r\nEND:VEVENT",
 			Error: &time.ParseError{
 				Layout:  "20060102T150405",
