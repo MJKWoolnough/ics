@@ -674,5 +674,10 @@ func TestEvent(t *testing.T) {
 			},
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
+		{ // 101
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDTEND:20250403T010203Z\r\nDURATION:PT1H\r\nEND:VEVENT",
+			Error:  ErrRequirementNotMet,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDTEND:20250403T010203Z\r\nDURATION:PT1H\r\nEND:VEVENT\r\n",
+		},
 	})
 }
