@@ -1226,7 +1226,7 @@ Loop:
 		return fmt.Errorf(errDecodingType, cTodo, ErrMissingRequired)
 	}
 
-	if s.Duration != nil && (s.DateTimeStart == nil) {
+	if s.Duration != nil && s.DateTimeStart == nil {
 		return fmt.Errorf(errDecodingType, cTodo, ErrRequirementNotMet)
 	}
 
@@ -3026,7 +3026,7 @@ Loop:
 		return fmt.Errorf(errDecodingType, cAlarmAudio, ErrMissingRequired)
 	}
 
-	if s.GeoLocation != nil && (s.Proximity == nil) {
+	if s.GeoLocation != nil && s.Proximity == nil {
 		return fmt.Errorf(errDecodingType, cAlarmAudio, ErrRequirementNotMet)
 	}
 
@@ -3343,7 +3343,7 @@ Loop:
 		return fmt.Errorf(errDecodingType, cAlarmDisplay, ErrMissingRequired)
 	}
 
-	if s.GeoLocation != nil && (s.Proximity == nil) {
+	if s.GeoLocation != nil && s.Proximity == nil {
 		return fmt.Errorf(errDecodingType, cAlarmDisplay, ErrRequirementNotMet)
 	}
 
@@ -3677,7 +3677,7 @@ Loop:
 		return fmt.Errorf(errDecodingType, cAlarmEmail, ErrMissingRequired)
 	}
 
-	if s.GeoLocation != nil && (s.Proximity == nil) {
+	if s.GeoLocation != nil && s.Proximity == nil {
 		return fmt.Errorf(errDecodingType, cAlarmEmail, ErrRequirementNotMet)
 	}
 
@@ -3997,7 +3997,7 @@ Loop:
 		return fmt.Errorf(errDecodingType, cAlarmURI, ErrMissingRequired)
 	}
 
-	if s.GeoLocation != nil && (s.Proximity == nil) {
+	if s.GeoLocation != nil && s.Proximity == nil {
 		return fmt.Errorf(errDecodingType, cAlarmURI, ErrRequirementNotMet)
 	}
 
