@@ -325,12 +325,19 @@ function printSection() {
 					echo -n "s.$(getName "$r") == nil";
 					second=true;
 				else
-					echo -n " s.$(getName "$r") != nil && (";
+					echo -n " s.$(getName "$r") != nil && ";
+
+					if [ "${#reqs[@]}" -gt 2 ]; then
+						echo -n " (";
+					fi;
+
 					first=true;
 				fi;
 			done;
 
-			echo -n ")";
+			if [ "${#reqs[@]}" -gt 2 ]; then
+				echo -n ")";
+			fi;
 		fi;
 
 		echo " {";
