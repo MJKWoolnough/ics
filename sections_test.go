@@ -626,5 +626,18 @@ func TestEvent(t *testing.T) {
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
 		},
+		{ // 91
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRELATED-TO:My Relation\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRELATED-TO:My Relation\r\nEND:VEVENT\r\n",
+		},
+		{ // 92
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRELATED-TO:My Relation\r\nRELATED-TO:Another Relation\r\nEND:VEVENT",
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRELATED-TO:My Relation\r\nRELATED-TO:Another Relation\r\nEND:VEVENT\r\n",
+		},
+		{ // 93
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRELATED-TO:My Relation;\r\nEND:VEVENT",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VEVENT\r\n",
+		},
 	})
 }
