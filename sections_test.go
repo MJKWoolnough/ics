@@ -891,5 +891,19 @@ func TestTodo(t *testing.T) {
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
 		},
+		{ // 41
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VTODO\r\n",
+		},
+		{ // 42
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nORGANIZER:http://another.com\r\nEND:VTODO",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VTODO\r\n",
+		},
+		{ // 43
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://a%:b@example.com;\r\nEND:VTODO",
+			Error:  url.EscapeError("%"),
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
 	})
 }
