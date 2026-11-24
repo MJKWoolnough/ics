@@ -753,5 +753,15 @@ func TestTodo(t *testing.T) {
 			},
 			Output: "BEGIN:VTODO\r\nDTSTAMP:\r\nUID:\r\nEND:VTODO\r\n",
 		},
+		{ // 15
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nUID:2\r\nEND:VTODO",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:\r\nEND:VTODO\r\n",
+		},
+		{ // 16
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1;\r\nEND:VTODO",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:\r\nEND:VTODO\r\n",
+		},
 	})
 }
