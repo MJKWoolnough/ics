@@ -813,5 +813,19 @@ func TestTodo(t *testing.T) {
 			},
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
 		},
+		{ // 26
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDESCRIPTION:\"My Description\"\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDESCRIPTION:\"My Description\"\r\nEND:VTODO\r\n",
+		},
+		{ // 27
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDESCRIPTION:\"My Description\"\r\nDESCRIPTION:\"Another Description\"\r\nEND:VTODO",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDESCRIPTION:\"My Description\"\r\nEND:VTODO\r\n",
+		},
+		{ // 28
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDESCRIPTION:My;\r\nEND:VTODO",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
 	})
 }
