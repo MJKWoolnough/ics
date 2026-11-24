@@ -845,5 +845,19 @@ func TestTodo(t *testing.T) {
 			},
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
 		},
+		{ // 32
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nEND:VTODO\r\n",
+		},
+		{ // 33
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nGEO:3;4\r\nEND:VTODO",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1;2\r\nEND:VTODO\r\n",
+		},
+		{ // 34
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nGEO:1\r\nEND:VTODO",
+			Error:  ErrInvalidTFloat,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
 	})
 }
