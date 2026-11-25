@@ -959,5 +959,23 @@ func TestTodo(t *testing.T) {
 			},
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
 		},
+		{ // 53
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VTODO\r\n",
+		},
+		{ // 54
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nSEQUENCE:2\r\nEND:VTODO",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VTODO\r\n",
+		},
+		{ // 55
+			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:x\r\nEND:VTODO",
+			Error: &strconv.NumError{
+				Func: "ParseInt",
+				Num:  "x",
+				Err:  strconv.ErrSyntax,
+			},
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
 	})
 }
