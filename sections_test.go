@@ -1019,5 +1019,23 @@ func TestTodo(t *testing.T) {
 			Error:  url.EscapeError("%"),
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
 		},
+		{ // 65
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDUE:20250403T010203Z\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDUE:20250403T010203Z\r\nEND:VTODO\r\n",
+		},
+		{ // 66
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDUE:20250403T010203Z\r\nDUE:20250403T010204Z\r\nEND:VTODO",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nDUE:20250403T010203Z\r\nEND:VTODO\r\n",
+		},
+		{ // 67
+			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDUE:20011240T131415\r\nEND:VTODO",
+			Error: &time.ParseError{
+				Layout:  "20060102T150405",
+				Value:   "20011240T131415",
+				Message: ": day out of range",
+			},
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
 	})
 }
