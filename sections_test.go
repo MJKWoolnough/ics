@@ -977,5 +977,19 @@ func TestTodo(t *testing.T) {
 			},
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
 		},
+		{ // 56
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSTATUS:TENTATIVE\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSTATUS:TENTATIVE\r\nEND:VTODO\r\n",
+		},
+		{ // 57
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSTATUS:TENTATIVE\r\nSTATUS:CONFIRMED\r\nEND:VTODO",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSTATUS:TENTATIVE\r\nEND:VTODO\r\n",
+		},
+		{ // 58
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSTATUS:x\r\nEND:VTODO",
+			Error:  ErrInvalidValue,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
 	})
 }
