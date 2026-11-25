@@ -905,5 +905,23 @@ func TestTodo(t *testing.T) {
 			Error:  url.EscapeError("%"),
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
 		},
+		{ // 44
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nPERCENT-COMPLETE:1\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nPERCENT-COMPLETE:1\r\nEND:VTODO\r\n",
+		},
+		{ // 45
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nPERCENT-COMPLETE:1\r\nPERCENT-COMPLETE:2\r\nEND:VTODO",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nPERCENT-COMPLETE:1\r\nEND:VTODO\r\n",
+		},
+		{ // 46
+			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nPERCENT-COMPLETE:x\r\nEND:VTODO",
+			Error: &strconv.NumError{
+				Func: "ParseInt",
+				Num:  "x",
+				Err:  strconv.ErrSyntax,
+			},
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
 	})
 }
