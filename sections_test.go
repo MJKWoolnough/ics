@@ -1169,5 +1169,18 @@ func TestTodo(t *testing.T) {
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
 		},
+		{ // 97
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRESOURCES:My Resource\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRESOURCES:My Resource\r\nEND:VTODO\r\n",
+		},
+		{ // 98
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRESOURCES:My Resource\r\nRESOURCES:Another Resource\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nRESOURCES:My Resource\r\nRESOURCES:Another Resource\r\nEND:VTODO\r\n",
+		},
+		{ // 99
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nRESOURCES:My Resource;\r\nEND:VTODO",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
 	})
 }
