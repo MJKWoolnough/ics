@@ -1143,5 +1143,18 @@ func TestTodo(t *testing.T) {
 			},
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
 		},
+		{ // 91
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nEND:VTODO\r\n",
+		},
+		{ // 92
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nREQUEST-STATUS:Another Status\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status\r\nREQUEST-STATUS:Another Status\r\nEND:VTODO\r\n",
+		},
+		{ // 93
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nREQUEST-STATUS:My Status;\r\nEND:VTODO",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
 	})
 }
