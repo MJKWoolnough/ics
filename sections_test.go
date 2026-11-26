@@ -1087,5 +1087,18 @@ func TestTodo(t *testing.T) {
 			Error:  url.EscapeError("%"),
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
 		},
+		{ // 79
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCATEGORIES:My Category\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCATEGORIES:My Category\r\nEND:VTODO\r\n",
+		},
+		{ // 80
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCATEGORIES:My Category\r\nCATEGORIES:Another Category\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCATEGORIES:My Category\r\nCATEGORIES:Another Category\r\nEND:VTODO\r\n",
+		},
+		{ // 81
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCATEGORIES:My Category;\r\nEND:VTODO",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
 	})
 }
