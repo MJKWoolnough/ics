@@ -1074,5 +1074,18 @@ func TestTodo(t *testing.T) {
 			Error:  url.EscapeError("%"),
 			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
 		},
+		{ // 76
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nEND:VTODO\r\n",
+		},
+		{ // 77
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nATTENDEE:http://another.com\r\nEND:VTODO",
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nATTENDEE:http://another.com\r\nEND:VTODO\r\n",
+		},
+		{ // 78
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://a%:b@example.com;\r\nEND:VTODO",
+			Error:  url.EscapeError("%"),
+			Output: "BEGIN:VTODO\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VTODO\r\n",
+		},
 	})
 }
