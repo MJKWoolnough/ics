@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func (c Calendar) Error() string {
+func (c Calendar) String() string {
 	var buf bytes.Buffer
 
 	buf.WriteString("Calendar: ")
