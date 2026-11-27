@@ -1201,3 +1201,41 @@ func TestTodo(t *testing.T) {
 		},
 	})
 }
+
+func TestJournal(t *testing.T) {
+	testSection[Journal](t, []sectionTest{
+		{ // 1
+			Error:  io.ErrUnexpectedEOF,
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:00010101T000000Z\r\nUID:\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 2
+			Input:  "+",
+			Error:  ErrInvalidContentLine,
+			Output: "BEGIN:VEVENT\r\nDTSTAMP:00010101T000000Z\r\nUID:\r\nEND:VEVENT\r\n",
+		},
+		{ // 3
+			Input:  "END:VJOURNAL",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:00010101T000000Z\r\nUID:\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 4
+			Input:  "DTSTAMP:20261119T200528Z\r\nEND:VJOURNAL",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 5
+			Input:  "UID:1\r\nEND:VJOURNAL",
+			Error:  ErrMissingRequired,
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:00010101T000000Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 6
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL",
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 7
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VOOD",
+			Error:  ErrInvalidEnd,
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
+		},
+	})
+}
