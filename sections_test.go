@@ -1246,5 +1246,19 @@ func TestJournal(t *testing.T) {
 			Error:  ErrInvalidEnd,
 			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
 		},
+		{ // 10
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nDTSTAMP:20250403T01020304Z\r\nEND:VJOURNAL",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 11
+			Input: "DTSTAMP:20011240T131415\r\nUID:1\r\nEND:VJOURNAL",
+			Error: &time.ParseError{
+				Layout:  "20060102T150405",
+				Value:   "20011240T131415",
+				Message: ": day out of range",
+			},
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:\r\nUID:\r\nEND:VJOURNAL\r\n",
+		},
 	})
 }
