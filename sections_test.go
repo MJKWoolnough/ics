@@ -1260,5 +1260,15 @@ func TestJournal(t *testing.T) {
 			},
 			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:\r\nUID:\r\nEND:VJOURNAL\r\n",
 		},
+		{ // 12
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nUID:2\r\nEND:VJOURNAL",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 13
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1;\r\nEND:VJOURNAL",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:\r\nEND:VJOURNAL\r\n",
+		},
 	})
 }
