@@ -1338,5 +1338,19 @@ func TestJournal(t *testing.T) {
 			},
 			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
 		},
+		{ // 26
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VJOURNAL",
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 27
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nORGANIZER:http://another.com\r\nEND:VJOURNAL",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://example.com\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 28
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nORGANIZER:http://a%:b@example.com;\r\nEND:VJOURNAL",
+			Error:  url.EscapeError("%"),
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
+		},
 	})
 }
