@@ -1483,5 +1483,18 @@ func TestJournal(t *testing.T) {
 			Error:  ErrInvalidText,
 			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
 		},
+		{ // 56
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nEND:VJOURNAL",
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 57
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nCOMMENT:Another Comment\r\nEND:VJOURNAL",
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment\r\nCOMMENT:Another Comment\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 58
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nCOMMENT:My Comment;\r\nEND:VJOURNAL",
+			Error:  ErrInvalidText,
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
+		},
 	})
 }
