@@ -1457,5 +1457,18 @@ func TestJournal(t *testing.T) {
 			Error:  url.EscapeError("%"),
 			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
 		},
+		{ // 50
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nEND:VJOURNAL",
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 51
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nATTENDEE:http://another.com\r\nEND:VJOURNAL",
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://example.com\r\nATTENDEE:http://another.com\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 52
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTENDEE:http://a%:b@example.com;\r\nEND:VJOURNAL",
+			Error:  url.EscapeError("%"),
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
+		},
 	})
 }
