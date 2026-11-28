@@ -1370,5 +1370,23 @@ func TestJournal(t *testing.T) {
 			},
 			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
 		},
+		{ // 32
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VJOURNAL",
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 33
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nSEQUENCE:2\r\nEND:VJOURNAL",
+			Error:  ErrMultiple,
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:1\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 34
+			Input: "DTSTAMP:20261119T200528Z\r\nUID:1\r\nSEQUENCE:x\r\nEND:VJOURNAL",
+			Error: &strconv.NumError{
+				Func: "ParseInt",
+				Num:  "x",
+				Err:  strconv.ErrSyntax,
+			},
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
+		},
 	})
 }
