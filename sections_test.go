@@ -1444,5 +1444,18 @@ func TestJournal(t *testing.T) {
 			Error:  ErrInvalidRecur,
 			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
 		},
+		{ // 47
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTACH:http://example.com\r\nEND:VJOURNAL",
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nATTACH:http://example.com\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 48
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTACH:http://example.com\r\nATTACH:http://another.com\r\nEND:VJOURNAL",
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nATTACH:http://example.com\r\nATTACH:http://another.com\r\nEND:VJOURNAL\r\n",
+		},
+		{ // 49
+			Input:  "DTSTAMP:20261119T200528Z\r\nUID:1\r\nATTACH:http://a%:b@example.com;\r\nEND:VJOURNAL",
+			Error:  url.EscapeError("%"),
+			Output: "BEGIN:VJOURNAL\r\nDTSTAMP:20261119T200528Z\r\nUID:1\r\nEND:VJOURNAL\r\n",
+		},
 	})
 }
